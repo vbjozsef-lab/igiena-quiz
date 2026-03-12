@@ -32,7 +32,21 @@ const {useState, useEffect, useRef, useCallback} = React;
 // ════════════════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════════════════
-const ADMIN_PASSWORD = "prof2024";
+// Tanárok: név → jelszó
+const TEACHERS = {
+  "Moldovan Geanina": "moldovan24",
+  "Ábrám Zoltán":     "abram24",
+  "Ferencz Lóránd":   "ferencz24",
+  "Balint Iosif":     "balint24",
+  "Nădășan Valentin": "nadasan24",
+  "Guest1":           "guest1",
+  "Guest2":           "guest2",
+};
+
+// Animált bemutatók laboronként (beépítve iframe-ben)
+const LAB_DEMOS = {
+  lp4b: "laborator_animat_lp4b.html",
+};
 // ════════════════════════════════════════════════════════════
 // SUPABASE CONFIG
 // ════════════════════════════════════════════════════════════
@@ -1016,14 +1030,26 @@ function HomePage({onAdminLogin, onJoinToken}) {
 // ② ADMIN LOGIN
 // ════════════════════════════════════════════════════════════
 function AdminLogin({onSuccess, onBack}) {
-  const [pw, setPw] = useState(""); const [err, setErr] = useState("");
-  const go = () => { if(pw===ADMIN_PASSWORD) onSuccess(); else setErr("Parolă incorectă!"); };
+  const [teacher, setTeacher] = useState("");
+  const [pw, setPw]           = useState("");
+  const [err, setErr]         = useState("");
+  const go = () => {
+    if (!teacher) { setErr("Selectați numele profesorului!"); return; }
+    if (!pw) { setErr("Introduceți parola!"); return; }
+    if (TEACHERS[teacher] !== pw) { setErr("Parolă incorectă!"); return; }
+    onSuccess(teacher);
+  };
   return (
     <div style={S.page}>
-      <div style={{...S.card, maxWidth:360, textAlign:"center"}}>
+      <div style={{...S.card, maxWidth:380, textAlign:"center"}}>
         <div style={{fontSize:44, marginBottom:10}}>🔐</div>
         <h2 style={{color:"#0a2a18", margin:"0 0 4px", fontSize:22}}>Panou Profesor</h2>
-        <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Generează coduri QR și urmărește rezultatele</p>
+        <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Generează coduri QR și urmărești rezultatele</p>
+        <label style={{...S.label, textAlign:"left", display:"block"}}>Profesor</label>
+        <select style={{...S.input, marginBottom:12}} value={teacher} onChange={e=>{setTeacher(e.target.value);setPw("");setErr("")}}>
+          <option value="">— Selectați numele —</option>
+          {Object.keys(TEACHERS).map(t=><option key={t} value={t}>{t}</option>)}
+        </select>
         <label style={{...S.label, textAlign:"left", display:"block"}}>Parolă</label>
         <input style={S.input} type="password" placeholder="••••••••" value={pw}
           onChange={e=>{setPw(e.target.value);setErr("")}} onKeyDown={e=>e.key==="Enter"&&go()}/>
@@ -1038,7 +1064,7 @@ function AdminLogin({onSuccess, onBack}) {
 // ════════════════════════════════════════════════════════════
 // ③ ADMIN PANEL — QR generator + results
 // ════════════════════════════════════════════════════════════
-function AdminPanel({onBack}) {
+function AdminPanel({onBack, teacherName}) {
   const [tab, setTab]             = useState("qr"); // qr | results
   const [selLab, setSelLab]       = useState(LABS.find(l=>l.ready) || LABS[0]);
   const [duration, setDuration]   = useState(5);
@@ -1077,7 +1103,7 @@ function AdminPanel({onBack}) {
     setGenerating(true);
     const token = generateToken();
     const expiresAt = Date.now() + duration * 60 * 1000;
-    const session = { token, labId: selLab.id, labTitle: selLab.title, labCode: selLab.code, duration, expiresAt, createdAt: Date.now(), usedBy:[] };
+    const session = { token, labId: selLab.id, labTitle: selLab.title, labCode: selLab.code, duration, expiresAt, createdAt: Date.now(), usedBy:[], teacher: teacherName };
     await addSession(session);
     const url = `${getBaseURL()}?token=${token}`;
     const dataURL = await generateQRDataURL(url);
@@ -1123,6 +1149,7 @@ function AdminPanel({onBack}) {
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
           <div>
             <h2 style={{color:"#0a2a18",fontSize:22,margin:"0 0 2px"}}>🔐 Panou Profesor</h2>
+            {teacherName && <p style={{color:"#16a34a",fontSize:13,fontWeight:600,margin:"0 0 2px"}}>👤 {teacherName}</p>}
             <p style={{color:"#2a7a50",fontSize:13,margin:0}}>Generează QR · Urmărește rezultatele</p>
           </div>
           <button style={{...S.btnW,width:"auto",padding:"8px 16px",fontSize:13}} onClick={onBack}>← Ieși</button>
@@ -1396,9 +1423,39 @@ function StudentLogin({session, onLogin}) {
 }
 
 // ════════════════════════════════════════════════════════════
+// DEMO SCREEN — animált bemutató beépített iframe-ben
+// ════════════════════════════════════════════════════════════
+function DemoScreen({lab, onBack}) {
+  const demoUrl = LAB_DEMOS[lab?.id];
+  return (
+    <div style={{display:"flex",flexDirection:"column",height:"100vh",background:"#0d1821"}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 16px",
+        background:"#152030",borderBottom:"1px solid #1e3a4a",flexShrink:0}}>
+        <button onClick={onBack}
+          style={{background:"#1e3a4a",border:"1px solid #2a5a6a",color:"#e2eaf0",
+            borderRadius:8,padding:"6px 14px",fontSize:13,cursor:"pointer",fontWeight:600}}>
+          ← Înapoi
+        </button>
+        <span style={{fontSize:20}}>{lab?.icon}</span>
+        <div>
+          <span style={{color:"#00c8d7",fontSize:11,fontWeight:700,textTransform:"uppercase"}}>{lab?.code}</span>
+          <span style={{color:"#e2eaf0",fontSize:14,fontWeight:600,marginLeft:8}}>Prezentare animată</span>
+        </div>
+      </div>
+      {demoUrl
+        ? <iframe src={demoUrl} style={{flex:1,border:"none",width:"100%"}} title="Demo"/>
+        : <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#6b8a9e",fontSize:16}}>
+            📽️ Prezentarea animată pentru {lab?.code} nu este disponibilă încă.
+          </div>
+      }
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
 // GENERIC MODULE SELECT (works for any lab)
 // ════════════════════════════════════════════════════════════
-function GenericModuleSelect({lab, modules, questions, studentName, onSelect}) {
+function GenericModuleSelect({lab, modules, questions, studentName, onSelect, onDemo}) {
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px"}}>
       <div style={{maxWidth:820,margin:"0 auto"}}>
@@ -1412,6 +1469,17 @@ function GenericModuleSelect({lab, modules, questions, studentName, onSelect}) {
           </div>
           <p style={{color:"#2a7a50",fontSize:13,margin:0}}>Bun venit, {studentName}! Alege modulul:</p>
         </div>
+        {lab && LAB_DEMOS[lab.id] && onDemo && (
+          <div style={{marginBottom:14}}>
+            <button onClick={onDemo}
+              style={{display:"inline-flex",alignItems:"center",gap:8,
+                background:"linear-gradient(135deg,#1d4ed8,#2563eb)",color:"#fff",
+                border:"none",borderRadius:10,padding:"9px 18px",fontSize:13,
+                fontWeight:600,cursor:"pointer",boxShadow:"0 2px 8px rgba(37,99,235,0.3)"}}>
+              📽️ Prezentare animată
+            </button>
+          </div>
+        )}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:14}}>
           {modules.map(m=>(
             <button key={m.id} onClick={()=>onSelect(m)}
@@ -1439,13 +1507,22 @@ function GenericModuleSelect({lab, modules, questions, studentName, onSelect}) {
 // ════════════════════════════════════════════════════════════
 // ⑥ LP4B MODULE SELECT
 // ════════════════════════════════════════════════════════════
-function LP4BModuleSelect({studentName, onSelect}) {
+function LP4BModuleSelect({studentName, onSelect, onDemo}) {
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px"}}>
       <div style={{maxWidth:820,margin:"0 auto"}}>
         <div style={{marginBottom:24}}>
           <h2 style={{color:"#0a3a20",fontSize:22,margin:"0 0 4px"}}>Bun venit, {studentName}!</h2>
           <p style={{color:"#2a7a50",fontSize:13,margin:0}}>LP4B · Produse de origine animală · Alege modulul:</p>
+        </div>
+        <div style={{marginBottom:14}}>
+          <button onClick={onDemo}
+            style={{display:"inline-flex",alignItems:"center",gap:8,
+              background:"linear-gradient(135deg,#1d4ed8,#2563eb)",color:"#fff",
+              border:"none",borderRadius:10,padding:"9px 18px",fontSize:13,
+              fontWeight:600,cursor:"pointer",boxShadow:"0 2px 8px rgba(37,99,235,0.3)"}}>
+            📽️ Prezentare animată
+          </button>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(290px,1fr))",gap:14}}>
           {LP4B_MODULES.map(m=>(
@@ -1520,7 +1597,7 @@ function QuizScreen({studentName, studentGroup, labId, module, onFinish}) {
       timestamp:Date.now(), timeUsed:module.time*60-timeLeft,
     };
     addResult(entry).catch(e => console.error("DB save error:", e));
-    onFinish(entry, fa);
+    onFinish(entry, fa, finalQs);
   };
 
   const q=qs[cur]; const prog=(cur/qs.length)*100;
@@ -1668,13 +1745,16 @@ function ErrorScreen({message, onBack}) {
 // ⑩ MAIN APP ROUTER
 // ════════════════════════════════════════════════════════════
 function App() {
-  const [screen,   setScreen]   = useState("home");
-  const [session,  setSession]  = useState(null);
-  const [student,  setStudent]  = useState(null);
-  const [module,   setModule]   = useState(null);
-  const [result,   setResult]   = useState(null);
-  const [answers,  setAnswers]  = useState(null);
-  const [errMsg,   setErrMsg]   = useState("");
+  const [screen,      setScreen]      = useState("home");
+  const [session,     setSession]     = useState(null);
+  const [student,     setStudent]     = useState(null);
+  const [module,      setModule]      = useState(null);
+  const [result,      setResult]      = useState(null);
+  const [answers,     setAnswers]     = useState(null);
+  const [quizQs,      setQuizQs]      = useState([]);
+  const [teacherName, setTeacherName] = useState("");
+  const [showDemo,    setShowDemo]    = useState(false);
+  const [errMsg,      setErrMsg]      = useState("");
   const [pendingToken, setPendingToken] = useState(null);
 
   const handleJoinToken = token => {
@@ -1683,8 +1763,8 @@ function App() {
   };
 
   if (screen==="home")        return <HomePage onAdminLogin={()=>setScreen("adminLogin")} onJoinToken={handleJoinToken}/>;
-  if (screen==="adminLogin")  return <AdminLogin onSuccess={()=>setScreen("admin")} onBack={()=>setScreen("home")}/>;
-  if (screen==="admin")       return <AdminPanel onBack={()=>setScreen("home")}/>;
+  if (screen==="adminLogin")  return <AdminLogin onSuccess={(t)=>{setTeacherName(t);setScreen("admin");}} onBack={()=>setScreen("home")}/>;
+  if (screen==="admin")       return <AdminPanel teacherName={teacherName} onBack={()=>setScreen("home")}/>;
 
   if (screen==="tokenJoin")   return (
     <TokenJoin token={pendingToken}
@@ -1718,7 +1798,7 @@ function App() {
       modules={LP1A_MODULES}
       questions={LP1A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp1b_modules") return (
     <GenericModuleSelect
@@ -1726,7 +1806,7 @@ function App() {
       modules={LP1B_MODULES}
       questions={LP1B_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp2a_modules") return (
     <GenericModuleSelect
@@ -1734,7 +1814,7 @@ function App() {
       modules={LP2A_MODULES}
       questions={LP2A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp2b_modules") return (
     <GenericModuleSelect
@@ -1742,7 +1822,7 @@ function App() {
       modules={LP2B_MODULES}
       questions={LP2B_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp3a_modules") return (
     <GenericModuleSelect
@@ -1750,7 +1830,7 @@ function App() {
       modules={LP3A_MODULES}
       questions={LP3A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp6a_modules") return (
     <GenericModuleSelect
@@ -1758,7 +1838,7 @@ function App() {
       modules={LP6A_MODULES}
       questions={LP6A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp6b_modules") return (
     <GenericModuleSelect
@@ -1766,7 +1846,7 @@ function App() {
       modules={LP6B_MODULES}
       questions={LP6B_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp5b_modules") return (
     <GenericModuleSelect
@@ -1774,7 +1854,7 @@ function App() {
       modules={LP5B_MODULES}
       questions={LP5B_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp5a_modules") return (
     <GenericModuleSelect
@@ -1782,7 +1862,7 @@ function App() {
       modules={LP5A_MODULES}
       questions={LP5A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp4a_modules") return (
     <GenericModuleSelect
@@ -1790,7 +1870,7 @@ function App() {
       modules={LP4A_MODULES}
       questions={LP4A_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp3b_modules") return (
     <GenericModuleSelect
@@ -1798,11 +1878,14 @@ function App() {
       modules={LP3B_MODULES}
       questions={LP3B_QUESTIONS}
       studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
   );
   if (screen==="lp4b_modules") return (
     <LP4BModuleSelect studentName={student?.name}
-      onSelect={m=>{setModule(m);setScreen("quiz");}}/>
+      onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>
+  );
+  if (showDemo) return (
+    <DemoScreen lab={LABS.find(l=>l.id===session?.labId)} onBack={()=>setShowDemo(false)}/>
   );
   if (screen==="quiz" && module) return (
     <QuizScreen studentName={student?.name} studentGroup={student?.group}
