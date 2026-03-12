@@ -833,10 +833,7 @@ async function addSession(session) {
       id: session.token,
       lab_id: session.labId,
       lab_code: session.labCode,
-      lab_title: session.labTitle,
-      duration: session.duration,
-      expires_at: session.expiresAt,
-      created_at: new Date(session.createdAt).toISOString()
+      expires_at: session.expiresAt
     })
   });
   if (!res.ok) {
