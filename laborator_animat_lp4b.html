@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste de Laborator – Animații Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg:       #0d1821;
+    --panel:    #152030;
+    --border:   #1e3a4a;
+    --teal:     #00c8d7;
+    --amber:    #f5a623;
+    --red:      #e8445a;
+    --green:    #2ecc71;
+    --purple:   #a78bfa;
+    --text:     #e2eaf0;
+    --muted:    #6b8a9e;
+    --white:    #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 2rem 3rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 1.2rem;
+    background: linear-gradient(135deg, #0d1821 60%, #152030 100%);
+  }
+  .header-icon { font-size: 2.4rem; }
+  header h1 { font-size: 1.5rem; font-weight: 800; color: var(--white); }
+  header p  { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
+
+  /* ── TAB NAV ── */
+  nav {
+    display: flex; gap: 0; overflow-x: auto;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  nav button {
+    flex: 1; min-width: 150px;
+    padding: 0.9rem 1rem;
+    background: transparent;
+    border: none; border-bottom: 3px solid transparent;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+  }
+  nav button:hover  { color: var(--text); background: rgba(255,255,255,0.03); }
+  nav button.active { color: var(--white); border-bottom-color: var(--teal); }
+
+  /* ── MAIN ── */
+  .test-panel { display: none; padding: 2.5rem 3rem; max-width: 1100px; margin: 0 auto; }
+  .test-panel.active { display: block; }
+
+  /* ── STEP PIPELINE ── */
+  .pipeline {
+    display: flex; align-items: flex-start; gap: 0;
+    margin-bottom: 2.5rem; flex-wrap: wrap;
+  }
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    flex: 1; min-width: 130px; cursor: pointer;
+  }
+  .step-dot .circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    border: 2px solid var(--border);
+    background: var(--panel);
+    transition: all 0.35s;
+    position: relative; z-index: 1;
+  }
+  .step-dot.done   .circle { border-color: var(--teal); background: rgba(0,200,215,0.12); }
+  .step-dot.active .circle { border-color: var(--amber); background: rgba(245,166,35,0.15); box-shadow: 0 0 18px rgba(245,166,35,0.35); transform: scale(1.15); }
+  .step-dot .label { font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 0.4rem; max-width: 110px; line-height: 1.3; transition: color 0.25s; }
+  .step-dot.done   .label { color: var(--teal); }
+  .step-dot.active .label { color: var(--amber); font-weight: 700; }
+  .step-connector {
+    flex: 0 0 30px; height: 2px; margin-top: 26px;
+    background: var(--border);
+    transition: background 0.5s;
+  }
+  .step-connector.done { background: var(--teal); }
+
+  /* ── STAGE CARD ── */
+  .stage-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    min-height: 360px;
+    display: flex; gap: 2.5rem;
+    align-items: flex-start;
+    transition: border-color 0.3s;
+  }
+  .stage-card.highlight { border-color: var(--teal); box-shadow: 0 0 30px rgba(0,200,215,0.08); }
+
+  .stage-visual {
+    flex: 0 0 280px;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .stage-info { flex: 1; }
+  .stage-info h2 {
+    font-size: 1.4rem; font-weight: 800; color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+  .stage-info .step-badge {
+    display: inline-block;
+    background: rgba(0,200,215,0.12);
+    color: var(--teal);
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem; border-radius: 20px;
+    margin-bottom: 0.8rem;
+  }
+  .stage-info p { font-size: 0.92rem; color: var(--text); line-height: 1.7; margin-bottom: 0.6rem; }
+  .stage-info .note {
+    font-size: 0.82rem; color: var(--muted);
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid var(--border);
+    padding: 0.5rem 0.8rem;
+    border-radius: 0 6px 6px 0;
+    margin-top: 0.5rem;
+  }
+  .result-box {
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-size: 0.9rem; font-weight: 700;
+    margin-top: 0.8rem;
+    animation: fadeSlide 0.4s ease;
+  }
+  .result-box.positive { background: rgba(232,68,90,0.15); color: var(--red); border: 1px solid rgba(232,68,90,0.3); }
+  .result-box.warning  { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.3); }
+  .result-box.good     { background: rgba(46,204,113,0.12); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex; gap: 1rem; margin-top: 1.8rem; align-items: center;
+  }
+  .btn {
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px; border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--teal); color: var(--bg); }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.3; cursor: default; transform: none; }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+  .btn-reset { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-left: auto; }
+  .btn-reset:hover { color: var(--red); border-color: var(--red); }
+  .step-counter { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+
+  /* ── SVG ANIMATIONS ── */
+  svg { overflow: visible; }
+
+  /* tube liquid animation */
+  .liquid-fill { transition: height 0.8s cubic-bezier(0.4,0,0.2,1), y 0.8s cubic-bezier(0.4,0,0.2,1), fill 1.2s ease; }
+  #n-liquid-poly, #e-liquid-poly, #e-liquid-bottom { transition: fill 1.2s ease; }
+  .smoke-puff  { opacity: 0; transition: opacity 0.5s; }
+  .smoke-puff.show { opacity: 1; animation: puffFloat 2s ease-in-out infinite; }
+  @keyframes puffFloat {
+    0%,100% { transform: translateY(0) scale(1); opacity: 0.7; }
+    50%      { transform: translateY(-8px) scale(1.1); opacity: 1; }
+  }
+  .drop { opacity: 0; }
+  .drop.falling { animation: dropFall 0.6s ease-in forwards; }
+  @keyframes dropFall {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(28px); }
+  }
+  .shake { animation: shakeAnim 0.5s ease; }
+  @keyframes shakeAnim {
+    0%,100% { transform: rotate(0deg); }
+    20%     { transform: rotate(-8deg); }
+    60%     { transform: rotate(8deg); }
+    80%     { transform: rotate(-4deg); }
+  }
+  .color-change { transition: fill 1.5s ease; }
+  .bounce { animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes bounceIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .pulse { animation: pulseGlow 1.5s ease-in-out infinite; }
+  @keyframes pulseGlow {
+    0%,100% { opacity: 0.7; }
+    50%     { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+  }
+
+  /* ── LEGEND TABLE ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .legend-item {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* ── RESULT SUMMARY ── */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem; margin-top: 1.5rem;
+  }
+  .summary-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 0.82rem;
+  }
+  .summary-card strong { display: block; color: var(--white); margin-bottom: 0.3rem; font-size: 0.9rem; }
+
+  /* ── FLOATING PARTICLES ── */
+  .bg-dots { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+  .dot { position: absolute; border-radius: 50%; background: var(--teal); opacity: 0.04; animation: floatDot linear infinite; }
+  @keyframes floatDot {
+    from { transform: translateY(100vh) scale(0.5); }
+    to   { transform: translateY(-20vh) scale(1); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .stage-card  { flex-direction: column; }
+    .stage-visual { flex: none; width: 100%; }
+    .test-panel  { padding: 1.5rem 1rem; }
+    header       { padding: 1.2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-dots" id="bgDots"></div>
+
+<header>
+  <div class="header-icon">🔬</div>
+  <div>
+    <h1>Teste de Laborator – Igienă Alimentară</h1>
+    <p>Animații interactive pas-cu-pas · Produse de origine animală</p>
+  </div>
+</header>
+
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">🧪 Nessler</button>
+  <button onclick="showTest(1)">💨 Eber</button>
+  <button onclick="showTest(2)">📊 pH Carne</button>
+  <button onclick="showTest(3)">🥛 Lactodensimetru</button>
+  <button onclick="showTest(4)">🥚 Prospeţime Ou</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TEST 0: NESSLER                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="test-panel active" id="test-0">
+  <div class="pipeline" id="pipe-0"></div>
+  <div class="stage-card" id="card-0">
+    <div class="stage-visual">
+      <svg id="svg-nessler" width="220" height="280" viewBox="0 0 220 280">
+        <!-- lombik belseje (sötét háttér) -->
+        <path d="M91 111 L91 159 L57 241 Q53 254 72 254 L148 254 Q167 254 163 241 L129 159 L129 111 Z" fill="#122030"/>
+        <rect x="86" y="91" width="48" height="23" rx="3" fill="#122030"/>
+        <!-- folyadék – JS tölti fel (#n-liquid-poly) -->
+        <polygon id="n-liquid-poly" points="" fill="#c8e6c9" opacity="0.92"/>
+        <!-- lombik körvonala (felül rajzolva) -->
+        <path d="M90 110 L90 160 L55 242 Q50 255 70 255 L150 255 Q170 255 165 242 L130 160 L130 110 Z"
+              fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <rect x="85" y="90" width="50" height="25" rx="4" fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <!-- dugó -->
+        <rect id="n-stopper" x="88" y="84" width="44" height="12" rx="4" fill="#5a6a72"/>
+        <!-- cseppek -->
+        <ellipse id="n-drop1" cx="110" cy="80" rx="5" ry="7" fill="#f5e642" class="drop"/>
+        <ellipse id="n-drop2" cx="115" cy="72" rx="4" ry="6" fill="#f5e642" class="drop"/>
+        <ellipse id="n-drop3" cx="105" cy="70" rx="4" ry="6" fill="#f5e642" class="drop"/>
+        <!-- reagencs üveg -->
+        <rect x="170" y="150" width="35" height="70" rx="6" fill="#2a4a5a" stroke="#4a7a8a" stroke-width="1.5"/>
+        <rect x="178" y="140" width="20" height="16" rx="3" fill="#3a5a6a" stroke="#4a7a8a" stroke-width="1.5"/>
+        <text x="187" y="188" text-anchor="middle" font-size="8" fill="#00c8d7" font-family="JetBrains Mono,monospace">Nessler</text>
+        <text id="n-label" x="110" y="275" text-anchor="middle" font-size="11" fill="#6b8a9e" font-family="Syne,sans-serif">Extract carne</text>
+      </svg>
+    </div>
+    <div class="stage-info" id="info-0">
+      <!-- filled by JS -->
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-0" onclick="prevStep(0)" disabled>← Înapoi</button>
+    <button class="btn btn-primary"   id="next-0" onclick="nextStep(0)">Următorul pas →</button>
+    <span class="step-counter" id="counter-0">1 / 6</span>
+    <button class="btn btn-reset" onclick="resetTest(0)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TEST 1: EBER                                             -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="test-panel" id="test-1">
+  <div class="pipeline" id="pipe-1"></div>
+  <div class="stage-card" id="card-1">
+    <div class="stage-visual">
+      <svg id="svg-eber" width="220" height="280" viewBox="0 0 220 280">
+        <!-- kémcső belseje (sötét háttér) -->
+        <rect x="79" y="142" width="62" height="96" fill="#122030"/>
+        <path d="M79 238 Q79 252 110 252 Q141 252 141 238" fill="#122030"/>
+        <!-- folyadék – JS tölti (#e-liquid-poly) -->
+        <polygon id="e-liquid-poly" points="" fill="#d4e8c2" opacity="0.9"/>
+        <ellipse id="e-liquid-bottom" cx="110" cy="238" rx="0" ry="0" fill="#d4e8c2" opacity="0.9"/>
+        <!-- kémcső körvonala -->
+        <rect x="78" y="140" width="64" height="100" rx="0" fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <path d="M78 240 Q78 254 110 254 Q142 254 142 240" fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <!-- dugó -->
+        <rect x="78" y="128" width="64" height="18" rx="4" fill="#4a7a8a"/>
+        <!-- húsdarab dróttal -->
+        <g id="e-meat">
+          <line x1="110" y1="128" x2="110" y2="183" stroke="#7a8a72" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <rect x="96" y="178" width="28" height="20" rx="5" fill="#c0664a"/>
+          <text x="110" y="191" text-anchor="middle" font-size="8" fill="#fff" font-family="Syne,sans-serif">carne</text>
+        </g>
+        <!-- füstfelhők -->
+        <ellipse id="e-smoke1" class="smoke-puff" cx="100" cy="166" rx="10" ry="6" fill="#b0bec5" opacity="0"/>
+        <ellipse id="e-smoke2" class="smoke-puff" cx="118" cy="158" rx="8"  ry="5" fill="#90a4ae" opacity="0"/>
+        <ellipse id="e-smoke3" class="smoke-puff" cx="108" cy="150" rx="7"  ry="4" fill="#78909c" opacity="0"/>
+        <!-- reagencs üveg -->
+        <rect x="170" y="150" width="35" height="80" rx="6" fill="#2a3a5a" stroke="#4a7a8a" stroke-width="1.5"/>
+        <rect x="178" y="140" width="20" height="16" rx="3" fill="#3a4a6a" stroke="#4a7a8a" stroke-width="1.5"/>
+        <text x="187" y="185" text-anchor="middle" font-size="7.5" fill="#a78bfa" font-family="JetBrains Mono,monospace">Eber</text>
+        <!-- figyelmeztetés -->
+        <g id="e-warning" opacity="0" style="transition:opacity 0.5s">
+          <rect x="20" y="155" width="50" height="30" rx="8" fill="#e8445a" opacity="0.9"/>
+          <text x="45" y="173" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold" font-family="Syne,sans-serif">⚠ NH₃!</text>
+        </g>
+        <text x="110" y="275" text-anchor="middle" font-size="11" fill="#6b8a9e" font-family="Syne,sans-serif">Probă carne</text>
+      </svg>
+    </div>
+    <div class="stage-info" id="info-1"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-1" onclick="prevStep(1)" disabled>← Înapoi</button>
+    <button class="btn btn-primary"   id="next-1" onclick="nextStep(1)">Următorul pas →</button>
+    <span class="step-counter" id="counter-1">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(1)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TEST 2: pH CARNE                                         -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="test-panel" id="test-2">
+  <div class="pipeline" id="pipe-2"></div>
+  <div class="stage-card" id="card-2">
+    <div class="stage-visual">
+      <svg id="svg-ph" width="220" height="280" viewBox="0 0 220 280">
+        <!-- pH strip -->
+        <rect id="ph-strip-bg" x="75" y="80" width="70" height="160" rx="6" fill="#2a3a4a" stroke="#4a7a8a" stroke-width="2"/>
+        <rect id="ph-strip-color" x="80" y="85" width="60" height="150" rx="4" fill="#c8e6c9" class="color-change"/>
+        <text x="110" y="175" text-anchor="middle" font-size="22" fill="rgba(255,255,255,0.15)" font-family="JetBrains Mono,monospace" id="ph-value-bg">pH</text>
+        <text id="ph-value" x="110" y="178" text-anchor="middle" font-size="22" fill="#fff" font-weight="bold" font-family="JetBrains Mono,monospace" opacity="0" style="transition:opacity 0.5s">--</text>
+        <!-- meat block -->
+        <rect id="ph-meat" x="25" y="200" width="55" height="45" rx="8" fill="#c0664a"/>
+        <text x="52" y="226" text-anchor="middle" font-size="9" fill="#fff" font-family="Syne,sans-serif">carne</text>
+        <!-- reference scale -->
+        <g id="ph-scale">
+          <text x="165" y="102" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">&lt;6.2</text>
+          <text x="165" y="125" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">6.2-6.6</text>
+          <text x="165" y="148" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">&gt;6.6</text>
+          <rect x="158" y="90"  width="7" height="22" rx="2" fill="#2ecc71"/>
+          <rect x="158" y="113" width="7" height="22" rx="2" fill="#f5a623"/>
+          <rect x="158" y="136" width="7" height="22" rx="2" fill="#e8445a"/>
+        </g>
+        <!-- insertion arrow -->
+        <g id="ph-arrow" opacity="0" style="transition:opacity 0.4s">
+          <line x1="52" y1="198" x2="88" y2="180" stroke="#00c8d7" stroke-width="2" stroke-dasharray="4,3"/>
+          <polygon points="88,172 84,180 92,180" fill="#00c8d7"/>
+        </g>
+        <!-- result indicator -->
+        <g id="ph-indicator" opacity="0" style="transition:opacity 0.5s">
+          <rect x="20" y="90" width="48" height="28" rx="6" fill="rgba(0,200,215,0.15)" stroke="#00c8d7" stroke-width="1.5"/>
+          <text id="ph-ind-text" x="44" y="108" text-anchor="middle" font-size="11" fill="#00c8d7" font-family="JetBrains Mono,monospace">5.9</text>
+        </g>
+        <text x="110" y="270" text-anchor="middle" font-size="11" fill="#6b8a9e" font-family="Syne,sans-serif">Hârtie indicator</text>
+      </svg>
+    </div>
+    <div class="stage-info" id="info-2"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-2" onclick="prevStep(2)" disabled>← Înapoi</button>
+    <button class="btn btn-primary"   id="next-2" onclick="nextStep(2)">Următorul pas →</button>
+    <span class="step-counter" id="counter-2">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(2)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TEST 3: LACTODENSIMETRU                                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="test-panel" id="test-3">
+  <div class="pipeline" id="pipe-3"></div>
+  <div class="stage-card" id="card-3">
+    <div class="stage-visual">
+      <svg id="svg-lacto" width="220" height="280" viewBox="0 0 220 280">
+        <defs>
+          <clipPath id="clip-l"><rect x="35" y="50" width="100" height="210"/></clipPath>
+        </defs>
+        <!-- cylinder -->
+        <rect x="35" y="50" width="100" height="210" rx="10" fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <ellipse cx="85" cy="50" rx="50" ry="8" fill="none" stroke="#4a7a8a" stroke-width="2"/>
+        <!-- milk liquid -->
+        <rect id="l-milk" x="36" y="120" width="98" height="139" rx="8" fill="#f5f0e8" clip-path="url(#clip-l)" opacity="0" style="transition:opacity 0.8s,y 1s"/>
+        <!-- scale marks on cylinder -->
+        <g stroke="#4a7a8a" stroke-width="1" opacity="0.5">
+          <line x1="135" y1="100" x2="145" y2="100"/><text x="148" y="104" font-size="7" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1.030</text>
+          <line x1="135" y1="130" x2="145" y2="130"/><text x="148" y="134" font-size="7" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1.028</text>
+          <line x1="135" y1="160" x2="145" y2="160"/><text x="148" y="164" font-size="7" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1.025</text>
+          <line x1="135" y1="190" x2="145" y2="190"/><text x="148" y="194" font-size="7" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1.020</text>
+        </g>
+        <!-- densimeter instrument -->
+        <g id="l-densimeter" style="transition:transform 1.2s cubic-bezier(0.4,0,0.2,1)">
+          <ellipse cx="85" cy="195" rx="22" ry="28" fill="#2a6a8a" stroke="#00c8d7" stroke-width="1.5" opacity="0.6"/>
+          <rect x="82" y="80" width="6" height="120" rx="2" fill="#3a8aaa" stroke="#00c8d7" stroke-width="1"/>
+          <!-- reading line -->
+          <line id="l-readLine" x1="70" y1="120" x2="100" y2="120" stroke="#f5a623" stroke-width="2" opacity="0" style="transition:opacity 0.4s"/>
+        </g>
+        <!-- reading value badge -->
+        <g id="l-readBadge" opacity="0" style="transition:opacity 0.5s">
+          <rect x="5" y="113" width="60" height="22" rx="5" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="1.5"/>
+          <text id="l-value" x="35" y="128" text-anchor="middle" font-size="11" fill="#f5a623" font-weight="bold" font-family="JetBrains Mono,monospace">1.028</text>
+        </g>
+        <text x="85" y="273" text-anchor="middle" font-size="11" fill="#6b8a9e" font-family="Syne,sans-serif">Cilindru gradat</text>
+      </svg>
+    </div>
+    <div class="stage-info" id="info-3"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-3" onclick="prevStep(3)" disabled>← Înapoi</button>
+    <button class="btn btn-primary"   id="next-3" onclick="nextStep(3)">Următorul pas →</button>
+    <span class="step-counter" id="counter-3">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(3)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TEST 4: OUĂ – PROSPEŢIME                                 -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="test-panel" id="test-4">
+  <div class="pipeline" id="pipe-4"></div>
+  <div class="stage-card" id="card-4">
+    <div class="stage-visual">
+      <svg id="svg-egg" width="220" height="280" viewBox="0 0 220 280">
+        <!-- edény -->
+        <rect x="40" y="100" width="140" height="155" rx="12" fill="none" stroke="#4a7a8a" stroke-width="2.5"/>
+        <!-- víz -->
+        <rect id="egg-water" x="41" y="210" width="138" height="44" rx="8" fill="#4a9ad4" opacity="0.25" style="transition:height 1.2s,y 1.2s"/>
+        <!-- hullám -->
+        <path id="egg-wave" d="M41 210 Q60 205 80 210 Q100 215 120 210 Q140 205 160 210 Q175 208 179 210" fill="none" stroke="#4a9ad4" stroke-width="2" opacity="0.5" style="transition:d 1.2s,opacity 0.5s"/>
+        <!-- tojás: SVG transform attribútummal forgatjuk, mindig a saját cx,cy körül -->
+        <g id="egg-obj">
+          <ellipse id="egg-ellipse" cx="110" cy="185" rx="30" ry="38"
+                   fill="#f5f0d8" stroke="#d4c88a" stroke-width="2"
+                   style="transition:cx 1.2s,cy 1.2s"/>
+          <ellipse id="egg-airpocket" cx="110" cy="157" rx="12" ry="6"
+                   fill="rgba(200,230,255,0.4)" stroke="rgba(200,230,255,0.6)" stroke-width="1"/>
+          <text id="egg-label" x="110" y="188" text-anchor="middle" font-size="8"
+                fill="#8a7a4a" font-family="Syne,sans-serif">ou</text>
+        </g>
+        <!-- állapot felirat -->
+        <g id="egg-state-badge" opacity="0" style="transition:opacity 0.5s">
+          <rect x="50" y="232" width="120" height="22" rx="8" fill="rgba(46,204,113,0.15)" stroke="#2ecc71" stroke-width="1.5"/>
+          <text id="egg-state-text" x="110" y="247" text-anchor="middle" font-size="10" fill="#2ecc71" font-weight="bold" font-family="Syne,sans-serif">PROASPĂT</text>
+        </g>
+        <text x="110" y="273" text-anchor="middle" font-size="11" fill="#6b8a9e" font-family="Syne,sans-serif">Vas cu apă</text>
+      </svg>
+    </div>
+    <div class="stage-info" id="info-4"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-4" onclick="prevStep(4)" disabled>← Înapoi</button>
+    <button class="btn btn-primary"   id="next-4" onclick="nextStep(4)">Următorul pas →</button>
+    <span class="step-counter" id="counter-4">1 / 6</span>
+    <button class="btn btn-reset" onclick="resetTest(4)">↺ Resetare</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  LOMBIK / KÉMCSŐ FOLYADÉK – clipPath nélkül
+// ══════════════════════════════════════════════════════════════
+
+// A Nessler-lombik belső falának X koordinátái egy adott Y magasságban.
+// Nyak: x=90..130 (y=110..160), tölcsér: lineárisan tágul x=55..165 (y=160..254)
+function flaskXatY(y) {
+  if (y <= 160) return { x1: 91, x2: 129 };
+  const t  = (y - 160) / (254 - 160);
+  return { x1: 91 - t*(91-56), x2: 129 + t*(164-129) };
+}
+
+// Polygon pontok a lombik folyadékához (fillPct: 0..1)
+function flaskPolyPoints(fillPct) {
+  const bottom = 252, top = Math.max(111, bottom - Math.round(141 * fillPct));
+  const pts = [];
+  for (let y = top; y <= bottom; y += 2) {
+    const {x1, x2} = flaskXatY(y);
+    pts.push([x1+1, y]);
+  }
+  const rightPts = [];
+  for (let y = bottom; y >= top; y -= 2) {
+    const {x1, x2} = flaskXatY(y);
+    rightPts.push([x2-1, y]);
+  }
+  return [...pts, ...rightPts].map(p => p.join(',')).join(' ');
+}
+
+function setFlaskLiquid(fillPct, color) {
+  const poly = document.getElementById('n-liquid-poly');
+  if (!poly) return;
+  poly.setAttribute('points', fillPct > 0.01 ? flaskPolyPoints(fillPct) : '');
+  poly.setAttribute('fill', color);
+}
+
+// ── TOJÁS pozicionálás
+// deg = döntésszög, cy = tojás középpontjának Y koordinátája,
+// airRy = levegőzseb mérete, waterY = víz teteje, stateText/Col = felirat
+function setEgg(deg, cy, airRy, waterY, stateText, stateCol) {
+  const obj      = document.getElementById('egg-obj');
+  const ellipse  = document.getElementById('egg-ellipse');
+  const airpocket= document.getElementById('egg-airpocket');
+  const label    = document.getElementById('egg-label');
+  const water    = document.getElementById('egg-water');
+  const badge    = document.getElementById('egg-state-badge');
+  const stateT   = document.getElementById('egg-state-text');
+  const wave     = document.getElementById('egg-wave');
+  const cx = 110;
+
+  // Forgás a tojás saját középpontja körül – soha nem mozdul ki az edényből
+  obj.setAttribute('transform', `rotate(${deg},${cx},${cy})`);
+  obj.style.transition = 'transform 1.3s cubic-bezier(0.4,0,0.2,1)';
+
+  ellipse.setAttribute('cx', cx);
+  ellipse.setAttribute('cy', cy);
+  airpocket.setAttribute('cx', cx);
+  airpocket.setAttribute('cy', cy - 32);
+  airpocket.setAttribute('ry', airRy);
+  airpocket.setAttribute('rx', Math.min(14, Math.round(airRy * 1.7)));
+  label.setAttribute('x', cx);
+  label.setAttribute('y', cy + 3);
+
+  // víz
+  const waterH = Math.max(0, 254 - waterY);
+  water.setAttribute('y', waterY);
+  water.setAttribute('height', waterH);
+  water.style.opacity = waterH > 0 ? '0.28' : '0';
+  wave.setAttribute('d',
+    `M41 ${waterY} Q60 ${waterY-5} 80 ${waterY} Q100 ${waterY+5} 120 ${waterY} Q140 ${waterY-4} 160 ${waterY} Q175 ${waterY-2} 179 ${waterY}`);
+
+  // állapot felirat
+  if (stateText) {
+    badge.style.opacity = '1';
+    badge.querySelector('rect').setAttribute('fill', stateCol + '22');
+    badge.querySelector('rect').setAttribute('stroke', stateCol);
+    stateT.setAttribute('fill', stateCol);
+    stateT.textContent = stateText;
+  } else {
+    badge.style.opacity = '0';
+  }
+}
+
+// Kémcső (Eber): belső tér x=80..140, y=142..238, alul lekerekített (r≈14)
+function setTubeLiquid(fillPct, color) {
+  const poly   = document.getElementById('e-liquid-poly');
+  const bottom = document.getElementById('e-liquid-bottom');
+  if (!poly) return;
+  const tubeTop = 142, tubeBot = 238, innerH = tubeBot - tubeTop;
+  const liquidTop = Math.max(tubeTop, tubeBot - Math.round(innerH * fillPct));
+  const x1 = 80, x2 = 140, cx = 110;
+
+  if (fillPct < 0.04) {
+    poly.setAttribute('points', '');
+    bottom.setAttribute('rx', '0'); bottom.setAttribute('ry', '0');
+    return;
+  }
+  // Téglalap rész a lekerekített aljig
+  const rectBot = Math.min(tubeBot - 2, tubeBot);
+  const pts = `${x1},${liquidTop} ${x2},${liquidTop} ${x2},${rectBot} ${x1},${rectBot}`;
+  poly.setAttribute('points', pts);
+  poly.setAttribute('fill', color);
+  // Lekerekített alj ellipszis
+  bottom.setAttribute('cx', cx);
+  bottom.setAttribute('cy', tubeBot);
+  bottom.setAttribute('rx', (x2-x1)/2 - 1);
+  bottom.setAttribute('ry', 14);
+  bottom.setAttribute('fill', color);
+}
+const TESTS = [
+  // ── 0: NESSLER ────────────────────────────────────────────
+  {
+    title: "Testul Nessler – Identificarea Amoniacului din Carne",
+    color: "#00c8d7",
+    steps: [
+      {
+        label: "Pregătire extract", icon: "🧫",
+        title: "Prepararea extractului de carne",
+        badge: "Pas 1 din 6",
+        text: "Se prelevează <strong>5 g de carne</strong> dintr-o zonă profundă a probei, se omogenizează și se prepară <strong>extractul apos</strong> prin filtrare (raport 1:5 carne:apă distilată).",
+        note: "Extractul trebuie să fie limpede. Turbiditatea excesivă poate interfera cu lectura colorimetrică.",
+        svg: () => {
+          setFlaskLiquid(0.18, '#e0f0e8');
+          document.getElementById('n-label').textContent = 'Extract carne';
+          ['n-drop1','n-drop2','n-drop3'].forEach(id => { const el=document.getElementById(id); el.classList.remove('falling'); el.style.opacity='0'; });
+          document.getElementById('n-stopper').setAttribute('fill','#5a6a72');
+        }
+      },
+      {
+        label: "Volum în eprubetă", icon: "🧪",
+        title: "Măsurarea volumului de extract",
+        badge: "Pas 2 din 6",
+        text: "Se pipetează <strong>2 ml de extract de carne</strong> într-o eprubetă curată. Volumul trebuie măsurat precis pentru comparabilitatea rezultatelor.",
+        note: "Se pregătesc simultan o probă martor (apă distilată) și o probă cu carne de referință (proaspătă).",
+        svg: () => {
+          setFlaskLiquid(0.38, '#d8eee0');
+        }
+      },
+      {
+        label: "Adăugare Nessler", icon: "💧",
+        title: "Adăugarea reactivului Nessler",
+        badge: "Pas 3 din 6",
+        text: "Se adaugă <strong>picătură cu picătură</strong> reactivul Nessler (tetaiodomercuriat dipotasic). Se numără exact câte picături se adaugă înainte de apariția colorației.",
+        note: "Reactivul Nessler reacționează selectiv cu NH₃ liber din extract, formând un complex galben-portocaliu.",
+        svg: () => {
+          setFlaskLiquid(0.42, '#d8eee0');
+          const drops = ['n-drop1','n-drop2','n-drop3'];
+          drops.forEach((id,i) => {
+            setTimeout(() => {
+              const el = document.getElementById(id);
+              el.style.opacity = '1';
+              el.classList.add('falling');
+            }, i*300);
+          });
+        }
+      },
+      {
+        label: "Reacție", icon: "⚗️",
+        title: "Reacție chimică: NH₃ + Nessler",
+        badge: "Pas 4 din 6",
+        text: "Amoniacul din extract reacționează cu reactivul Nessler: <br><code style='font-family:JetBrains Mono;font-size:0.85rem;color:#f5a623'>NH₃ + K₂[HgI₄] → [Hg₂N]I + KI + ...</code><br><br>Complexul format este <strong>galben-portocaliu</strong> și vizibil cu ochiul liber.",
+        note: "Reacția este progresivă. Cu cât carnea este mai alterată, cu atât colorația apare la mai puține picături.",
+        svg: () => {
+          setFlaskLiquid(0.52, '#f5d800');
+        }
+      },
+      {
+        label: "Interpretare", icon: "🔍",
+        title: "Interpretarea rezultatelor",
+        badge: "Pas 5 din 6",
+        text: "Se observă la câte picături apare colorația galbenă:",
+        note: "",
+        result: [
+          { cls: "good",     text: "✅ Colorație după >10 picături = CARNE PROASPĂTĂ" },
+          { cls: "warning",  text: "⚠️ Colorație la 5–10 picături = CARNE RELATIV PROASPĂTĂ" },
+          { cls: "positive", text: "🔴 Colorație la <5 picături = CARNE ALTERATĂ" },
+        ],
+        svg: () => {
+          setFlaskLiquid(0.52, '#e8b000');
+        }
+      },
+      {
+        label: "Concluzie", icon: "📋",
+        title: "Concluzie și raportare",
+        badge: "Pas 6 din 6",
+        text: "Testul Nessler este <strong>calitativ și semicantitativ</strong>. Rezultatul se raportează ca: <em>absență amoniac / urme / amoniac prezent</em> și se corelează cu celelalte examinări (pH, Eber, organoleptic).",
+        note: "Standard de referință: STAS 9065/5-1973 și SR EN ISO 13730. Metoda modernă echivalentă: TVB-N (azot baze volatile) prin distilare.",
+        result: [{ cls: "good", text: "📊 Rezultat final: se consemnează în buletinul de analiză alături de pH și aspect organoleptic" }],
+        svg: () => {
+          setFlaskLiquid(0.52, '#e8b000');
+        }
+      }
+    ]
+  },
+
+  // ── 1: EBER ────────────────────────────────────────────────
+  {
+    title: "Testul Eber – Identificarea Amoniacului (metoda gazoasă)",
+    color: "#a78bfa",
+    steps: [
+      {
+        label: "Pregătire eprubetă", icon: "🧪",
+        title: "Pregătirea sistemului Eber",
+        badge: "Pas 1 din 5",
+        text: "Se introduce <strong>reactivul Eber</strong> (HCl + etanol + eter) în eprubetă. Se fixează un suport cu sârmă pe care se va agăța proba de carne.",
+        note: "Reactivul Eber conține HCl 25%, etanol absolut și eter etilic în raport 1:3:1. Se lucrează sub nișă!",
+        svg: () => {
+          setTubeLiquid(0.28, '#d4e8f8');
+          ['e-smoke1','e-smoke2','e-smoke3'].forEach(id => { const el=document.getElementById(id); el.classList.remove('show'); el.style.opacity='0'; });
+          document.getElementById('e-warning').style.opacity='0';
+        }
+      },
+      {
+        label: "Fixare probă", icon: "🥩",
+        title: "Fixarea probei de carne",
+        badge: "Pas 2 din 5",
+        text: "Se atârnă o bucată de <strong>3–5 g carne</strong> pe sârma din interior, astfel încât să fie suspendată deasupra reactivului, fără contact direct cu lichidul.",
+        note: "Distanța corectă față de reactiv: 1–2 cm. Contactul direct invalidează testul.",
+        svg: () => {
+          setTubeLiquid(0.28, '#d4e8f8');
+          const meat = document.getElementById('e-meat');
+          meat.style.transition = 'transform 0.8s';
+          meat.style.transform = 'translateY(-5px)';
+        }
+      },
+      {
+        label: "Închidere sistem", icon: "🔒",
+        title: "Închiderea eprubetei",
+        badge: "Pas 3 din 5",
+        text: "Se astupă eprubeta cu dopul și se așteaptă <strong>3–5 minute</strong>. Vaporii degajați de reactiv intră în contact cu suprafața cărnii.",
+        note: "Sistemul închis permite acumularea vaporilor de HCl care reacționează cu NH₃ eventual prezent.",
+        svg: () => {
+          setTubeLiquid(0.38, '#c4daf0');
+        }
+      },
+      {
+        label: "Observare fum", icon: "💨",
+        title: "Observarea reacției",
+        badge: "Pas 4 din 5",
+        text: "Se observă dacă apare un <strong>gaz fumuriu alb-gri</strong> în jurul probei de carne:<br><code style='font-family:JetBrains Mono;font-size:0.85rem;color:#a78bfa'>NH₃ + HCl → NH₄Cl (gaz alb)</code><br><br>Fumul vizibil = amoniac prezent = carne în descompunere.",
+        note: "Reacția este vizibilă imediat dacă carnea este puternic alterată. Prezența fumului fumuriu este pozitivă.",
+        svg: () => {
+          setTubeLiquid(0.38, '#b8cce0');
+          ['e-smoke1','e-smoke2','e-smoke3'].forEach((id,i) => {
+            setTimeout(() => {
+              const el = document.getElementById(id);
+              el.classList.add('show');
+            }, i*400);
+          });
+          setTimeout(() => { document.getElementById('e-warning').style.opacity='1'; }, 800);
+        }
+      },
+      {
+        label: "Interpretare", icon: "📋",
+        title: "Interpretare și concluzie",
+        badge: "Pas 5 din 5",
+        text: "Testul Eber este <strong>calitativ și rapid</strong> (5–10 min). Se corelează cu testul Nessler și pH.",
+        note: "Sensibilitate: detectează NH₃ > 0,2 mg/100g. Specificitate bună pentru descompunere proteică.",
+        result: [
+          { cls: "good",     text: "✅ Fără fum = NH₃ absent = carne PROASPĂTĂ" },
+          { cls: "positive", text: "🔴 Fum fumuriu vizibil = NH₃ prezent = carne ALTERATĂ" },
+        ],
+        svg: () => {}
+      }
+    ]
+  },
+
+  // ── 2: pH ──────────────────────────────────────────────────
+  {
+    title: "Determinarea pH-ului Cărnii – Hârtie Indicator",
+    color: "#2ecc71",
+    steps: [
+      {
+        label: "Pregătire probă", icon: "🔪",
+        title: "Incizia în proba de carne",
+        badge: "Pas 1 din 5",
+        text: "Se face o <strong>incizie profundă</strong> în proba de carne cu un cuțit steril, sau se prepară extractul apos (5g carne / 25ml apă distilată). Zona de incizie expune țesutul muscular intern.",
+        note: "pH-ul superficial poate fi mai mic din cauza uscării. Măsurarea în profunzime sau pe extract oferă valori mai reprezentative.",
+        svg: () => {
+          document.getElementById('ph-strip-color').setAttribute('fill','#c8e6c9');
+          document.getElementById('ph-value').style.opacity='0';
+          document.getElementById('ph-arrow').style.opacity='0';
+          document.getElementById('ph-indicator').style.opacity='0';
+        }
+      },
+      {
+        label: "Introducere hârtie", icon: "📄",
+        title: "Aplicarea hârtiei indicator",
+        badge: "Pas 2 din 5",
+        text: "Se introduce hârtia indicator de pH direct în incizie sau în extractul de carne. Se lasă <strong>30 secunde</strong> de contact, suficient pentru impregnarea cu sucul din țesut.",
+        note: "Se folosesc hârtii indicator universale cu domeniu 5–8 sau specific 5.5–7.5 pentru carne.",
+        svg: () => {
+          document.getElementById('ph-arrow').style.opacity='1';
+          document.getElementById('ph-strip-color').setAttribute('fill','#d4c88a');
+        }
+      },
+      {
+        label: "Virarea culorii", icon: "🎨",
+        title: "Virarea culorii indicatorului",
+        badge: "Pas 3 din 5",
+        text: "Culoarea hârtiei se schimbă în funcție de pH-ul probei. Se compară imediat culoarea obținută cu <strong>scala de referință</strong> a producătorului.",
+        note: "Comparația trebuie făcută în lumină naturală sau sub lumină albă standardizată, nu la lumină galbenă.",
+        svg: () => {
+          document.getElementById('ph-strip-color').setAttribute('fill','#81c784');
+          document.getElementById('ph-value').style.opacity='1';
+          document.getElementById('ph-value').textContent='5.9';
+          document.getElementById('ph-indicator').style.opacity='1';
+        }
+      },
+      {
+        label: "Citire & comparare", icon: "🔍",
+        title: "Citirea valorii pH",
+        badge: "Pas 4 din 5",
+        text: "Se citește valoarea pH prin comparație cu scala etalon. Exemplu de citire pentru carne proaspătă:",
+        note: "Rezoluția hârtiei indicator este ±0.2–0.5 unități pH. Pentru precizie mai mare se folosește pH-metrul cu electrod.",
+        result: [
+          { cls: "good",    text: "pH 5.9 → Verde deschis → CARNE PROASPĂTĂ ✅" },
+        ],
+        svg: () => {
+          document.getElementById('ph-strip-color').setAttribute('fill','#81c784');
+          document.getElementById('ph-value').textContent='5.9';
+        }
+      },
+      {
+        label: "Interpretare finală", icon: "📊",
+        title: "Interpretarea completă a pH-ului",
+        badge: "Pas 5 din 5",
+        text: "Corelarea culorii cu starea sanitară a cărnii:",
+        note: "DFD (pH >6.2 post-mortem): risc microbiologic crescut. PSE (pH <5.8 rapid post-mortem): calitate slabă.",
+        result: [
+          { cls: "good",     text: "🟢 pH < 6.2  → Carne PROASPĂTĂ" },
+          { cls: "warning",  text: "🟡 pH 6.2–6.6 → Carne RELATIV PROASPĂTĂ" },
+          { cls: "positive", text: "🔴 pH > 6.6  → Carne ALTERATĂ – improprie consumului" },
+        ],
+        svg: () => {}
+      }
+    ]
+  },
+
+  // ── 3: LACTODENSIMETRU ────────────────────────────────────
+  {
+    title: "Determinarea Densității Laptelui – Lactodensimetru",
+    color: "#f5a623",
+    steps: [
+      {
+        label: "Pregătire lapte", icon: "🥛",
+        title: "Pregătirea probei de lapte",
+        badge: "Pas 1 din 5",
+        text: "Se aduce proba de lapte la <strong>temperatura de referință de 20°C</strong> (temperatura standard pentru lactodensimetru). Se omogenizează ușor prin răsturnare.",
+        note: "Temperatura afectează semnificativ densitatea (±0.0002/°C). Fiecare grad diferență față de 20°C necesită corecție.",
+        svg: () => {
+          document.getElementById('l-milk').style.opacity='0';
+          document.getElementById('l-densimeter').style.transform='translateY(-120px)';
+          document.getElementById('l-readLine').style.opacity='0';
+          document.getElementById('l-readBadge').style.opacity='0';
+        }
+      },
+      {
+        label: "Turnare cilindru", icon: "🧪",
+        title: "Turnarea laptelui în cilindru",
+        badge: "Pas 2 din 5",
+        text: "Se toarnă laptele în cilindrul gradat până la <strong>3/4 din volum</strong>, cu atenție să nu se formeze spumă excesivă. Spuma pe suprafață perturbă citirea.",
+        note: "Cilindrul trebuie să fie curat și uscat. Urmele de apă sau detergent modifică densitatea citită.",
+        svg: () => {
+          document.getElementById('l-milk').style.opacity='1';
+          document.getElementById('l-milk').setAttribute('y','120');
+          document.getElementById('l-milk').setAttribute('height','139');
+        }
+      },
+      {
+        label: "Introducere instrument", icon: "📏",
+        title: "Introducerea lactodensimetrului",
+        badge: "Pas 3 din 5",
+        text: "Se introduce lactodensimetrul ușor în lapte și se lasă să se <strong>stabilizeze fără a atinge pereții sau fundul</strong> cilindrului. Instrumentul plutește la nivelul densității laptelui.",
+        note: "Dacă instrumentul atinge peretele, forța capilară modifică nivelul de plutire și citirea va fi eronată.",
+        svg: () => {
+          document.getElementById('l-densimeter').style.transform='translateY(0)';
+          document.getElementById('l-readLine').style.opacity='1';
+        }
+      },
+      {
+        label: "Citire scala", icon: "🔍",
+        title: "Citirea scalei",
+        badge: "Pas 4 din 5",
+        text: "Se citește valoarea la <strong>nivelul inferior al meniscului</strong> (suprafața laptelui pe tijă). Meniscul laptelui este convex – se citește la baza lui.",
+        note: "Ochiul trebuie să fie la nivelul suprafeței laptelui pentru a evita eroarea de paralaxă.",
+        result: [{ cls: "warning", text: "⚠️ Corecție temperatură: +0.0002 pentru fiecare °C > 20°C" }],
+        svg: () => {
+          document.getElementById('l-readBadge').style.opacity='1';
+          document.getElementById('l-value').textContent='1.028';
+        }
+      },
+      {
+        label: "Interpretare", icon: "📋",
+        title: "Interpretarea valorii densității",
+        badge: "Pas 5 din 5",
+        text: "Valoarea densității indică calitatea și autenticitatea laptelui:",
+        note: "Frauda dublă (diluare + ecremare) poate compensa efectele → densitate aparent normală! Se determină obligatoriu și grăsimea.",
+        result: [
+          { cls: "good",     text: "✅ 1.028–1.034 g/ml → Lapte NORMAL" },
+          { cls: "positive", text: "🔴 < 1.028 g/ml    → Posibil DILUAT cu apă" },
+          { cls: "warning",  text: "⚠️ > 1.034 g/ml    → Posibil ECREMAT (smântână extrasă)" },
+        ],
+        svg: () => {}
+      }
+    ]
+  },
+
+  // ── 4: OU PROSPEŢIME ──────────────────────────────────────
+  {
+    title: "Testul de Prospeţime al Oului în Apă",
+    color: "#e8a838",
+    steps: [
+      {
+        label: "Pregătire vas", icon: "🪣",
+        title: "Pregătirea vasului cu apă",
+        badge: "Pas 1 din 6",
+        text: "Se umple un vas transparent cu <strong>apă de la robinet la temperatura camerei</strong>. Nu se folosește apă sărată sau caldă, deoarece acestea modifică densitatea mediului și flotabilitatea oului.",
+        note: "Densitatea apei la 20°C ≈ 1.0 g/cm³. Densitatea oului proaspăt ≈ 1.07–1.09 g/cm³ → se scufundă.",
+        svg: () => {
+          // Tojás az edény felett, víz üres
+          setEgg(0, 140, 6, 254, null, '#2ecc71');
+        }
+      },
+      {
+        label: "Ou proaspăt", icon: "✅",
+        title: "Comportament: Ou Proaspăt (0–7 zile)",
+        badge: "Pas 2 din 6",
+        text: "Oul proaspăt se <strong>scufundă complet</strong> și ia o <strong>poziție orizontală</strong> pe fundul vasului. Camera de aer este mică (≤ 4mm), greutatea specifică mare.",
+        note: "Clasificare UE: Clasa A extra – camera de aer ≤ 4mm. Ou proaspăt ideal pentru consum direct.",
+        result: [{ cls: "good", text: "✅ Orizontal pe fund → OU PROASPĂT (Clasa A)" }],
+        svg: () => {
+          // Vízszintes a fenéken – cy=210, deg=0, víz y=155
+          setEgg(0, 210, 5, 155, '✅ PROASPĂT (0–7 zile)', '#2ecc71');
+        }
+      },
+      {
+        label: "Ou 1–2 săpt.", icon: "⚠️",
+        title: "Comportament: Ou 1–2 Săptămâni",
+        badge: "Pas 3 din 6",
+        text: "Pe măsură ce oul îmbătrânește, aerul pătrunde prin porii cojii. Camera de aer crește → oul devine mai ușor și se <strong>ridică ușor înclinat</strong>, cu vârful mic în sus.",
+        note: "Camera de aer: 4–6mm. Încă acceptabil pentru consum, dar nu mai este 'extra proaspăt'. Albuș ușor lichefiat.",
+        result: [{ cls: "warning", text: "⚠️ Înclinat 30–45° → OU DE 1–2 SĂPTĂMÂNI (Clasa A)" }],
+        svg: () => {
+          // Ferde ~30°, kissé emelkedett – cy=195, víz y=155
+          setEgg(30, 195, 9, 155, '⚠️ 1–2 SĂPTĂMÂNI', '#f5a623');
+        }
+      },
+      {
+        label: "Ou 3–4 săpt.", icon: "🔶",
+        title: "Comportament: Ou Vechi (3–4 Săptămâni)",
+        badge: "Pas 4 din 6",
+        text: "Oul stă <strong>vertical</strong>, cu vârful ascuțit în jos și capătul rotund în sus. Camera de aer a crescut considerabil (6–9mm). Oul nu mai e pe fund, ci în coloana de apă.",
+        note: "Camera de aer: 6–9mm → Clasa B. Acceptat doar pentru industria alimentară, nu pentru consum direct.",
+        result: [{ cls: "warning", text: "🔶 Vertical în apă → OU VECHI (Clasa B, 3–4 săpt.)" }],
+        svg: () => {
+          // Közel függőleges ~80°, lebeg – cy=185, víz y=145
+          setEgg(80, 185, 13, 145, '🔶 VECHI (3–4 săptămâni)', '#f5a623');
+        }
+      },
+      {
+        label: "Ou stricat", icon: "🔴",
+        title: "Comportament: Ou Stricat (>1 Lună)",
+        badge: "Pas 5 din 6",
+        text: "Oul <strong>plutește la suprafață</strong>. Camera de aer este foarte mare (>9mm), densitatea oului a scăzut sub densitatea apei. Miros neplăcut la spargere.",
+        note: "Camera de aer >9mm → Clasa C → INACCEPTABIL pentru orice consum alimentar. Potențial contaminat cu Salmonella.",
+        result: [{ cls: "positive", text: "🔴 Plutește la suprafață → OU STRICAT – ARUNCAT!" }],
+        svg: () => {
+          // Felúszik – cy=150, vízszintes, víz y=155
+          setEgg(0, 150, 17, 155, '🔴 STRICAT – ARUNCAT!', '#e8445a');
+        }
+      },
+      {
+        label: "Concluzie", icon: "📊",
+        title: "Concluzie & Clasificare UE",
+        badge: "Pas 6 din 6",
+        text: "Testul flotabilității este un screening rapid și ieftin, fără echipament. Se completează cu examinarea la ovoscop (camera de aer) și verificarea greutății.",
+        note: "Ref: Regulamentul CE 1234/2007 privind clasificarea ouălor. Temperatura de depozitare influențează viteza de îmbătrânire: la 4°C ouăle sunt proaspete 4–5 săptămâni; la 20°C doar 1–2 săptămâni.",
+        result: [
+          { cls: "good",     text: "🟢 Orizontal pe fund → Clasa A (≤4mm cameră aer)" },
+          { cls: "warning",  text: "🟡 Înclinat/vertical → Clasa A/B (4–9mm)" },
+          { cls: "positive", text: "🔴 Plutitor → Clasa C (>9mm) – interzis consum" },
+        ],
+        svg: () => { setEgg(0, 210, 5, 155, '✅ PROASPĂT', '#2ecc71'); }
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+//  STATE & RENDER
+// ══════════════════════════════════════════════════════════════
+const state = TESTS.map(() => 0);
+
+function renderPipeline(testIdx) {
+  const test = TESTS[testIdx];
+  const cur  = state[testIdx];
+  const pipe = document.getElementById(`pipe-${testIdx}`);
+  pipe.innerHTML = '';
+  test.steps.forEach((step, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i < cur ? ' done' : i === cur ? ' active' : '');
+    dot.innerHTML = `<div class="circle">${step.icon}</div><div class="label">${step.label}</div>`;
+    dot.onclick = () => jumpStep(testIdx, i);
+    pipe.appendChild(dot);
+    if (i < test.steps.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = 'step-connector' + (i < cur ? ' done' : '');
+      pipe.appendChild(conn);
+    }
+  });
+}
+
+function renderInfo(testIdx) {
+  const test = TESTS[testIdx];
+  const cur  = state[testIdx];
+  const step = test.steps[cur];
+  const info = document.getElementById(`info-${testIdx}`);
+  let html = `<span class="step-badge">${step.badge}</span>
+    <h2>${step.title}</h2>
+    <p>${step.text}</p>`;
+  if (step.note) html += `<p class="note">💡 ${step.note}</p>`;
+  if (step.result) {
+    step.result.forEach(r => {
+      html += `<div class="result-box ${r.cls}">${r.text}</div>`;
+    });
+  }
+  info.innerHTML = html;
+  document.getElementById(`card-${testIdx}`).classList.toggle('highlight', cur === test.steps.length - 1);
+  document.getElementById(`counter-${testIdx}`).textContent = `${cur + 1} / ${test.steps.length}`;
+  document.getElementById(`prev-${testIdx}`).disabled = cur === 0;
+  document.getElementById(`next-${testIdx}`).disabled = cur === test.steps.length - 1;
+  document.getElementById(`next-${testIdx}`).textContent = cur === test.steps.length - 2 ? 'Concluzie →' : cur === test.steps.length - 1 ? '✅ Complet' : 'Următorul pas →';
+}
+
+function renderAll(testIdx) {
+  renderPipeline(testIdx);
+  renderInfo(testIdx);
+  if (TESTS[testIdx].steps[state[testIdx]].svg) {
+    TESTS[testIdx].steps[state[testIdx]].svg();
+  }
+}
+
+function nextStep(testIdx) {
+  if (state[testIdx] < TESTS[testIdx].steps.length - 1) {
+    state[testIdx]++;
+    renderAll(testIdx);
+  }
+}
+
+function prevStep(testIdx) {
+  if (state[testIdx] > 0) {
+    state[testIdx]--;
+    renderAll(testIdx);
+  }
+}
+
+function jumpStep(testIdx, step) {
+  state[testIdx] = step;
+  renderAll(testIdx);
+}
+
+function resetTest(testIdx) {
+  state[testIdx] = 0;
+  renderAll(testIdx);
+}
+
+function showTest(idx) {
+  document.querySelectorAll('.test-panel').forEach((p,i) => {
+    p.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('#tabNav button').forEach((b,i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  renderAll(idx);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Background particles
+  const bg = document.getElementById('bgDots');
+  for (let i = 0; i < 18; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    const size = Math.random() * 80 + 20;
+    d.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:-${size}px;animation-duration:${Math.random()*20+15}s;animation-delay:-${Math.random()*20}s;`;
+    bg.appendChild(d);
+  }
+
+  // Init all tests
+  TESTS.forEach((_,i) => renderAll(i));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    const active = [...document.querySelectorAll('.test-panel')].findIndex(p => p.classList.contains('active'));
+    if (e.key === 'ArrowRight') nextStep(active);
+    if (e.key === 'ArrowLeft')  prevStep(active);
+  });
+});
+</script>
+</body>
+</html>
