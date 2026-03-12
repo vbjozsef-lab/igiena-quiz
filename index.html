@@ -826,7 +826,7 @@ const LP4B_QUESTIONS = {
 // SUPABASE helpers
 // ════════════════════════════════════════════════════════════
 async function addSession(session) {
-  await sb("sessions", {
+  const res = await sb("sessions", {
     method: "POST",
     prefer: "return=minimal",
     body: JSON.stringify({
@@ -839,6 +839,12 @@ async function addSession(session) {
       created_at: new Date(session.createdAt).toISOString()
     })
   });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("addSession error:", res.status, err);
+    throw new Error(`addSession failed: ${res.status} ${err}`);
+  }
+  console.log("addSession OK:", session.token);
 }
 async function addResult(result) {
   await sb("results", {
@@ -861,8 +867,10 @@ async function addResult(result) {
 }
 async function getSession(token) {
   const res = await sb(`sessions?id=eq.${token}&select=*`);
-  if (!res.ok) return null;
+  console.log("getSession status:", res.status, "token:", token);
+  if (!res.ok) { const err = await res.text(); console.error("getSession error:", err); return null; }
   const data = await res.json();
+  console.log("getSession data:", data);
   if (!data.length) return null;
   const s = data[0];
   return { token: s.id, labId: s.lab_id, labCode: s.lab_code, labTitle: s.lab_title, duration: s.duration, expiresAt: s.expires_at, createdAt: new Date(s.created_at).getTime() };
