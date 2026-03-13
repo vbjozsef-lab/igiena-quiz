@@ -2,597 +2,624 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LP4B · Igienă Alimentară – Produse de Origine Animală</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LP4B · Igienă Alimentară</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* ══ RESET & BASE ══════════════════════════════════════════ */
+/* ══ RESET ══════════════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --green:   #059669;
-  --green2:  #10b981;
-  --green-l: #d1fae5;
-  --cream:   #fdfcf7;
-  --warm:    #f5f0e8;
-  --border:  #e2d9cc;
-  --text:    #1a1a0f;
-  --muted:   #6b7057;
-  --red:     #dc2626;
-  --amber:   #d97706;
-  --purple:  #7c3aed;
-  --blue:    #0284c7;
-  --rose:    #e11d48;
-  --shadow:  0 2px 16px rgba(0,0,0,0.08);
-}
-body{
-  background:var(--cream);
-  color:var(--text);
-  font-family:'DM Sans',sans-serif;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+html,body{
+  height:100%;overflow:hidden;
+  background:#F5F0E8;color:#1A1A0F;
+  font-family:'Barlow',sans-serif;
 }
 
-/* ══ TOPBAR ════════════════════════════════════════════════ */
+/* ══ LAYOUT ═════════════════════════════════════════════════ */
+#app{height:100vh;display:flex;flex-direction:column;}
+
+/* ══ TOPBAR ═════════════════════════════════════════════════ */
 #topbar{
-  background:#fff;
-  border-bottom:2px solid var(--border);
-  padding:10px 20px;
-  display:flex;
-  align-items:center;
-  gap:14px;
+  background:#FFFFFF;
+  border-bottom:1px solid #D4C9B8;
+  padding:0 20px;
+  height:48px;
+  display:flex;align-items:center;gap:16px;
   flex-shrink:0;
-  box-shadow:0 1px 8px rgba(0,0,0,0.06);
 }
-.top-badge{
-  background:var(--green);
-  color:#fff;
-  font-family:'JetBrains Mono',monospace;
-  font-size:11px;
-  font-weight:500;
-  padding:4px 10px;
-  border-radius:6px;
-  letter-spacing:0.05em;
-  flex-shrink:0;
+.lp-badge{
+  background:#00A8B5;color:#1A2B3C;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:900;
+  padding:3px 12px;border-radius:4px;
+  letter-spacing:.08em;flex-shrink:0;
 }
 #topbar h1{
-  font-family:'Playfair Display',serif;
-  font-size:15px;
-  font-weight:700;
-  color:var(--text);
-  flex:1;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:16px;font-weight:700;
+  color:#FFFFFF;flex:1;letter-spacing:.02em;
 }
-#slide-counter{
+#ctr{
   font-family:'JetBrains Mono',monospace;
-  font-size:11px;
-  color:var(--muted);
+  font-size:11px;color:#8B7D6B;
   white-space:nowrap;
-  background:var(--warm);
-  padding:4px 10px;
-  border-radius:6px;
-  border:1px solid var(--border);
 }
 
-/* ══ SECTION TABS ══════════════════════════════════════════ */
+/* ══ TAB BAR ════════════════════════════════════════════════ */
 #tabs{
-  display:flex;
-  overflow-x:auto;
-  background:var(--warm);
-  border-bottom:2px solid var(--border);
-  scrollbar-width:none;
-  flex-shrink:0;
-  padding:0 8px;
-  gap:2px;
+  background:#EDE8DF;
+  border-bottom:1px solid #D4C9B8;
+  display:flex;overflow-x:auto;
+  scrollbar-width:none;flex-shrink:0;
+  height:36px;align-items:stretch;
 }
 #tabs::-webkit-scrollbar{display:none;}
 #tabs button{
-  padding:10px 16px;
-  background:transparent;
-  border:none;
-  border-bottom:3px solid transparent;
-  color:var(--muted);
-  font-family:'DM Sans',sans-serif;
-  font-size:12px;
-  font-weight:600;
-  cursor:pointer;
-  white-space:nowrap;
-  transition:all 0.2s;
-  margin-bottom:-2px;
+  padding:0 16px;background:transparent;
+  border:none;border-bottom:2px solid transparent;
+  color:#8B7D6B;font-family:'Barlow',sans-serif;
+  font-size:11px;font-weight:600;cursor:pointer;
+  white-space:nowrap;transition:all .2s;
+  letter-spacing:.03em;
 }
-#tabs button:hover{color:var(--text);}
-#tabs button.active{color:var(--text);border-bottom-color:var(--sc,var(--green));}
+#tabs button.active{color:#FFFFFF;}
 
-/* ══ SLIDE AREA ════════════════════════════════════════════ */
-#slide-area{
-  flex:1;
+/* ══ STAGE ══════════════════════════════════════════════════ */
+#stage{
+  flex:1;overflow:hidden;
+  position:relative;
+  display:flex;align-items:stretch;
+}
+.slide{
+  display:none;
+  width:100%;
+  padding:32px 48px;
   overflow-y:auto;
-  overflow-x:hidden;
-  padding:28px 20px;
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  background:var(--cream);
-  background-image: radial-gradient(circle at 20% 80%, #d1fae522 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, #fef3c722 0%, transparent 50%);
+  animation:fadeIn .25s ease;
 }
-.slide{display:none;width:100%;max-width:800px;animation:fadeUp 0.3s ease;}
-.slide.active{display:block;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.slide.active{display:flex;flex-direction:column;justify-content:center;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ══ SLIDE CARD ════════════════════════════════════════════ */
-.slide-card{
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:20px;
-  padding:36px 40px;
-  box-shadow:var(--shadow);
-}
-.slide-tag{
-  font-size:11px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.1em;
+/* ══ TYPOGRAPHY ═════════════════════════════════════════════ */
+.slide-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.15em;
   margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:6px;
 }
 .slide-h2{
-  font-family:'Playfair Display',serif;
-  font-size:1.7rem;
-  font-weight:700;
-  color:var(--text);
-  margin-bottom:22px;
-  line-height:1.25;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:900;color:#1A1A0F;
+  margin-bottom:24px;line-height:1.1;
+  letter-spacing:.02em;
 }
 
-/* ══ CONTENT ITEMS ═════════════════════════════════════════ */
-.items{display:flex;flex-direction:column;gap:6px;}
-.item-head{font-size:13px;font-weight:700;margin-top:12px;margin-bottom:2px;letter-spacing:0.02em;}
-.item-bullet{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  font-size:14px;
-  color:#374151;
-  line-height:1.65;
-  padding:3px 0;
+/* ══ TITLE SLIDE ════════════════════════════════════════════ */
+.ts-accent{
+  position:absolute;left:0;top:0;bottom:0;
+  width:6px;
 }
-.bullet-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:7px;}
-.item-body{font-size:14px;color:#374151;line-height:1.7;padding:3px 0;}
-
-/* ══ pH TABLE ══════════════════════════════════════════════ */
-.ph-table{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
-.ph-row{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:12px;}
-.ph-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;min-width:70px;}
-.ph-lbl{font-size:14px;font-weight:600;}
-.body-p{font-size:14px;color:var(--muted);line-height:1.7;margin-top:8px;}
-
-/* ══ CASE CARDS ════════════════════════════════════════════ */
-.cases{display:flex;flex-direction:column;gap:14px;}
-.case-card{
-  background:var(--warm);
-  border:1.5px solid var(--border);
-  border-left:4px solid var(--rose);
-  border-radius:12px;
-  padding:16px 18px;
+.ts-content{
+  padding-left:8px;
 }
-.case-head{font-size:13px;font-weight:700;color:var(--rose);margin-bottom:8px;}
-.case-p{font-size:13px;color:#374151;line-height:1.6;margin-top:3px;}
-
-/* ══ HERO SLIDE ════════════════════════════════════════════ */
-.hero-slide{
-  min-height:300px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  gap:12px;
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:20px;
-  padding:48px 32px;
-  box-shadow:var(--shadow);
-  position:relative;
-  overflow:hidden;
-}
-.hero-slide::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--sc) 12%, transparent), transparent 70%);
-}
-.hero-icon{font-size:3.5rem;position:relative;}
-.hero-label{
-  font-size:10px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.15em;
-  color:var(--sc,var(--green));
-  position:relative;
-}
-.hero-title{
-  font-family:'Playfair Display',serif;
-  font-size:2.2rem;
-  font-weight:900;
-  color:var(--text);
-  position:relative;
-  line-height:1.2;
-}
-.hero-sub{font-size:14px;color:var(--muted);position:relative;}
-
-/* ══ ANIM EMBED ════════════════════════════════════════════ */
-.anim-wrapper{
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-}
-.anim-header{
-  background:linear-gradient(135deg,#ecfdf5,#d1fae5);
-  border-bottom:1.5px solid #a7f3d0;
-  padding:20px 28px;
-}
-.anim-header h2{
-  font-family:'Playfair Display',serif;
-  font-size:1.4rem;
-  font-weight:700;
-  color:#064e3b;
-  margin-bottom:4px;
-}
-.anim-header p{font-size:13px;color:#065f46;}
-.anim-body{padding:20px 24px;}
-
-/* ══ TESTE ANIMATE OVERRIDES (light theme) ═════════════════ */
-.anim-body .pipeline{margin-bottom:1.5rem;}
-.anim-body .step-dot .circle{
-  border-color:#059669 !important;
-  color:#059669 !important;
-  background:#fff !important;
-  box-shadow:none !important;
-}
-.anim-body .step-dot .circle.done{
-  background:#059669 !important;
-  color:#fff !important;
-}
-.anim-body .step-content{
-  background:var(--warm) !important;
-  border:1.5px solid var(--border) !important;
-  color:var(--text) !important;
-}
-.anim-body .step-label{color:var(--muted) !important;}
-.anim-body .connector{background:var(--border) !important;}
-.anim-body .badge{color:var(--green) !important;}
-.anim-body .btn-next{background:var(--green) !important;color:#fff !important;}
-.anim-body .btn-prev,.anim-body .btn-reset{
-  background:#fff !important;
-  color:var(--muted) !important;
-  border-color:var(--border) !important;
-}
-.anim-body [id^="step-inner"] h2{color:var(--text) !important;}
-.anim-body [id^="step-inner"] p{color:#374151 !important;}
-.anim-body .tip-box{
-  background:var(--green-l) !important;
-  border-color:#6ee7b7 !important;
-  color:#065f46 !important;
-}
-/* Tabs inside anim */
-.anim-body nav button{
-  color:var(--muted) !important;
-  background:transparent !important;
-  border-bottom-color:transparent !important;
-}
-.anim-body nav button.active{
-  color:var(--text) !important;
-  border-bottom-color:var(--green) !important;
-}
-.anim-body nav{
-  background:var(--warm) !important;
-  border-bottom:1.5px solid var(--border) !important;
-  border-radius:10px 10px 0 0;
-  overflow:hidden;
+.ts-kicker{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.2em;
   margin-bottom:16px;
 }
-.anim-body .test-panel{background:transparent !important;}
+.ts-h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(2.5rem,6vw,4.5rem);
+  font-weight:900;color:#FFFFFF;
+  line-height:1.05;letter-spacing:.02em;
+  margin-bottom:16px;
+}
+.ts-sub{
+  font-size:clamp(1rem,2vw,1.4rem);
+  color:#8B7D6B;margin-bottom:32px;
+}
+.ts-pills{display:flex;flex-wrap:wrap;gap:10px;}
+.pill{
+  border:1.5px solid;border-radius:100px;
+  padding:6px 16px;font-size:14px;font-weight:600;
+}
+.ts-bar{
+  position:absolute;bottom:0;left:0;right:0;height:4px;
+}
 
-/* ══ BOTTOM NAV ════════════════════════════════════════════ */
+/* ══ CUPRINS ════════════════════════════════════════════════ */
+.cup-list{display:flex;flex-direction:column;gap:10px;}
+.cup-row{display:flex;align-items:center;gap:14px;background:#FFFFFF;border-radius:10px;padding:12px 18px;}
+.cup-num{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;min-width:36px;}
+.cup-icon{width:36px;height:36px;border-radius:8px;border:1px solid;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.cup-title{font-size:15px;font-weight:700;}
+.cup-sub{font-size:12px;margin-top:2px;}
+
+/* ══ SECTION HERO ═══════════════════════════════════════════ */
+.slide.hero-slide{padding:0;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;}
+.hero-content{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  height:100%;text-align:center;gap:16px;
+  padding:40px;
+}
+.hero-line{width:80px;height:3px;border-radius:2px;}
+.hero-icon-big{font-size:clamp(4rem,10vw,7rem);line-height:1;}
+.hero-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:900;letter-spacing:.05em;
+  text-transform:uppercase;
+  text-shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+.hero-divider{width:120px;height:2px;border-radius:2px;}
+.hero-section-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:14px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.2em;
+}
+
+/* ══ INFO CARDS ═════════════════════════════════════════════ */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.info-card{border-radius:12px;padding:18px;}
+.card-label{font-size:13px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+.ci{font-size:14px;color:#1A1A0F;line-height:1.6;padding:2px 0;}
+.plain-items{display:flex;flex-direction:column;gap:8px;}
+.plain-item{display:flex;align-items:flex-start;gap:12px;font-size:15px;color:#1A1A0F;line-height:1.6;}
+.plain-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+
+/* ══ pH TABLE ═══════════════════════════════════════════════ */
+.ph-table{display:flex;flex-direction:column;gap:12px;margin:8px 0 16px;}
+.ph-row{display:flex;align-items:center;gap:24px;padding:18px 24px;border-radius:12px;}
+.ph-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;min-width:100px;}
+.ph-lbl{font-size:16px;font-weight:700;}
+.ph-extra{font-size:13px;color:#8B7D6B;line-height:1.6;margin-top:4px;}
+
+/* ══ CASE CARDS ═════════════════════════════════════════════ */
+.cases-grid{display:flex;flex-direction:column;gap:12px;}
+.case-card{border-radius:12px;padding:16px 20px;}
+.case-head{font-size:13px;font-weight:700;margin-bottom:8px;letter-spacing:.02em;}
+.case-p{font-size:13px;color:#1A1A0F;line-height:1.55;margin-top:3px;}
+
+/* ══ ANIM SLIDE ═════════════════════════════════════════════ */
+.slide.anim-slide{padding:0;overflow:hidden;}
+.anim-wrap{height:100%;display:flex;flex-direction:column;}
+.anim-header{
+  background:#FFFFFF;
+  border-bottom:1px solid #D4C9B8;
+  padding:14px 24px;flex-shrink:0;
+  display:flex;align-items:center;gap:16px;
+}
+.anim-header h3{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.2rem;font-weight:900;
+  color:#FFFFFF;letter-spacing:.03em;
+}
+.anim-header p{font-size:11px;color:#8B7D6B;margin-top:2px;}
+.test-tabs{
+  display:flex;overflow-x:auto;
+  background:#EDE8DF;
+  border-bottom:1px solid #D4C9B8;
+  scrollbar-width:none;flex-shrink:0;
+  height:38px;align-items:stretch;
+}
+.test-tabs::-webkit-scrollbar{display:none;}
+.test-tabs button{
+  padding:0 14px;background:transparent;
+  border:none;border-bottom:3px solid transparent;
+  color:#8B7D6B;font-family:'Barlow',sans-serif;
+  font-size:11px;font-weight:600;cursor:pointer;
+  white-space:nowrap;transition:all .2s;
+}
+.test-tabs button.active{color:#FFFFFF;}
+.test-body{
+  flex:1;overflow-y:auto;
+  padding:20px 28px;
+  display:flex;flex-direction:column;
+  gap:14px;
+  min-height:0;
+}
+
+/* ══ PIPELINE ═══════════════════════════════════════════════ */
+.pipeline{display:flex;align-items:flex-start;flex-shrink:0;}
+.sdot{display:flex;flex-direction:column;align-items:center;cursor:pointer;flex:1;min-width:40px;}
+.circ{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  border:2px solid #2d4a60;color:#8B7D6B;
+  background:#EDE8DF;transition:all .25s;
+  font-family:'Barlow Condensed',sans-serif;
+}
+.circ.active,.circ.done{color:#1A2B3C;}
+.conn{flex:1;height:2px;background:#D4C9B8;margin-top:17px;min-width:4px;transition:background .25s;}
+.slbl{font-size:9px;color:#8B7D6B;text-align:center;margin-top:4px;max-width:64px;line-height:1.3;}
+
+/* ══ STEP CONTENT ════════════════════════════════════════════ */
+.step-card{
+  background:#FFFFFF;border:1px solid #D4C9B8;
+  border-radius:14px;padding:22px 26px;
+  flex:1;min-height:0;
+}
+.step-num{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:8px;display:block;
+}
+.step-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(1.2rem,3vw,1.6rem);
+  font-weight:900;color:#1A1A0F;
+  margin-bottom:12px;letter-spacing:.02em;
+}
+.step-body{font-size:14px;color:#1A1A0F;line-height:1.7;}
+.step-tip{
+  padding:10px 14px;border-radius:8px;
+  font-size:13px;font-weight:600;line-height:1.5;
+  margin-top:12px;flex-shrink:0;
+}
+
+/* ══ STEP NAV — always visible ════════════════════════════════ */
+.step-nav{
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+  background:#FFFFFF;
+  border-top:1px solid #D4C9B8;
+  padding:12px 28px;
+}
+.sn-btn{
+  padding:10px 22px;border-radius:8px;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .2s;border:1px solid #D4C9B8;
+  background:#EDE8DF;color:#1A1A0F;
+  white-space:nowrap;
+}
+.sn-btn:hover:not(:disabled){background:#D4C9B8;}
+.sn-btn:disabled{opacity:.3;cursor:default;}
+.sn-btn.next{border:none;color:#1A2B3C;}
+.sn-ctr{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:#8B7D6B;
+  margin-left:auto;white-space:nowrap;
+}
+.sn-reset{
+  font-size:11px;padding:8px 12px;
+  border-radius:6px;background:transparent;
+  border:1px solid #D4C9B8;color:#8B7D6B;
+  cursor:pointer;font-family:'Barlow',sans-serif;
+}
+
+/* ══ BOTTOM NAV ═════════════════════════════════════════════ */
 #botnav{
-  background:#fff;
-  border-top:2px solid var(--border);
-  padding:12px 20px;
-  display:flex;
-  align-items:center;
-  gap:12px;
+  background:#FFFFFF;border-top:1px solid #D4C9B8;
+  padding:10px 20px;display:flex;align-items:center;gap:14px;
   flex-shrink:0;
 }
-.nbtn{
-  background:#fff;
-  border:1.5px solid var(--border);
-  color:var(--text);
-  border-radius:10px;
-  padding:9px 20px;
-  font-family:'DM Sans',sans-serif;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.2s;
+.nb{
+  background:#EDE8DF;border:1px solid #D4C9B8;
+  color:#1A1A0F;border-radius:8px;padding:10px 24px;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
 }
-.nbtn:hover:not(:disabled){background:var(--warm);border-color:#c0b8a8;}
-.nbtn:disabled{opacity:0.35;cursor:default;}
-.nbtn.primary{color:#fff;border:none;font-weight:700;}
-#progress{flex:1;height:4px;background:var(--border);border-radius:3px;overflow:hidden;}
-#pfill{height:100%;border-radius:3px;transition:width 0.4s,background 0.4s;}
+.nb:hover:not(:disabled){background:#D4C9B8;}
+.nb:disabled{opacity:.3;cursor:default;}
+.nb.nxt{border:none;color:#1A2B3C;font-weight:800;}
+#prog{flex:1;height:3px;background:#D4C9B8;border-radius:2px;overflow:hidden;}
+#pf{height:100%;border-radius:2px;transition:width .4s,background .4s;}
 
-/* ══ RESPONSIVE ════════════════════════════════════════════ */
-@media(max-width:640px){
-  .slide-card{padding:22px 18px;}
-  .slide-h2{font-size:1.3rem;}
-  .hero-title{font-size:1.7rem;}
+/* ══ RESPONSIVE ═════════════════════════════════════════════ */
+@media(max-width:768px){
+  .slide{padding:20px 20px;}
+  .test-body{padding:14px 16px;gap:10px;}
+  .step-nav{padding:10px 16px;gap:8px;}
+  .step-card{padding:16px 18px;}
+  .sn-btn{padding:10px 14px;font-size:12px;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+  .cup-row{padding:10px 14px;gap:10px;}
+  .ph-row{padding:14px 18px;gap:16px;}
+  .anim-header{padding:10px 16px;}
   #topbar h1{font-size:13px;}
-  .anim-body{padding:14px 12px;}
+  .circ{width:28px;height:28px;font-size:10px;}
+  .conn{margin-top:14px;}
+}
+@media(max-width:480px){
+  .slide{padding:14px;}
+  .slide-h2{margin-bottom:16px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .hero-title{letter-spacing:.02em;}
+  .sn-btn span{display:none;}
 }
 </style>
 </head>
 <body>
-
+<div id="app">
 <div id="topbar">
-  <span class="top-badge">LP4B</span>
+  <span class="lp-badge">LP4B</span>
   <h1>Igienă Alimentară · Produse de Origine Animală</h1>
-  <span id="slide-counter">1 / 25</span>
+  <span id="ctr">1 / 25</span>
 </div>
 <div id="tabs"></div>
-<div id="slide-area">
+<div id="stage">
 <div class="slide" id="sl0">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#059669">📋 Introducere</div>
-  <h2 class="slide-h2">IGIENĂ ALIMENTARĂ</h2>
-  <div class="items"><div class="item-head" style="color:#059669">Controlul Igienico-Sanitar</div><div class="item-body">al Produselor de Origine Animală</div><div class="item-head" style="color:#059669">Carne • Conserve • Ouă • Lapte & Produse Lactate</div><div class="item-head" style="color:#059669">Lucrări Practice | www.sanatateplus.ro/lpi</div></div>
+
+<div class="ts-accent" style="background:#00A8B5"></div>
+<div class="ts-content">
+  <div class="ts-kicker" style="color:#00A8B5">IGIENĂ ALIMENTARĂ</div>
+  <h1 class="ts-h1">al Produselor de Origine Animală</h1>
+  <p class="ts-sub">Carne • Conserve • Ouă • Lapte & Produse Lactate</p>
+  <div class="ts-pills">
+    <span class="pill" style="border-color:#00A8B5;color:#00A8B5">🥩 Carne</span>
+    <span class="pill" style="border-color:#E8A838;color:#E8A838">🥫 Conserve</span>
+    <span class="pill" style="border-color:#A78BFA;color:#A78BFA">🥚 Ouă</span>
+    <span class="pill" style="border-color:#2ECC71;color:#2ECC71">🥛 Lapte</span>
+  </div>
 </div>
+<div class="ts-bar" style="background:#E8A838"></div>
 </div>
 
 <div class="slide" id="sl1">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#059669">📋 Introducere</div>
-  <h2 class="slide-h2">CUPRINS</h2>
-  <div class="items"><div class="item-body">01</div><div class="item-head" style="color:#059669">Carnea</div><div class="item-head" style="color:#059669">Recoltare, organoleptic, pH, amoniac, prospeţime</div><div class="item-body">02</div><div class="item-head" style="color:#059669">Conserve Alimentare</div><div class="item-head" style="color:#059669">Examen exterior, etanşeitate, control chimic</div><div class="item-body">03</div><div class="item-head" style="color:#059669">Ouăle</div><div class="item-head" style="color:#059669">Organoleptic, ovoscop, densitate, vechime</div><div class="item-body">04</div><div class="item-head" style="color:#059669">Laptele & Produse Lactate</div><div class="item-body">Densitate, aciditate, lipide, pasteurizare, fraude</div></div>
-</div>
+<div class="slide-label" style="color:#00A8B5">📋 INTRODUCERE</div><h2 class="slide-h2">Cuprins</h2><div class="cup-list"><div class="cup-row">
+  <div class="cup-num" style="color:#00A8B5">01</div>
+  <div class="cup-icon" style="background:#00A8B522;border-color:#00A8B544">🥩</div>
+  <div class="cup-info">
+    <div class="cup-title" style="color:#FFFFFF">Carnea</div>
+    <div class="cup-sub" style="color:#8B7D6B">Recoltare, organoleptic, pH, amoniac</div>
+  </div>
+</div><div class="cup-row">
+  <div class="cup-num" style="color:#E8A838">02</div>
+  <div class="cup-icon" style="background:#E8A83822;border-color:#E8A83844">🥫</div>
+  <div class="cup-info">
+    <div class="cup-title" style="color:#FFFFFF">Conserve Alimentare</div>
+    <div class="cup-sub" style="color:#8B7D6B">Examen exterior, etanșeitate, control</div>
+  </div>
+</div><div class="cup-row">
+  <div class="cup-num" style="color:#A78BFA">03</div>
+  <div class="cup-icon" style="background:#A78BFA22;border-color:#A78BFA44">🥚</div>
+  <div class="cup-info">
+    <div class="cup-title" style="color:#FFFFFF">Ouăle</div>
+    <div class="cup-sub" style="color:#8B7D6B">Organoleptic, ovoscop, densitate, prospețime</div>
+  </div>
+</div><div class="cup-row">
+  <div class="cup-num" style="color:#2ECC71">04</div>
+  <div class="cup-icon" style="background:#2ECC7122;border-color:#2ECC7144">🥛</div>
+  <div class="cup-info">
+    <div class="cup-title" style="color:#FFFFFF">Laptele & Prod. Lactate</div>
+    <div class="cup-sub" style="color:#8B7D6B">Densitate, aciditate, lipide</div>
+  </div>
+</div><div class="cup-row">
+  <div class="cup-num" style="color:#E8445A">05</div>
+  <div class="cup-icon" style="background:#E8445A22;border-color:#E8445A44">📍</div>
+  <div class="cup-info">
+    <div class="cup-title" style="color:#FFFFFF">Focare Reale România</div>
+    <div class="cup-sub" style="color:#8B7D6B">Studii de caz documentate 2016–2025</div>
+  </div>
+</div></div>
 </div>
 
-<div class="slide" id="sl2">
-<div class="hero-slide" style="--sc:#dc2626">
-  <div class="hero-icon">🥩</div>
-  <div class="hero-label">CARNE</div>
-  <h2 class="hero-title">CARNEA</h2>
-  
+<div class="slide hero-slide" id="sl2">
+
+<div class="hero-bg" style="background:#00A8B5"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">🥩</div>
+  <h2 class="hero-title" style="color:#FFFFFF">CARNEA</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">CARNE</div>
 </div>
 </div>
 
 <div class="slide" id="sl3">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#dc2626">🥩 Carne</div>
-  <h2 class="slide-h2">Recoltarea Probelor de Carne</h2>
-  <div class="items"><div class="item-head" style="color:#dc2626">Cantitate minimă</div><div class="item-head" style="color:#dc2626">Minim 300 g recoltați</div><div class="item-body">din mai multe zone:</div><div class="item-body">muşchi, grăsime, organe</div><div class="item-head" style="color:#dc2626">Locații de recoltare</div><div class="item-head" style="color:#dc2626">Suprafaţă şi profunzime</div><div class="item-head" style="color:#dc2626">Articulaţii, grăsime</div><div class="item-head" style="color:#dc2626">Părţi diferite ale carcasei</div><div class="item-head" style="color:#dc2626">Extract de carne</div><div class="item-head" style="color:#dc2626">Utilizat pentru</div><div class="item-body">determinări chimice:</div><div class="item-body">pH, amoniac, aldehide</div><div class="item-body">Recoltarea trebuie efectuată în condiţii igienice stricte, cu instrumente sterile, cu etichetare corectă şi păstrare la 0-4°C până la analiză.</div></div>
-</div>
+<div class="slide-label" style="color:#00A8B5">🥩 CARNE</div>
+<h2 class="slide-h2">Recoltarea Probelor de Carne</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">din mai multe zone:</div><div class="ci">muşchi, grăsime, organe</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">determinări chimice:</div><div class="ci">pH, amoniac, aldehide</div><div class="ci">Recoltarea trebuie efectuată în condiţii igienice stricte, cu instrumente sterile, cu etichetare corectă şi păstrare la 0-4°C până la analiză.</div></div></div>
 </div>
 
 <div class="slide" id="sl4">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#dc2626">🥩 Carne</div>
-  <h2 class="slide-h2">Caracteristici Organoleptice</h2>
-  <div class="items"><div class="item-body">🥩  CARNE</div><div class="item-head" style="color:#dc2626">Aspect exterior:</div><div class="item-head" style="color:#dc2626">Suprafaţă uscată sau umidă, fără mucus</div><div class="item-head" style="color:#dc2626">Aspect secţiune:</div><div class="item-head" style="color:#dc2626">Culoare roz-roşie uniformă, lucioasă</div><div class="item-head" style="color:#dc2626">Grăsime:</div><div class="item-head" style="color:#dc2626">Albă/gălbuie, consistenţă normală, fără rânced</div><div class="item-head" style="color:#dc2626">Articulaţii:</div><div class="item-head" style="color:#dc2626">Suprafaţă netedă, fără exsudat</div><div class="item-head" style="color:#dc2626">Miros:</div><div class="item-head" style="color:#dc2626">Caracteristic speciei, plăcut, fără putrezire</div><div class="item-head" style="color:#dc2626">Consistenţă:</div><div class="item-head" style="color:#dc2626">Elastică – urma degetului dispare rapid</div><div class="item-body">🐟  PEŞTE</div><div class="item-head" style="color:#dc2626">Ochi:</div><div class="item-head" style="color:#dc2626">Transparenţi, convecşi, corneea clară</div><div class="item-head" style="color:#dc2626">Gura:</div><div class="item-head" style="color:#dc2626">Închisă, membrane mucoase curate</div><div class="item-head" style="color:#dc2626">Branhii:</div><div class="item-head" style="color:#dc2626">Roşii, fără mucozităţi, fără miros</div><div class="item-head" style="color:#dc2626">Solzi:</div><div class="item-head" style="color:#dc2626">Aderenţi, lucioşi, fără desprindere</div><div class="item-head" style="color:#dc2626">Musculatura:</div><div class="item-head" style="color:#dc2626">Fermă, elastică, adereantă la os</div><div class="item-head" style="color:#dc2626">Miros:</div><div class="item-head" style="color:#dc2626">De mare/apă dulce, fără putreziciune</div></div>
-</div>
+<div class="slide-label" style="color:#00A8B5">🥩 CARNE</div>
+<h2 class="slide-h2">Caracteristici Organoleptice</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Aspect exterior:</div><div class="ci">Suprafaţă uscată sau umidă, fără mucus</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Consistenţă:</div><div class="ci">Elastică – urma degetului dispare rapid</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">De mare/apă dulce, fără putreziciune</div></div></div>
 </div>
 
 <div class="slide" id="sl5">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#dc2626">🥩 Carne</div>
-  <h2 class="slide-h2">Determinarea pH-ului Cărnii</h2>
-  <div class="ph-table"><div class="ph-row" style="background:#dcfce7;border-left:4px solid #166534"><span class="ph-val" style="color:#166534"><6,2</span><span class="ph-lbl" style="color:#166534">Carne proaspătă</span></div>
-<div class="ph-row" style="background:#fef9c3;border-left:4px solid #854d0e"><span class="ph-val" style="color:#854d0e">6,2–6,6</span><span class="ph-lbl" style="color:#854d0e">Relativ proaspătă</span></div>
-<div class="ph-row" style="background:#fee2e2;border-left:4px solid #991b1b"><span class="ph-val" style="color:#991b1b">>6,6</span><span class="ph-lbl" style="color:#991b1b">Carne alterată</span></div>
-</div>
-  <p class="body-p">Principiu: Hârtie de filtru introdusă în extractul de carne sau în proba de carne (după incizie) — culoarea indicatorului revelează pH-ul.</p><p class="body-p">Carne PROASPĂTĂ</p><p class="body-p">Alterare absentă</p><p class="body-p">pH 6,2 – 6,6</p><p class="body-p">Carne RELATIV PROASPĂTĂ</p><p class="body-p">Consumată imediat</p><p class="body-p">Carne ALTERATĂ</p><p class="body-p">Improprie consumului</p><p class="body-p">Aspecte moderne – Carnea DFD și PSE</p>
-</div>
-</div>
-
-<div class="slide" id="sl6">
-<div class="anim-wrapper">
-  <div class="anim-header">
-    <h2>🧪 Teste Animate Pas cu Pas</h2>
-    <p>Nessler · Eber · pH · Lactodensimetru · Prospeţimea Oului — navigați între teste cu butoanele de mai jos</p>
-  </div>
-  <div class="anim-body">
-    <nav id="tabNav" style="display:flex;gap:0;overflow-x:auto;scrollbar-width:none;">
-    </nav>
-  </div>
-</div>
+<div class="slide-label" style="color:#00A8B5">🥩 CARNE</div>
+<h2 class="slide-h2">Determinarea pH-ului Cărnii</h2>
+<div class="ph-table"><div class="ph-row" style="background:#0d2b1a;border-left:5px solid #2ECC71">
+  <span class="ph-val" style="color:#2ECC71">< 6,2</span>
+  <span class="ph-lbl" style="color:#2ECC71">Carne PROASPĂTĂ</span>
+</div><div class="ph-row" style="background:#2b1e0a;border-left:5px solid #E8A838">
+  <span class="ph-val" style="color:#E8A838">6,2 – 6,6</span>
+  <span class="ph-lbl" style="color:#E8A838">Carne relativ proaspătă</span>
+</div><div class="ph-row" style="background:#2b0a0e;border-left:5px solid #E8445A">
+  <span class="ph-val" style="color:#E8445A">> 6,6</span>
+  <span class="ph-lbl" style="color:#E8445A">Carne ALTERATĂ</span>
+</div></div>
+<p class="ph-extra">Principiu: Hârtie de filtru introdusă în extractul de carne sau în proba de carne (după incizie) — culoarea indicatorului revelează pH-ul.</p><p class="ph-extra">Alterare absentă</p>
 </div>
 
-<div class="slide" id="sl7">
-<div class="hero-slide" style="--sc:#d97706">
-  <div class="hero-icon">🥫</div>
-  <div class="hero-label">CONSERVE</div>
-  <h2 class="hero-title">CONSERVELE ALIMENTARE</h2>
-  
+<div class="slide anim-slide" id="sl6">
+<iframe 
+  src="laborator_animat_lp4b.html" 
+  style="width:100%;height:100%;border:none;display:block;"
+  title="Teste animate pas cu pas">
+</iframe>
+</div>
+
+<div class="slide hero-slide" id="sl7">
+
+<div class="hero-bg" style="background:#E8A838"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">🥫</div>
+  <h2 class="hero-title" style="color:#FFFFFF">CONSERVELE ALIMENTARE</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">CONSERVE</div>
 </div>
 </div>
 
 <div class="slide" id="sl8">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#d97706">🥫 Conserve</div>
-  <h2 class="slide-h2">Controlul Conservelor Alimentare</h2>
-  <div class="items"><div class="item-head" style="color:#d97706">Examen Organoleptic</div><div class="item-head" style="color:#d97706">Exterior:</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Cutia – integritate, deformări</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Capacul – bombat = gaz bacterian!</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Eticheta – lizibilă, completă</div><div class="item-head" style="color:#d97706">Interior:</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Miros la deschidere</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Aspect conţinut</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Culoare şi consistenţă</div><div class="item-head" style="color:#d97706">Examen Fizic – Etanşeitate</div><div class="item-head" style="color:#d97706">Test în apă caldă (85°C):</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Conserva scufundată 5–10 min</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Apariţia bulelor → neetanşă</div><div class="item-head" style="color:#d97706">După deschidere:</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Presiune internă crescută</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Bombaj activ = Clostridium botulinum!</div><div class="item-head" style="color:#d97706">Examen Chimic</div><div class="item-head" style="color:#d97706">Benzoat de Na (conservant):</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>Max. admis: 1 g/kg</div><div class="item-body">pH conţinut:</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>< 4,5 → mediu acid, risc redus</div><div class="item-bullet"><span class="bullet-dot" style="background:#d97706"></span>> 4,5 → risc Clostridium</div><div class="item-head" style="color:#d97706">Nitraţi/nitriţi (la carne)</div><div class="item-body">Bombajul capacului = sterilizare incompletă sau condiţii inadecvate → bacterii anaerobe (Clostridium botulinum) → PERICOL VITAL!</div></div>
-</div>
+<div class="slide-label" style="color:#E8A838">🥫 CONSERVE</div>
+<h2 class="slide-h2">Controlul Conservelor Alimentare</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">• Cutia – integritate, deformări</div><div class="ci">• Capacul – bombat = gaz bacterian!</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">• Presiune internă crescută</div><div class="ci">• Bombaj activ = Clostridium botulinum!</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">pH conţinut:</div><div class="ci">• < 4,5 → mediu acid, risc redus</div><div class="ci">• > 4,5 → risc Clostridium</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Nitraţi/nitriţi (la carne)</div><div class="ci">Bombajul capacului = sterilizare incompletă sau condiţii inadecvate → bacterii anaerobe (Clostridium botulinum) → PERICOL VITAL!</div></div></div>
 </div>
 
-<div class="slide" id="sl9">
-<div class="hero-slide" style="--sc:#7c3aed">
-  <div class="hero-icon">🥚</div>
-  <div class="hero-label">OUĂ</div>
-  <h2 class="hero-title">OUĂLE</h2>
-  
+<div class="slide hero-slide" id="sl9">
+
+<div class="hero-bg" style="background:#A78BFA"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">🥚</div>
+  <h2 class="hero-title" style="color:#FFFFFF">OUĂLE</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">OUĂ</div>
 </div>
 </div>
 
 <div class="slide" id="sl10">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#7c3aed">🥚 Ouă</div>
-  <h2 class="slide-h2">Examinarea Organoleptică a Oului</h2>
-  <div class="items"><div class="item-head" style="color:#7c3aed">Caracteristici Exterioare</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Coaja: curată, fără fisuri, fără pete</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Suprafaţă: mată (ou proaspăt)</div><div class="item-body">strălucitoare = ou vechi!</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Culoare: uniformă, specifică rasei</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Miros: absent (prin coajă)</div><div class="item-head" style="color:#7c3aed">Examen la Ovoscop</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Transparenţă uniformă</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Camera de aer: ≤ 5 mm (ou proaspăt)</div><div class="item-body">> 9 mm = ou vechi</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Albuş: alb, dens, fără opacităţi</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Gălbenuş: central, sferic, mobil redus</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Pata germinativă: punct mic, vizibil</div><div class="item-head" style="color:#7c3aed">Clasificare UE după camera de aer (Reg. CE 1234/2007):</div><div class="item-head" style="color:#7c3aed">Clasă</div><div class="item-head" style="color:#7c3aed">Camera de aer</div><div class="item-head" style="color:#7c3aed">Stare</div><div class="item-head" style="color:#7c3aed">Utilizare</div><div class="item-head" style="color:#7c3aed">A (extra)</div><div class="item-body">≤ 4 mm</div><div class="item-head" style="color:#7c3aed">Proaspăt</div><div class="item-head" style="color:#7c3aed">Consum direct</div><div class="item-head" style="color:#7c3aed">A</div><div class="item-body">≤ 6 mm</div><div class="item-head" style="color:#7c3aed">Proaspăt</div><div class="item-head" style="color:#7c3aed">Consum direct</div><div class="item-head" style="color:#7c3aed">B</div><div class="item-body">≤ 9 mm</div><div class="item-head" style="color:#7c3aed">Secundar</div><div class="item-head" style="color:#7c3aed">Industrie alimentară</div><div class="item-head" style="color:#7c3aed">C</div><div class="item-body">> 9 mm</div><div class="item-head" style="color:#7c3aed">Degradat</div><div class="item-head" style="color:#7c3aed">Inacceptabil consum</div></div>
-</div>
+<div class="slide-label" style="color:#A78BFA">🥚 OUĂ</div>
+<h2 class="slide-h2">Examinarea Organoleptică a Oului</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Caracteristici Exterioare</div><div class="ci">• Coaja: curată, fără fisuri, fără pete</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">• Suprafaţă: mată (ou proaspăt)</div><div class="ci">strălucitoare = ou vechi!</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">• Transparenţă uniformă</div><div class="ci">• Camera de aer: ≤ 5 mm (ou proaspăt)</div><div class="ci">> 9 mm = ou vechi</div><div class="ci">• Albuş: alb, dens, fără opacităţi</div><div class="ci">• Gălbenuş: central, sferic, mobil redus</div><div class="ci">• Pata germinativă: punct mic, vizibil</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Inacceptabil consum</div></div></div>
 </div>
 
 <div class="slide" id="sl11">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#7c3aed">🥚 Ouă</div>
-  <h2 class="slide-h2">Densitatea și Vechimea Oului</h2>
-  <div class="items"><div class="item-head" style="color:#7c3aed">Determinarea Densităţii</div><div class="item-head" style="color:#7c3aed">Metode:</div><div class="item-body">1. Măsurarea volumului + greutăţii</div><div class="item-body">2. Imersia în soluţii NaCl cu densităţi diferite</div><div class="item-head" style="color:#7c3aed">Valori normale: 1,07–1,09 g/cm³ la 15°C</div><div class="item-body">Soluţia cu densitate egală cu oul → plutire în poziţie verticală</div><div class="item-head" style="color:#7c3aed">Scăderea densităţii = pierdere de apă prin pori</div><div class="item-head" style="color:#7c3aed">Determinarea Vechimii (testul în apă)</div><div class="item-head" style="color:#7c3aed">Principiu: camera de aer creşte cu vârsta</div><div class="item-body">(aerul pătrunde prin pori)</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Ou proaspăt: se scufundă, poziţie orizontală</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Ou 1 săptămână: uşor înclinat</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Ou 2–3 săpt.: vertical, vârf jos</div><div class="item-bullet"><span class="bullet-dot" style="background:#7c3aed"></span>Ou vechi/stricat: pluteşte la suprafaţă</div><div class="item-head" style="color:#7c3aed">Relativ la temperatura de depozitare!</div><div class="item-body">Greutatea oului: Un ou proaspăt cântăreşte în medie 50–70 g (în funcţie de clasă: S < 53g, M 53–63g, L 63–73g, XL > 73g conform Reg. CE 1234/2007). Pierderea în greutate prin deshidratare este un indicator indirect de prospeţime.</div></div>
-</div>
+<div class="slide-label" style="color:#A78BFA">🥚 OUĂ</div>
+<h2 class="slide-h2">Densitatea și Vechimea Oului</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">1. Măsurarea volumului + greutăţii</div><div class="ci">2. Imersia în soluţii NaCl cu densităţi diferite</div><div class="ci">Valori normale: 1,07–1,09 g/cm³ la 15°C</div><div class="ci">Soluţia cu densitate egală cu oul → plutire în poziţie verticală</div><div class="ci">Scăderea densităţii = pierdere de apă prin pori</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Determinarea Vechimii (testul în apă)</div><div class="ci">Principiu: camera de aer creşte cu vârsta</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">(aerul pătrunde prin pori)</div><div class="ci">• Ou proaspăt: se scufundă, poziţie orizontală</div><div class="ci">• Ou 1 săptămână: uşor înclinat</div><div class="ci">• Ou 2–3 săpt.: vertical, vârf jos</div><div class="ci">• Ou vechi/stricat: pluteşte la suprafaţă</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Relativ la temperatura de depozitare!</div><div class="ci">Greutatea oului: Un ou proaspăt cântăreşte în medie 50–70 g (în funcţie de clasă: S < 53g, M 53–63g, L 63–73g, XL > 73g conform Reg. CE 1234/2007). Pierderea în greutate prin deshidratare este un indicator indirect de prospeţime.</div></div></div>
 </div>
 
-<div class="slide" id="sl12">
-<div class="hero-slide" style="--sc:#0284c7">
-  <div class="hero-icon">🥛</div>
-  <div class="hero-label">LAPTE & CHIMIE</div>
-  <h2 class="hero-title">LAPTELE & PRODUSE LACTATE</h2>
-  
+<div class="slide hero-slide" id="sl12">
+
+<div class="hero-bg" style="background:#2ECC71"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">🥛</div>
+  <h2 class="hero-title" style="color:#FFFFFF">LAPTELE & PRODUSE LACTATE</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">LAPTE</div>
 </div>
 </div>
 
 <div class="slide" id="sl13">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Examenul Organoleptic al Laptelui</h2>
-  <div class="items"><div class="item-head" style="color:#0284c7">Aspect:</div><div class="item-body">Lichid omogen, opac, fără impurităţi vizibile, fără sediment</div><div class="item-head" style="color:#0284c7">Consistenţă:</div><div class="item-body">Fluidă, uşor vâscoasă – se scurge uniform de pe pereţii vasului</div><div class="item-head" style="color:#0284c7">Culoare:</div><div class="item-body">Albă-gălbuie (lapte integral) sau albă-albăstruie (lapte smântânit)</div><div class="item-head" style="color:#0284c7">Miros:</div><div class="item-body">Plăcut, dulceag, caracteristic; la pasteurizat – uşor gust de fiert</div><div class="item-head" style="color:#0284c7">Gust:</div><div class="item-body">Dulceag, caracteristic; fără gust acid, amar, rânced sau străin</div><div class="item-body">Recoltare: aleator, nr. probe proporţional cu lotul, condiţii igienice, etichetare, păstrare la 4°C.</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Examenul Organoleptic al Laptelui</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Aspect:</div><div class="ci">Lichid omogen, opac, fără impurităţi vizibile, fără sediment</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Consistenţă:</div><div class="ci">Fluidă, uşor vâscoasă – se scurge uniform de pe pereţii vasului</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">Culoare:</div><div class="ci">Albă-gălbuie (lapte integral) sau albă-albăstruie (lapte smântânit)</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Miros:</div><div class="ci">Plăcut, dulceag, caracteristic; la pasteurizat – uşor gust de fiert</div></div></div>
 </div>
 
 <div class="slide" id="sl14">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Determinarea Densităţii Laptelui</h2>
-  <div class="items"><div class="item-head" style="color:#0284c7">Metodă: Lactodensimetru</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Se scufundă în lapte fără a atinge pereţii</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Citire la nivelul suprafeţei libere (meniscul)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Corecţie de temperatură: ± 0,0002/°C (referinţă 20°C)</div><div class="item-head" style="color:#0284c7">Valori normale</div><div class="item-head" style="color:#0284c7">Lapte normalizat:</div><div class="item-body">≥ 1,028–1,029 g/ml</div><div class="item-head" style="color:#0284c7">Lapte smântânit:</div><div class="item-body">≥ 1,030 g/ml la 20°C</div><div class="item-head" style="color:#0284c7">Interpretarea fraudelor:</div><div class="item-head" style="color:#0284c7">Adăugare de apă</div><div class="item-body">→ Scade densitatea</div><div class="item-head" style="color:#0284c7">Ecremare (smântânire)</div><div class="item-body">→ Creşte densitatea (grăsimea < 1,0)</div><div class="item-head" style="color:#0284c7">Fraudă dublă</div><div class="item-body">→ Efectele se compensează → determinare grăsimi obligatorie!</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Determinarea Densităţii Laptelui</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Metodă: Lactodensimetru</div><div class="ci">• Se scufundă în lapte fără a atinge pereţii</div><div class="ci">• Citire la nivelul suprafeţei libere (meniscul)</div><div class="ci">• Corecţie de temperatură: ± 0,0002/°C (referinţă 20°C)</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Ecremare (smântânire)</div><div class="ci">→ Creşte densitatea (grăsimea < 1,0)</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">Fraudă dublă</div><div class="ci">→ Efectele se compensează → determinare grăsimi obligatorie!</div></div></div>
 </div>
 
 <div class="slide" id="sl15">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Determinarea Acidităţii Laptelui</h2>
-  <div class="items"><div class="item-head" style="color:#0284c7">Metoda prin Titrare (Thorner)</div><div class="item-head" style="color:#0284c7">Principiu: titrare cu soluţie NaOH 0,1 N</div><div class="item-head" style="color:#0284c7">Indicator: fenolftaleină</div><div class="item-head" style="color:#0284c7">Valori normale:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte crud/pasteurizat: 15–20 °T</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte bătut: max. 120 °T</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Smântână proaspătă: 15–30 °T</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Iaurt: 70–140 °T</div><div class="item-head" style="color:#0284c7">Proba cu Alcool Etilic</div><div class="item-head" style="color:#0284c7">Principiu: alcoolul extrage apa din cazeină</div><div class="item-body">→ precipitare la aciditate crescută</div><div class="item-head" style="color:#0284c7">Interpretare:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Fără fulgi = lapte normal (< 20 °T)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Fulgi mici = limită (20–22 °T)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Fulgi mari = lapte acid/alterat</div><div class="item-head" style="color:#0284c7">Rapidă, calitativă, pentru control la recepţie!</div><div class="item-head" style="color:#0284c7">Metode moderne de determinare a acidităţii</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>pH-metrie directă: măsurarea electronică a pH-ului cu electrozi de sticlă</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Titrare automată (titratori automaţi): precizie ± 0,1 °T, flux de 200+ probe/oră</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Spectroscopie NIR (Near Infrared): determinarea simultană a acidităţii, grăsimii, proteinelor şi lactozei</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Teste rapide Neogen/BioMérieux: detectare aciditate + contaminare microbianǎ în < 5 min</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Determinarea Acidităţii Laptelui</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Metoda prin Titrare (Thorner)</div><div class="ci">Principiu: titrare cu soluţie NaOH 0,1 N</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">• Lapte crud/pasteurizat: 15–20 °T</div><div class="ci">• Lapte bătut: max. 120 °T</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">Proba cu Alcool Etilic</div><div class="ci">Principiu: alcoolul extrage apa din cazeină</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Interpretare:</div><div class="ci">• Fără fulgi = lapte normal (< 20 °T)</div><div class="ci">• Fulgi mici = limită (20–22 °T)</div><div class="ci">• Fulgi mari = lapte acid/alterat</div><div class="ci">Rapidă, calitativă, pentru control la recepţie!</div><div class="ci">Metode moderne de determinare a acidităţii</div></div></div>
 </div>
 
 <div class="slide" id="sl16">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Examene Chimice ale Laptelui</h2>
-  <div class="items"><div class="item-head" style="color:#0284c7">Lipide – Metoda Gerber</div><div class="item-head" style="color:#0284c7">Principiu: acid sulfuric + butanol</div><div class="item-body">separă stratul de grăsime</div><div class="item-head" style="color:#0284c7">Valori admise:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte normalizat: 2,0–3,5 g%</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte integral: ≥ 3,5 g%</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte bătut: 0,1–3,5 g%</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Lapte smântânit: ≤ 0,1 g%</div><div class="item-head" style="color:#0284c7">Controlul Pasteurizării</div><div class="item-head" style="color:#0284c7">Proba peroxidazei:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Enzima inactivată la pasteurizare înaltă</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>NaCl + H₂O₂ + parafenilen-diamină</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Gri-albastru → lapte crud/insuficient pasteurizat</div><div class="item-head" style="color:#0284c7">Forsfataza alcalină:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Standard european de referinţă</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Inactivată la 72°C/15 sec (HTST)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>< 350 mU/l lapte pasteurizat corect</div><div class="item-head" style="color:#0284c7">Depistarea Fraudelor</div><div class="item-head" style="color:#0284c7">Bicarbonat (neutralizare acid):</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Acid rozolic → culori:</div><div class="item-head" style="color:#0284c7">Normal: galben-brun</div><div class="item-head" style="color:#0284c7">Alcalin: carmin (roz)</div><div class="item-head" style="color:#0284c7">Acid: portocaliu</div><div class="item-head" style="color:#0284c7">NaCl din brânzeturi:</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Normal: 2,5–4,0 g%</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Metoda Mohr (arg. nitrat)</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Examene Chimice ale Laptelui</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Principiu: acid sulfuric + butanol</div><div class="ci">separă stratul de grăsime</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">• Lapte normalizat: 2,0–3,5 g%</div><div class="ci">• Lapte integral: ≥ 3,5 g%</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">• Lapte bătut: 0,1–3,5 g%</div><div class="ci">• Lapte smântânit: ≤ 0,1 g%</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">Proba peroxidazei:</div><div class="ci">• Enzima inactivată la pasteurizare înaltă</div><div class="ci">• NaCl + H₂O₂ + parafenilen-diamină</div><div class="ci">• Gri-albastru → lapte crud/insuficient pasteurizat</div></div></div>
 </div>
 
 <div class="slide" id="sl17">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Studii de Caz – Incidente Reale</h2>
-  <div class="cases"><div class="case-card"><div class="case-head">Caz 1 – Salmonella în ouă (UE, 2021)</div><p class="case-p">Contaminare Salmonella Enteritidis în loturi de ouă din Polonia. Depistată prin testare PCR la recepţie. Retragere din piaţă a 50.000 ouă. Lecţie: testarea microbiologică la loturile de risc.</p></div><div class="case-card"><div class="case-head">Caz 2 – Lapte adulter cu apă (România, 2023)</div><p class="case-p">Densitate măsurată: 1,022 g/ml (sub limita 1,028). Confirmat prin spectroscopie NIR şi crioscopie (punctul de îngheţ > -0,52°C). Sancţionat conform Ord. 10/2008 ANSVSA.</p></div><div class="case-card"><div class="case-head">Caz 3 – Bombage conserve, Clostridium (EU, 2022)</div><p class="case-p">Conserve de ton cu bombaj activ retrase din 12 state UE. pH interior 5,8 – condiţii favorabile Cl. botulinum. Sterilizare insuficientă (F₀ < 3). Risc pentru sănătate publică.</p></div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Studii de Caz – Incidente Reale</h2>
+<div class="cases-grid"><div class="case-card" style="border-left:4px solid #00A8B5;background:#FFFFFF"><div class="case-head" style="color:#00A8B5">Caz 1 – Salmonella în ouă (UE, 2021)</div><p class="case-p">Contaminare Salmonella Enteritidis în loturi de ouă din Polonia. Depistată prin testare PCR la recepţie. Retragere din piaţă a 50.000 ouă. Lecţie: testarea microbiologică la loturile de risc.</p></div><div class="case-card" style="border-left:4px solid #E8A838;background:#FFFFFF"><div class="case-head" style="color:#E8A838">Caz 2 – Lapte adulter cu apă (România, 2023)</div><p class="case-p">Densitate măsurată: 1,022 g/ml (sub limita 1,028). Confirmat prin spectroscopie NIR şi crioscopie (punctul de îngheţ > -0,52°C). Sancţionat conform Ord. 10/2008 ANSVSA.</p></div><div class="case-card" style="border-left:4px solid #A78BFA;background:#FFFFFF"><div class="case-head" style="color:#A78BFA">Caz 3 – Bombage conserve, Clostridium (EU, 2022)</div><p class="case-p">Conserve de ton cu bombaj activ retrase din 12 state UE. pH interior 5,8 – condiţii favorabile Cl. botulinum. Sterilizare insuficientă (F₀ < 3). Risc pentru sănătate publică.</p></div></div>
 </div>
 
 <div class="slide" id="sl18">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Reglementări Europene & Metode Moderne</h2>
-  <div class="items"><div class="item-head" style="color:#0284c7">Legislaţie UE Cheie</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Reg. (CE) 853/2004 – norme igienă produse animale</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Reg. (CE) 854/2004 – control oficial</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Reg. (CE) 2073/2005 – criterii microbiologice</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Reg. (UE) 2019/627 – controale oficiale carne</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Dir. 2002/99/CE – sănătate animală</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Reg. (CE) 1234/2007 – clasificare ouă</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>ANSVSA Ord. 10/2008 – lapte în România</div><div class="item-head" style="color:#0284c7">Metode Analitice Moderne</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>PCR şi RT-PCR – detectare patogeni (Salmonella, Listeria, E.coli O157)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Spectroscopie NIR/MIR – analiză simultană multicomponent</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>ELISA – detectare antibiotice, hormoni</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>LC-MS/MS – micotoxine, pesticide (ppb)</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>Flow cytometry – numărare celule somatice lapte</div><div class="item-bullet"><span class="bullet-dot" style="background:#0284c7"></span>MALDI-TOF – identificare rapidă bacterii</div><div class="item-body">Digitalizare & LIMS: Sistemele moderne de management al laboratorului (LIMS) integrează trasabilitatea completă, automatizarea rapoartelor şi alertele în timp real pentru depăşiri.</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Reglementări Europene & Metode Moderne</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="card-label" style="color:#00A8B5">Legislaţie UE Cheie</div><div class="ci">• Reg. (CE) 853/2004 – norme igienă produse animale</div><div class="ci">• Reg. (CE) 854/2004 – control oficial</div><div class="ci">• Reg. (CE) 2073/2005 – criterii microbiologice</div><div class="ci">• Reg. (UE) 2019/627 – controale oficiale carne</div><div class="ci">• Dir. 2002/99/CE – sănătate animală</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Metode Analitice Moderne</div><div class="ci">• PCR şi RT-PCR – detectare patogeni (Salmonella, Listeria, E.coli O157)</div><div class="ci">• Spectroscopie NIR/MIR – analiză simultană multicomponent</div><div class="ci">• ELISA – detectare antibiotice, hormoni</div><div class="ci">• LC-MS/MS – micotoxine, pesticide (ppb)</div><div class="ci">• Flow cytometry – numărare celule somatice lapte</div></div></div>
 </div>
 
 <div class="slide" id="sl19">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#0284c7">🥛 Lapte & Chimie</div>
-  <h2 class="slide-h2">Demonstrație Interactivă — Animații Laborator</h2>
-  <div class="items"><div class="item-body">Deschideți fișierul HTML atașat pentru animații pas cu pas ale fiecărui test:</div><div class="item-body">🟡</div><div class="item-head" style="color:#0284c7">Testul Nessler</div><div class="item-head" style="color:#0284c7">Amoniac – reacție galbenă</div><div class="item-body">animatie pas cu pas</div><div class="item-body">💨</div><div class="item-head" style="color:#0284c7">Testul Eber</div><div class="item-head" style="color:#0284c7">Amoniac – fum alb NH₄Cl</div><div class="item-body">animatie pas cu pas</div><div class="item-body">🌡</div><div class="item-body">pH carne</div><div class="item-head" style="color:#0284c7">Hârtie indicator + scară</div><div class="item-body">animatie pas cu pas</div><div class="item-body">🥚</div><div class="item-head" style="color:#0284c7">Prospeţime ouă</div><div class="item-head" style="color:#0284c7">Densitate în apă + cameră aer</div><div class="item-body">animatie pas cu pas</div><div class="item-body">🥛</div><div class="item-head" style="color:#0284c7">Lactodensimetru</div><div class="item-head" style="color:#0284c7">Densitate lapte & fraude</div><div class="item-body">animatie pas cu pas</div><div class="item-body">🧪</div><div class="item-head" style="color:#0284c7">Gerber</div><div class="item-head" style="color:#0284c7">Lipide – separare grăsime</div><div class="item-body">animatie pas cu pas</div><div class="item-body">Fisier: laborvizsgalatok_animacio.html  —  deschideti in orice browser modern (Chrome, Edge, Firefox)</div></div>
-</div>
+<div class="slide-label" style="color:#2ECC71">🥛 LAPTE</div>
+<h2 class="slide-h2">Demonstrație Interactivă — Animații Laborator</h2>
+<div class="cards-grid"><div class="info-card" style="border-top:3px solid #00A8B5;background:#FFFFFF"><div class="ci">Deschideți fișierul HTML atașat pentru animații pas cu pas ale fiecărui test:</div></div><div class="info-card" style="border-top:3px solid #E8A838;background:#FFFFFF"><div class="card-label" style="color:#E8A838">Amoniac – reacție galbenă</div><div class="ci">animatie pas cu pas</div></div><div class="info-card" style="border-top:3px solid #A78BFA;background:#FFFFFF"><div class="card-label" style="color:#A78BFA">Amoniac – fum alb NH₄Cl</div><div class="ci">animatie pas cu pas</div></div><div class="info-card" style="border-top:3px solid #2ECC71;background:#FFFFFF"><div class="card-label" style="color:#2ECC71">🌡</div><div class="ci">pH carne</div></div></div>
 </div>
 
-<div class="slide" id="sl20">
-<div class="hero-slide" style="--sc:#e11d48">
-  <div class="hero-icon">📍</div>
-  <div class="hero-label">FOCARE REALE</div>
-  <h2 class="hero-title">FOCARE REALE DIN ROMÂNIA</h2>
-  <p class="hero-sub">Studii de caz documentate 2016–2025</p>
+<div class="slide hero-slide" id="sl20">
+
+<div class="hero-bg" style="background:#E8445A"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">📍</div>
+  <h2 class="hero-title" style="color:#FFFFFF">FOCARE REALE DIN ROMÂNIA</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">FOCARE REALE</div>
 </div>
 </div>
 
 <div class="slide" id="sl21">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#e11d48">📍 Focare Reale</div>
-  <h2 class="slide-h2">Focare Documentate – România (1/3)</h2>
-  <div class="cases"><div class="case-card"><div class="case-head">📍 România, 2016 — E. coli O26, sindrom hemolitic-uremic la copii</div><p class="case-p">Cazuri: 15 copii (5–38 luni), 3 decese. Perioada: 25 ian – 22 feb 2016. Zona: sudul României.
+<div class="slide-label" style="color:#E8445A">📍 FOCARE REALE</div>
+<h2 class="slide-h2">Focare Documentate – România (1/3)</h2>
+<div class="cases-grid"><div class="case-card" style="border-left:4px solid #00A8B5;background:#FFFFFF"><div class="case-head" style="color:#00A8B5">📍 România, 2016 — E. coli O26, sindrom hemolitic-uremic la copii</div><p class="case-p">Cazuri: 15 copii (5–38 luni), 3 decese. Perioada: 25 ian – 22 feb 2016. Zona: sudul României.
 Agent: STEC / E. coli producătoare de toxină Shiga, serogrup O26.
 Expuneri investigate: lactate, carne, fructe, legume — sursă unică neconfirmată imediat.
-Lecție: toxiinfecția alimentară poate evolua letal la copilul mic; identificarea rapidă a sursei rămâne o provocare majoră.</p></div><div class="case-card"><div class="case-head">📍 Alba, 2020 — Salmonella + Staphylococcus aureus, braserie</div><p class="case-p">Descoperire: Salmonella în 2 coproculturi de la angajați + S. aureus în exudat faringian. Salmonella și în coproculturi pacienți.
+Lecție: toxiinfecția alimentară poate evolua letal la copilul mic; identificarea rapidă a sursei rămâne o provocare majoră.</p></div><div class="case-card" style="border-left:4px solid #E8A838;background:#FFFFFF"><div class="case-head" style="color:#E8A838">📍 Alba, 2020 — Salmonella + Staphylococcus aureus, braserie</div><p class="case-p">Descoperire: Salmonella în 2 coproculturi de la angajați + S. aureus în exudat faringian. Salmonella și în coproculturi pacienți.
 Deficiențe: igienă deficitară a personalului, dezinfecție insuficientă a ouălor, control inadecvat al suprafețelor.
 Măsuri: suspendarea activității unității, sancțiuni DSP, remediere igienică.</p></div></div>
 </div>
-</div>
 
 <div class="slide" id="sl22">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#e11d48">📍 Focare Reale</div>
-  <h2 class="slide-h2">Focare Documentate – România (2/3)</h2>
-  <div class="cases"><div class="case-card"><div class="case-head">📍 Brașov / Cheile Grădiștei, 2023 — focar tabără copii</div><p class="case-p">Oficial DSP Brașov: 29 pacienți în focar înregistrat după evenimentul din complexul turistic Moieciu.
+<div class="slide-label" style="color:#E8445A">📍 FOCARE REALE</div>
+<h2 class="slide-h2">Focare Documentate – România (2/3)</h2>
+<div class="cases-grid"><div class="case-card" style="border-left:4px solid #00A8B5;background:#FFFFFF"><div class="case-head" style="color:#00A8B5">📍 Brașov / Cheile Grădiștei, 2023 — focar tabără copii</div><p class="case-p">Oficial DSP Brașov: 29 pacienți în focar înregistrat după evenimentul din complexul turistic Moieciu.
 Relatări publice: ~100 copii simptomatici sau spitalizați — diferența față de raportarea oficială ilustrează gap-ul de raportare.
-Lecție epidemiologică: diferența dintre expuși / simptomatici / pacienți oficial raportați — esențială în analiza oricărui focar.</p></div><div class="case-card"><div class="case-head">📍 Păltiniș, Sibiu, 2024 — Staphylococcus aureus, tabără copii</div><p class="case-p">Agent confirmat: S. aureus identificat în alimente (paste, pulpă de porc) ȘI în secrețiile nazale ale angajaților din blocul alimentar.
+Lecție epidemiologică: diferența dintre expuși / simptomatici / pacienți oficial raportați — esențială în analiza oricărui focar.</p></div><div class="case-card" style="border-left:4px solid #E8A838;background:#FFFFFF"><div class="case-head" style="color:#E8A838">📍 Păltiniș, Sibiu, 2024 — Staphylococcus aureus, tabără copii</div><p class="case-p">Agent confirmat: S. aureus identificat în alimente (paste, pulpă de porc) ȘI în secrețiile nazale ale angajaților din blocul alimentar.
 Impact: 17 copii spitalizați. Concluzie DSP Sibiu: contaminare de la purtători umani.
 Prevenție: triaj epidemiologic al personalului, igienă mâini, excludere personal simptomatic/colonizat de la manipularea alimentelor.</p></div></div>
 </div>
-</div>
 
 <div class="slide" id="sl23">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#e11d48">📍 Focare Reale</div>
-  <h2 class="slide-h2">Focare Documentate – România (3/3)</h2>
-  <div class="cases"><div class="case-card"><div class="case-head">📍 Reghin, Mureș, 2025 — Balul Insuratilor, 37 de persoane afectate</div><p class="case-p">Impact: 37 persoane simptomatice, 29 transportate la spital. Activitatea unității — suspendată temporar.
+<div class="slide-label" style="color:#E8445A">📍 FOCARE REALE</div>
+<h2 class="slide-h2">Focare Documentate – România (3/3)</h2>
+<div class="cases-grid"><div class="case-card" style="border-left:4px solid #00A8B5;background:#FFFFFF"><div class="case-head" style="color:#00A8B5">📍 Reghin, Mureș, 2025 — Balul Insuratilor, 37 de persoane afectate</div><p class="case-p">Impact: 37 persoane simptomatice, 29 transportate la spital. Activitatea unității — suspendată temporar.
 Anchetă: ANSVSA + DSVSA Mureș — 13 probe din alimente și băuturi analizate. Management interinstituțional: DSP, DSVSA, ISU, spital, laborator.
 Valoare didactică: exemplu modern de coordonare inter-instituțională în gestionarea unui focar de amploare.</p><p class="case-p">Sinteză comparativă</p><p class="case-p">An / Loc</p><p class="case-p">Agent</p><p class="case-p">Afectați</p><p class="case-p">Aliment / Verigă cheie</p><p class="case-p">2016 – Sud România</p><p class="case-p">E. coli O26 (STEC)</p><p class="case-p">15 copii, 3 decese</p><p class="case-p">Lactate, carne, legume (nedeterminat)</p><p class="case-p">2020 – Alba</p><p class="case-p">Salmonella + S. aureus</p><p class="case-p">Focar unitate HoReCa</p><p class="case-p">Personal purtător, ouă neigienizate</p><p class="case-p">2023 – Brașov</p><p class="case-p">Nedeterminat public</p><p class="case-p">29 oficial / ~100 public</p><p class="case-p">Tabără copii, masă colectivă</p><p class="case-p">2024 – Sibiu</p><p class="case-p">S. aureus</p><p class="case-p">17 copii spitalizați</p><p class="case-p">Paste, porc; personal colonizat</p><p class="case-p">2025 – Mureș</p><p class="case-p">În investigație</p><p class="case-p">37 simptomatici, 29 spitalizați</p><p class="case-p">Eveniment festiv, anchetă activă</p></div></div>
 </div>
+
+<div class="slide hero-slide" id="sl24">
+
+<div class="hero-bg" style="background:#00A8B5"></div>
+<div class="hero-content">
+  <div class="hero-line" style="background:#F5F0E844"></div>
+  <div class="hero-icon-big">✅</div>
+  <h2 class="hero-title" style="color:#FFFFFF">CONCLUZII</h2>
+  <div class="hero-divider" style="background:#F5F0E855"></div>
+  <div class="hero-section-label" style="color:#1A2B3C99">CONCLUZII</div>
+</div>
 </div>
 
-<div class="slide" id="sl24">
-<div class="slide-card">
-  <div class="slide-tag" style="color:#059669">✅ Concluzii</div>
-  <h2 class="slide-h2">CONCLUZII</h2>
-  <div class="items"><div class="item-head" style="color:#059669">Controlul igienico-sanitar al</div><div class="item-body">produselor de origine animală</div><div class="item-body">protejează sănătatea publică</div><div class="item-body">Metodele clasice (pH, amoniac, densitate) rămân fundamentale în practica de laborator</div><div class="item-body">Metodele moleculare (PCR, NIR, ELISA) cresc sensibilitatea şi viteza de analiză</div><div class="item-body">Legislaţia UE impune standarde clare pentru fiecare categorie de produs</div><div class="item-body">Trasabilitatea şi documentarea sunt esenţiale în sistemul HACCP</div><div class="item-body">Lucrări Practice Igienă Alimentară | www.sanatateplus.ro/lpi | © 2025</div></div>
-</div>
-</div>
-
-</div>
-
+</div><!-- stage -->
 <div id="botnav">
-  <button class="nbtn" id="pbtn" onclick="go(cur-1)" disabled>← Anterior</button>
-  <div id="progress"><div id="pfill"></div></div>
-  <button class="nbtn primary" id="nbtn" onclick="go(cur+1)">Următor →</button>
+  <button class="nb" id="pb" onclick="go(cur-1)" disabled>← Anterior</button>
+  <div id="prog"><div id="pf" style="background:#00A8B5;width:4%"></div></div>
+  <button class="nb nxt" id="nb" onclick="go(cur+1)" style="background:#00A8B5">Următor →</button>
 </div>
+</div><!-- app -->
 
 <script>
-const SECS = [{"id": "intro", "start": 0, "end": 1, "name": "Introducere", "icon": "\ud83d\udccb", "color": "#059669"}, {"id": "carne", "start": 2, "end": 12, "name": "Carne", "icon": "\ud83e\udd69", "color": "#dc2626"}, {"id": "conserve", "start": 13, "end": 14, "name": "Conserve", "icon": "\ud83e\udd6b", "color": "#d97706"}, {"id": "oua", "start": 15, "end": 17, "name": "Ou\u0103", "icon": "\ud83e\udd5a", "color": "#7c3aed"}, {"id": "lapte", "start": 18, "end": 25, "name": "Lapte & Chimie", "icon": "\ud83e\udd5b", "color": "#0284c7"}, {"id": "focare", "start": 26, "end": 29, "name": "Focare Reale", "icon": "\ud83d\udccd", "color": "#e11d48"}, {"id": "concl", "start": 30, "end": 30, "name": "Concluzii", "icon": "\u2705", "color": "#059669"}];
-const SLIDE_SECS = ["intro", "intro", "carne", "carne", "carne", "carne", "carne", "conserve", "conserve", "oua", "oua", "oua", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "focare", "focare", "focare", "focare", "concl"];
+const SECS = [{"id": "intro", "color": "#00A8B5", "icon": "📋", "label": "Introducere"}, {"id": "carne", "color": "#00A8B5", "icon": "🥩", "label": "Carne"}, {"id": "teste", "color": "#E8A838", "icon": "🧪", "label": "Teste Animate"}, {"id": "conserve", "color": "#E8A838", "icon": "🥫", "label": "Conserve"}, {"id": "oua", "color": "#A78BFA", "icon": "🥚", "label": "Ouă"}, {"id": "lapte", "color": "#2ECC71", "icon": "🥛", "label": "Lapte"}, {"id": "focare", "color": "#E8445A", "icon": "📍", "label": "Focare Reale"}, {"id": "concl", "color": "#00A8B5", "icon": "✅", "label": "Concluzii"}];
+const SLIDE_SECS = ["intro", "intro", "carne", "carne", "carne", "carne", "teste", "conserve", "conserve", "oua", "oua", "oua", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "lapte", "focare", "focare", "focare", "focare", "concl"];
 const TOTAL = 25;
-let cur = 0;
+const ANIM_IDX = 6;
+const TESTS = [{"id": "nessler", "icon": "🧪", "color": "#E8A838", "title": "Testul Nessler", "sub": "Identificarea amoniacului din carne · 6 pași", "steps": [{"n": "1/6", "title": "Recoltarea & pregătirea probei", "body": "Se prelevează minim 5 g de carne dintr-o zonă profundă. Se omogenizează și se prepară extractul apos (raport 1:5 carne:apă distilată). Se filtrează până la limpezire.", "tip": "Raport 1:5 carne : apă distilată"}, {"n": "2/6", "title": "Pipetarea extractului", "body": "Se pipetează exact 2 ml de extract filtrat într-o eprubetă curată. Se pregătește simultan o probă martor cu apă distilată și una de referință (carne proaspătă).", "tip": "Probe paralele obligatorii"}, {"n": "3/6", "title": "Adăugarea reactivului Nessler", "body": "Se adaugă reactivul Nessler picătură cu picătură, numărând exact. Se agită ușor după fiecare picătură și se urmărește apariția colorației galbene.", "tip": "Reactivul Nessler = tetaiodomercuriat dipotasic"}, {"n": "4/6", "title": "Reacția chimică", "body": "Amoniacul reacționează cu reactivul Nessler → complex colorat galben-portocaliu. Intensitatea culorii și numărul de picături indică concentrația de NH₃.", "tip": "Culoare galbenă = NH₃ prezent"}, {"n": "5/6", "title": "Interpretarea picăturilor", "body": "<b style='color:#E8A838'>&gt;10 picături</b> → carne proaspătă &nbsp;|&nbsp; <b style='color:#F97316'>5–10 pic.</b> → rel. proaspătă &nbsp;|&nbsp; <b style='color:#E8445A'>&lt;5 pic.</b> → alterată", "tip": "Numărul de picături = cheia interpretării"}, {"n": "6/6", "title": "Concluzie & raportare", "body": "Rezultatul este calitativ și semicantitativ. Se raportează ca: absență amoniac / urme / amoniac prezent. Se corelează obligatoriu cu pH, testul Eber și examenul organoleptic.", "tip": "Corelație obligatorie cu pH și Eber"}]}, {"id": "eber", "icon": "💨", "color": "#3B82F6", "title": "Testul Eber", "sub": "Identificarea amoniacului gazos · 5 pași", "steps": [{"n": "1/5", "title": "Pregătirea sistemului", "body": "Se introduce reactivul Eber (HCl 25% + etanol absolut + eter etilic, raport 1:3:1) în eprubetă. Se fixează un suport cu sârmă pe care se va atârna proba de carne.", "tip": "Reactiv Eber: HCl 25% + etanol + eter (1:3:1)"}, {"n": "2/5", "title": "Fixarea probei de carne", "body": "Se atârnă 3–5 g de carne pe sârma din interior, suspendată la 1–2 cm deasupra reactivului, fără contact direct cu lichidul. Contactul direct invalidează testul.", "tip": "Fără contact direct cu reactivul!"}, {"n": "3/5", "title": "Închiderea sistemului", "body": "Se astupă eprubeta cu un dop etanș și se așteaptă 3–5 minute. Vaporii de HCl urcă și intră în contact cu suprafața cărnii. NH₃ degajat reacționează cu vaporii de HCl.", "tip": "Timp de așteptare: 3–5 minute"}, {"n": "4/5", "title": "Observarea reacției", "body": "Dacă carnea conține amoniac → apare gaz fumuriu alb-cenușiu vizibil în jurul probei. Fumul este clorura de amoniu (NH₄Cl). Reacție pozitivă = carne în descompunere.", "tip": "Fum alb = NH₄Cl = carne alterată"}, {"n": "5/5", "title": "Interpretare & concluzie", "body": "Testul Eber este calitativ și rapid (5–10 min total). Reacție negativă = carne proaspătă. Reacție pozitivă = carne alterată. Se corelează cu Nessler și pH.", "tip": "Testul durează total 5–10 minute"}]}, {"id": "ph", "icon": "📊", "color": "#2ECC71", "title": "pH-ul Cărnii", "sub": "Determinare cu hârtie indicator · 5 pași", "steps": [{"n": "1/5", "title": "Pregătirea probei – incizia", "body": "Se face o incizie adâncă (2–3 cm) în proba de carne cu un cuțit steril, expunând țesutul muscular intern. Alternativ: extract apos (5 g carne / 25 ml apă distilată), filtrat.", "tip": "Incizia expune sucul muscular intern"}, {"n": "2/5", "title": "Introducerea hârtiei indicator", "body": "Se introduce hârtia indicator de pH direct în incizie sau în extractul filtrat. Se lasă 30 secunde de contact pentru impregnarea completă cu sucul din țesut.", "tip": "Contact minim 30 secunde"}, {"n": "3/5", "title": "Virarea culorii", "body": "Culoarea hârtiei se schimbă în funcție de pH-ul probei, imediat după absorbție. Se scoate hârtia și se compară imediat cu scala etalon a producătorului.", "tip": "Comparați imediat – culoarea se poate estompa"}, {"n": "4/5", "title": "Citirea & corecția valorii", "body": "Se citește valoarea pH prin comparație cu scala etalon. Rezoluția hârtiei indicator: ±0,2–0,5 unități pH. pH-metrul digital oferă precizie mai mare (±0,01).", "tip": "Rezoluție hârtie: ±0,2–0,5 unități pH"}, {"n": "5/5", "title": "Interpretare completă", "body": "<b style='color:#2ECC71'>pH &lt; 6,2</b> → carne proaspătă &nbsp;|&nbsp; <b style='color:#E8A838'>pH 6,2–6,6</b> → relativ proaspătă &nbsp;|&nbsp; <b style='color:#E8445A'>pH &gt; 6,6</b> → alterată", "tip": "pH > 6,6 = carne alterată — nu se consumă"}]}, {"id": "lacto", "icon": "🥛", "color": "#A78BFA", "title": "Lactodensimetrul", "sub": "Determinarea densității laptelui · 5 pași", "steps": [{"n": "1/5", "title": "Aducerea laptelui la 20°C", "body": "Se aduce proba de lapte la exact 20°C (temperatura de referință standard). Se omogenizează ușor prin răsturnare de 5–6 ori. Nu se agită puternic – spuma perturbă măsurarea.", "tip": "Temperatura de referință: exact 20°C"}, {"n": "2/5", "title": "Turnarea în cilindrul gradat", "body": "Se toarnă laptele în cilindrul gradat până la ¾ din volum, pe peretele cilindrului pentru a evita spuma. Spuma de pe suprafață se îndepărtează cu hârtie de filtru.", "tip": "Turnare pe perete – evită spuma"}, {"n": "3/5", "title": "Introducerea lactodensimetrului", "body": "Se introduce lactodensimetrul ușor, lăsându-l să plutească liber. Nu trebuie să atingă pereții sau fundul cilindrului. Se așteaptă 1–2 minute pentru stabilizare completă.", "tip": "Nu atingă pereții sau fundul!"}, {"n": "4/5", "title": "Citirea scalei – meniscul", "body": "Se citește valoarea la nivelul inferior al meniscului. Ochiul trebuie să fie exact la nivelul suprafeței laptelui pentru a evita eroarea de paralaxă.", "tip": "Citire la meniscul inferior – evitați paralaxă"}, {"n": "5/5", "title": "Interpretarea rezultatelor", "body": "<b style='color:#2ECC71'>1,029–1,033 g/ml</b> → lapte normal &nbsp;|&nbsp; <b style='color:#E8445A'>&lt;1,028</b> → diluat cu apă &nbsp;|&nbsp; <b style='color:#E8A838'>&gt;1,034</b> → ecremat", "tip": "Densitate normală: 1,029–1,033 g/ml"}]}, {"id": "ou", "icon": "🥚", "color": "#F97316", "title": "Prospeţimea Oului", "sub": "Testul flotabilității în apă · 6 pași", "steps": [{"n": "1/6", "title": "Pregătirea vasului cu apă", "body": "Se umple un vas transparent (400–500 ml) cu apă de la robinet la temperatura camerei (18–22°C). Nu se folosește apă sărată sau caldă – modifică densitatea și falsifică rezultatul.", "tip": "Apă de robinet, 18–22°C, vas transparent"}, {"n": "2/6", "title": "Ou proaspăt – 0–7 zile", "body": "Oul se scufundă complet și stă orizontal pe fundul vasului. Camera de aer este mică (≤4 mm), conținut intact, densitate mare.", "tip": "🟢 Clasa A extra UE – cel mai proaspăt"}, {"n": "3/6", "title": "Ou de 1–2 săptămâni", "body": "Camera de aer crește (4–6 mm). Oul se ridică ușor și se înclină la 20–30°, cu capătul rotund (camera de aer) în sus. Albușul ușor lichefiat.", "tip": "🟡 Clasa A UE – bun pentru consum"}, {"n": "4/6", "title": "Ou de 3–4 săptămâni", "body": "Camera de aer crescută considerabil (6–9 mm). Oul stă vertical în apă, cu vârful ascuțit în jos și capătul rotund în sus, ridicat de pe fund.", "tip": "🟠 Clasa B UE – pentru industrie alimentară"}, {"n": "5/6", "title": "Ou stricat – >1 lună", "body": "Oul plutește la suprafața apei. Camera de aer foarte mare (>9 mm), densitatea a scăzut sub densitatea apei. La spargere: miros sulfuros. Risc Salmonella!", "tip": "🔴 Clasa C UE – impropriu consumului!"}, {"n": "6/6", "title": "Clasificare completă & concluzie", "body": "Testul flotabilității este un screening rapid, ieftin, fără echipament special. Se completează obligatoriu cu examinarea la ovoscop și verificarea greutății.", "tip": "Completați cu ovoscop + verificare greutate"}]}];
+let cur = 0, curTest = 0, curStep = 0;
 
+// ── MAIN NAVIGATION ──────────────────────────────────────────
 function buildTabs(){
   const nav = document.getElementById('tabs');
   SECS.forEach((s,i)=>{
     const b = document.createElement('button');
-    b.id = 'tab'+i;
-    b.textContent = s.icon+' '+s.name;
-    b.onclick = () => {
-      const idx = SLIDE_SECS.indexOf(s.id);
+    b.id='tab'+i; b.textContent=s.icon+' '+s.label;
+    b.onclick=()=>{
+      const idx=SLIDE_SECS.indexOf(s.id);
       if(idx>=0) go(idx);
     };
     nav.appendChild(b);
@@ -602,125 +629,34 @@ function buildTabs(){
 function go(idx){
   if(idx<0||idx>=TOTAL) return;
   document.getElementById('sl'+cur)?.classList.remove('active');
-  cur = idx;
+  cur=idx;
   document.getElementById('sl'+cur)?.classList.add('active');
-  document.getElementById('slide-counter').textContent = (cur+1)+' / '+TOTAL;
-  document.getElementById('pbtn').disabled = cur===0;
-  const nb = document.getElementById('nbtn');
-  nb.disabled = cur===TOTAL-1;
-  nb.textContent = cur===TOTAL-1 ? '✓ Final' : 'Următor →';
-  
-  const secId = SLIDE_SECS[cur];
-  const sec = SECS.find(s=>s.id===secId)||SECS[0];
-  document.documentElement.style.setProperty('--sc', sec.color);
-  nb.style.background = sec.color;
-  
-  document.getElementById('pfill').style.width = Math.round((cur+1)/TOTAL*100)+'%';
-  document.getElementById('pfill').style.background = sec.color;
-  
-  SECS.forEach((s,i)=>{
-    const b = document.getElementById('tab'+i);
+  document.getElementById('ctr').textContent=(cur+1)+' / '+TOTAL;
+  document.getElementById('pb').disabled=cur===0;
+  const nb=document.getElementById('nb');
+  nb.disabled=cur===TOTAL-1;
+  nb.textContent=cur===TOTAL-1?'✓ Final':'Următor →';
+  const sid=SLIDE_SECS[cur];
+  const sec=SECS.find(x=>x.id===sid)||SECS[0];
+  nb.style.background=sec.color;
+  document.getElementById('pf').style.width=Math.round((cur+1)/TOTAL*100)+'%';
+  document.getElementById('pf').style.background=sec.color;
+  SECS.forEach((sx,i)=>{
+    const b=document.getElementById('tab'+i);
     if(!b) return;
-    const active = s.id===secId;
-    b.classList.toggle('active',active);
-    if(active) b.style.setProperty('--sc',sec.color);
+    b.classList.toggle('active',sx.id===sid);
+    b.style.borderBottomColor=sx.id===sid?sx.color:'transparent';
+    b.style.color=sx.id===sid?sx.color:'';
   });
-  
-  document.getElementById('slide-area').scrollTop = 0;
 }
 
-document.addEventListener('keydown', e=>{
-  if(e.key==='ArrowRight'||e.key===' ') go(cur+1);
-  if(e.key==='ArrowLeft') go(cur-1);
+document.addEventListener('keydown',e=>{
+  if((e.key==='ArrowRight'||e.key===' ')&&!['INPUT','BUTTON'].includes(e.target.tagName)) go(cur+1);
+  if(e.key==='ArrowLeft'&&!['INPUT','BUTTON'].includes(e.target.tagName)) go(cur-1);
 });
 
 buildTabs();
 go(0);
-</script>
-
-<script>
-
-const TESTS = [{"title": "Testul Nessler", "subtitle": "Identificarea amoniacului din carne · 6 paşi", "steps": [{"title": "Pas 1: Recoltarea şi pregătirea probei", "num": "Pas 1/6", "content": "Se prelevează minim 5 g de carne dintr-o zonă profundă a probei. Se omogenizează şi se prepară extractul apos (raport 1:5 carne:apă distilată). Se filtrează până la limpezire.", "tip": "De ştiut"}, {"title": "Pas 2: Pipetarea extractului", "num": "Pas 2/6", "content": "Se pipetează exact 2 ml de extract de carne filtrat într-o eprubetă curată. Se pregăteşte simultan o probă martor cu apă distilată şi una de referinţă (carne proaspătă).", "tip": "Probe paralele"}, {"title": "Pas 3: Adăugarea reactivului Nessler", "num": "Pas 3/6", "content": "Se adaugă reactivul Nessler (tetaiodomercuriat dipotasic) picătură cu picătură, numărând exact. Se agită uşor după fiecare picătură şi se urmăreşte apariţia coloraţiei.", "tip": "Reactivul Nessler"}, {"title": "Pas 4: Reacţia chimică", "num": "Pas 4/6", "content": "Amoniacul prezent în extract reacţionează cu reactivul Nessler şi formează un complex colorat galben-portocaliu. Intensitatea culorii şi numărul de picături necesare indică concentraţia de NH₃.", "tip": "Reacţia chimică"}, {"title": "Pas 5: Interpretarea numărului de picături", "num": "Pas 5/6", "content": "Se numără câte picături de reactiv Nessler au fost necesare pentru a apărea coloraţia galbenă. Numărul de picături este cheia interpretării prospeţimii cărnii.", "tip": "Interpretare"}, {"title": "Pas 6: Concluzie şi raportare", "num": "Pas 6/6", "content": "Rezultatul testului Nessler este calitativ şi semicantitativ. Se raportează ca: absenţă amoniac / urme / amoniac prezent şi se corelează obligatoriu cu pH, testul Eber şi examinarea organoleptică.", "tip": "Buletin de analiză"}]}, {"title": "Testul Eber", "subtitle": "Identificarea amoniacului prin metoda gazoasă · 5 paşi", "steps": [{"title": "Pas 1: Pregătirea sistemului", "num": "Pas 1/5", "content": "Se introduce reactivul Eber (HCl 25% + etanol + eter etilic, raport 1:3:1) în eprubetă sau flacon. Se fixează un suport cu sârmă sau cârlig pe care se va atârna proba de carne.", "tip": "Reactivul Eber"}, {"title": "Pas 2: Fixarea probei de carne", "num": "Pas 2/5", "content": "Se atârnă o bucată de 3–5 g de carne pe sârma din interior, suspendată la 1–2 cm deasupra reactivului, fără contact direct cu lichidul. Contactul direct invalidează testul.", "tip": "Pregătirea probei"}, {"title": "Pas 3: Închiderea sistemului", "num": "Pas 3/5", "content": "Se astupă eprubeta cu un dop etanş şi se aşteaptă 3–5 minute. Vaporii de HCl din reactiv urcă şi intră în contact cu suprafaţa cărnii. NH₃ degajat reacţionează cu vaporii de HCl.", "tip": "Reacţia Eber"}, {"title": "Pas 4: Observarea reacţiei – gaz fumuriu", "num": "Pas 4/5", "content": "Dacă carnea conţine amoniac (carne în descompunere), apare un gaz fumuriu alb-cenuşiu vizibil în jurul şi deasupra probei de carne. Fumul este clorura de amoniu (NH₄Cl).", "tip": "Evaluarea fumului"}, {"title": "Pas 5: Interpretare şi concluzie", "num": "Pas 5/5", "content": "Testul Eber este calitativ şi rapid (5–10 minute total). Se corelează întotdeauna cu testul Nessler şi determinarea pH-ului pentru un rezultat complet şi credibil.", "tip": "Concluzie"}]}, {"title": "pH-ul Cărnii", "subtitle": "Determinare cu hârtie indicator sau pH-metru · 5 paşi", "steps": [{"title": "Pas 1: Pregătirea probei – incizia", "num": "Pas 1/5", "content": "Se face o incizie adâncă (2–3 cm) în proba de carne cu un cuţit steril, expunând ţesutul muscular intern. Alternativ, se prepară extract apos (5 g carne / 25 ml apă distilată).", "tip": "Pregătire probă"}, {"title": "Pas 2: Introducerea hârtiei indicator", "num": "Pas 2/5", "content": "Se introduce hârtia indicator de pH direct în incizia practicată sau în extractul filtrat. Se lasă 30 secunde de contact pentru impregnarea completă cu sucul din ţesut.", "tip": "Hârtia indicator"}, {"title": "Pas 3: Virarea culorii", "num": "Pas 3/5", "content": "Culoarea hârtiei se schimbă în funcţie de pH-ul probei. Virarea culorii are loc imediat ce hârtia a absorbit sucul din carne. Se scoate hârtia şi se compară imediat cu scala etalon.", "tip": "Virarea culorii"}, {"title": "Pas 4: Citirea şi corectarea valorii", "num": "Pas 4/5", "content": "Se citeşte valoarea pH prin comparaţie cu scala etalon a producătorului. Se notează valoarea numerică. Rezoluţia hârtiei indicator este ±0.2–0.5 unităţi pH.", "tip": "Exemplu citire"}, {"title": "Pas 5: Interpretare completă", "num": "Pas 5/5", "content": "Corelarea valorii pH cu starea sanitară a cărnii. Valoarea singură nu este suficientă – se interpretează împreună cu examenul organoleptic şi testele de amoniac.", "tip": "Tabel interpretare"}]}, {"title": "Lactodensimetrul", "subtitle": "Determinarea densităţii laptelui · 5 paşi", "steps": [{"title": "Pas 1: Aducerea laptelui la temperatura de referinţă", "num": "Pas 1/5", "content": "Se aduce proba de lapte la exact 20°C (temperatura de referinţă standard pentru lactodensimetru). Se omogenizează uşor prin răsturnare de 5–6 ori. Nu se agită puternic – spuma perturbă măsurarea.", "tip": "Corecţia temp."}, {"title": "Pas 2: Turnarea laptelui în cilindrul gradat", "num": "Pas 2/5", "content": "Se toarnă laptele în cilindrul gradat până la 3/4 din volum, pe peretele cilindrului pentru a evita formarea spumei. Spuma de pe suprafaţă se îndepărtează cu hârtie de filtru înainte de măsurare.", "tip": "Pregătire cilindru"}, {"title": "Pas 3: Introducerea lactodensimetrului", "num": "Pas 3/5", "content": "Se introduce lactodensimetrul uşor, lăsându-l să plutească liber. Nu trebuie să atingă pereţii sau fundul cilindrului. Se aşteaptă 1–2 minute pentru stabilizare completă.", "tip": "Poziţionare corectă"}, {"title": "Pas 4: Citirea scalei – meniscul", "num": "Pas 4/5", "content": "Se citeşte valoarea la nivelul inferior al meniscului (suprafaţa laptelui pe tija instrumentului). Ochiul trebuie să fie exact la nivelul suprafeţei laptelui pentru a evita eroarea de paralaxă.", "tip": "Eroarea de paralaxă"}, {"title": "Pas 5: Interpretarea rezultatelor", "num": "Pas 5/5", "content": "Valoarea densităţii indică autenticitatea şi calitatea laptelui. Densitatea anormală semnalează posibile fraude: diluare cu apă sau ecremare. Cele două fraude combinate pot masca reciproc efectele!", "tip": "Interpretare valori"}]}, {"title": "Prospeţimea Oului", "subtitle": "Testul flotabilităţii în apă · 6 paşi", "steps": [{"title": "Pas 1: Pregătirea vasului cu apă", "num": "Pas 1/6", "content": "Se umple un vas transparent (400–500 ml) cu apă de la robinet la temperatura camerei (18–22°C). Nu se foloseşte apă sărată sau caldă – acestea modifică densitatea mediului şi rezultatul.", "tip": "Principiu fizic"}, {"title": "Pas 2: Ou proaspăt – 0–7 zile", "num": "Pas 2/6", "content": "Oul proaspăt se scufundă complet şi ia o poziţie orizontală pe fundul vasului. Camera de aer este mică (≤4 mm), conţinutul intact, densitate mare. Clasificare UE: Clasa A extra.", "tip": "Clasa A extra UE"}, {"title": "Pas 3: Ou de 1–2 săptămâni", "num": "Pas 3/6", "content": "Aerul pătrunde treptat prin porii cojii, camera de aer creşte (4–6 mm). Oul se ridică uşor şi se înclină la 20–30°, cu capătul rotund (camera de aer) în sus. Albuşul uşor lichefiat.", "tip": "Clasa A UE"}, {"title": "Pas 4: Ou de 3–4 săptămâni", "num": "Pas 4/6", "content": "Camera de aer a crescut considerabil (6–9 mm). Oul stă vertical în apă, cu vârful ascuţit în jos şi capătul rotund în sus, ridicat de pe fund. Albuşul apos, gălbenuşul deplasat.", "tip": "Clasa B UE"}, {"title": "Pas 5: Ou stricat – >1 lună", "num": "Pas 5/6", "content": "Oul pluteşte la suprafaţa apei. Camera de aer este foarte mare (>9 mm), densitatea a scăzut sub densitatea apei. La spargere: miros sulfuros neplăcut. Risc de contaminare cu Salmonella.", "tip": "Clasa C UE"}, {"title": "Pas 6: Clasificare completă & concluzie", "num": "Pas 6/6", "content": "Testul flotabilităţii este un screening rapid, ieftin, fără echipament special. Se completează obligatoriu cu examinarea la ovoscop şi verificarea greutăţii. Temperatura de depozitare influenţează semnificativ viteza de îmbătrânire.", "tip": "Clasificare UE"}]}];
-const COLORS = ["#00c8d7", "#f5a623", "#e8445a", "#a78bfa", "#2ecc71"];
-const BG_COLORS = ["#003a40", "#3a2800", "#3a0010", "#1e1040", "#003a15"];
-const ICONS = ["\ud83e\uddea", "\ud83d\udca8", "\ud83d\udcca", "\ud83e\udd5b", "\ud83e\udd5a"];
-
-const state = TESTS.map(() => 0);
-
-function renderStep(ti, si) {
-  const test = TESTS[ti];
-  const step = test.steps[si];
-  const c = COLORS[ti];
-  const bg = BG_COLORS[ti];
-  const n = test.steps.length;
-  
-  // Update circles
-  for (let i = 0; i < n; i++) {
-    const circ = document.getElementById(`c-${ti}-${i}`);
-    if (!circ) continue;
-    if (i < si) {
-      circ.style.background = c;
-      circ.style.color = '#0d1821';
-      circ.innerHTML = '✓';
-    } else if (i === si) {
-      circ.style.background = c;
-      circ.style.color = '#0d1821';
-      circ.innerHTML = i + 1;
-      circ.style.boxShadow = `0 0 12px ${c}88`;
-    } else {
-      circ.style.background = 'transparent';
-      circ.style.color = c;
-      circ.innerHTML = i + 1;
-      circ.style.boxShadow = 'none';
-    }
-    // connector
-    const conn = document.getElementById(`conn-${ti}-${i}`);
-    if (conn) conn.style.background = i < si ? c : 'var(--border)';
-  }
-  
-  // Update content
-  const numText = step.num || `Pas ${si+1}/${n}`;
-  const inner = document.getElementById(`step-inner-${ti}`);
-  inner.innerHTML = `
-    <span class="badge" style="color:${c};">${numText}</span>
-    <h2>${step.title.replace(/^Pas \d+: /, '')}</h2>
-    <p>${step.content}</p>
-    ${step.tip ? `<div class="tip-box" style="background:${bg};border:1px solid ${c}44;color:${c};">💡 ${step.tip}</div>` : ''}
-  `;
-  
-  // Buttons
-  document.getElementById(`prev-${ti}`).disabled = si === 0;
-  document.getElementById(`prev-${ti}`).style.opacity = si === 0 ? '0.3' : '1';
-  const nextBtn = document.getElementById(`next-${ti}`);
-  if (si === n - 1) {
-    nextBtn.textContent = '✓ Finalizat';
-    nextBtn.style.opacity = '0.6';
-    nextBtn.disabled = true;
-  } else {
-    nextBtn.textContent = 'Următor →';
-    nextBtn.style.opacity = '1';
-    nextBtn.disabled = false;
-  }
-  document.getElementById(`counter-${ti}`).textContent = `${si+1} / ${n}`;
-}
-
-function nextStep(ti) {
-  const n = TESTS[ti].steps.length;
-  if (state[ti] < n - 1) { state[ti]++; renderStep(ti, state[ti]); }
-}
-function prevStep(ti) {
-  if (state[ti] > 0) { state[ti]--; renderStep(ti, state[ti]); }
-}
-function goStep(ti, si) { state[ti] = si; renderStep(ti, si); }
-function resetTest(ti) { state[ti] = 0; renderStep(ti, 0); }
-function showTest(ti) {
-  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===ti));
-  document.querySelectorAll('#nav button').forEach((b,i) => b.classList.toggle('active', i===ti));
-}
-
-// Init all
-TESTS.forEach((_, ti) => renderStep(ti, 0));
-
 </script>
 </body>
 </html>
