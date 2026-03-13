@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste Animate Pas cu Pas – LP4B</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#0d1821;--panel:#152030;--border:#1e3a4a;--text:#e2eaf0;--muted:#6b8a9e;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+  header{padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;background:linear-gradient(135deg,#0d1821 60%,#152030);}
+  header h1{font-size:1.3rem;font-weight:800;color:#fff;}
+  header p{font-size:0.8rem;color:var(--muted);margin-top:0.1rem;}
+  nav{display:flex;gap:0;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav button{flex:1;min-width:140px;padding:0.85rem 0.8rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  nav button:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  nav button.active{color:#fff;border-bottom-color:var(--teal, #00c8d7);}
+  .panel{display:none;padding:2rem;max-width:900px;margin:0 auto;}
+  .panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;gap:0;margin-bottom:2rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;gap:0;flex:1;min-width:100px;cursor:pointer;padding:0.5rem 0.3rem;}
+  .circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.9rem;border:2px solid;transition:all 0.3s;position:relative;z-index:1;}
+  .connector{flex:1;height:2px;margin-top:19px;min-width:8px;transition:background 0.3s;}
+  .step-label{font-size:0.65rem;color:var(--muted);text-align:center;margin-top:0.3rem;max-width:90px;line-height:1.3;}
+  .step-content{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;min-height:220px;position:relative;}
+  .step-content .badge{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;display:inline-block;}
+  .step-content h2{font-size:1.25rem;font-weight:800;color:#fff;margin-bottom:1rem;}
+  .step-content p{font-size:0.92rem;color:#b8ccd8;line-height:1.7;}
+  .tip-box{margin-top:1.2rem;padding:0.9rem 1.1rem;border-radius:10px;font-size:0.82rem;line-height:1.6;font-weight:600;}
+  .nav-btns{display:flex;gap:0.8rem;margin-top:1.5rem;}
+  .btn{padding:0.65rem 1.4rem;border-radius:9px;border:none;font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+  .btn-prev{background:var(--panel);color:var(--muted);border:1px solid var(--border);}
+  .btn-prev:hover{color:#fff;border-color:#4a7a9a;}
+  .btn-next{color:#0d1821;font-weight:800;}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}
+  .step-counter{margin-left:auto;align-self:center;font-size:0.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  @media(max-width:600px){.panel{padding:1rem;}.step-content{padding:1.2rem;}}
+</style>
+</head>
+<body>
+<header>
+  <span style="font-size:2rem">🔬</span>
+  <div>
+    <h1>Teste de Laborator – Animații Pas cu Pas</h1>
+    <p>LP4B · Produse de Origine Animală · 5 teste · 27 pași</p>
+  </div>
+</header>
+<nav id="nav">
+  <button class="active" onclick="showTest(0)">🧪 Testul Nessler</button>
+  <button class="" onclick="showTest(1)">💨 Testul Eber</button>
+  <button class="" onclick="showTest(2)">📊 pH-ul Cărnii</button>
+  <button class="" onclick="showTest(3)">🥛 Lactodensimetrul </button>
+  <button class="" onclick="showTest(4)">🥚 Prospeţimea Oului</button>
+</nav>
+<div class="panel active" id="panel-0">
+<div style="margin-bottom:1.5rem;">
+  <h2 style="color:#00c8d7;font-size:1.4rem;margin-bottom:0.3rem;">🧪 Testul Nessler</h2>
+  <p style="color:var(--muted);font-size:0.85rem;">Identificarea amoniacului din carne · 6 paşi</p>
+</div>
+<div class="pipeline" id="pipe-0">
+  <div class="step-dot" onclick="goStep(0,0)">
+    <div class="circle" id="c-0-0" style="border-color:#00c8d7;color:#00c8d7;">1</div>
+    <div style="display:none"></div>
+    <div class="step-label">Recoltarea şi preg</div>
+  </div>
+  <div class="connector" id="conn-0-0" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(0,1)">
+    <div class="circle" id="c-0-1" style="border-color:#00c8d7;color:#00c8d7;">2</div>
+    <div style="display:none"></div>
+    <div class="step-label">Pipetarea extractu</div>
+  </div>
+  <div class="connector" id="conn-0-1" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(0,2)">
+    <div class="circle" id="c-0-2" style="border-color:#00c8d7;color:#00c8d7;">3</div>
+    <div style="display:none"></div>
+    <div class="step-label">Adăugarea reactivu</div>
+  </div>
+  <div class="connector" id="conn-0-2" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(0,3)">
+    <div class="circle" id="c-0-3" style="border-color:#00c8d7;color:#00c8d7;">4</div>
+    <div style="display:none"></div>
+    <div class="step-label">Reacţia chimică</div>
+  </div>
+  <div class="connector" id="conn-0-3" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(0,4)">
+    <div class="circle" id="c-0-4" style="border-color:#00c8d7;color:#00c8d7;">5</div>
+    <div style="display:none"></div>
+    <div class="step-label">Interpretarea numă</div>
+  </div>
+  <div class="connector" id="conn-0-4" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(0,5)">
+    <div class="circle" id="c-0-5" style="border-color:#00c8d7;color:#00c8d7;">6</div>
+    <div class="step-label">Concluzie şi rapor</div>
+  </div>
+</div>
+<div class="step-content" id="content-0">
+  <div id="step-inner-0"></div>
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="prevStep(0)" id="prev-0">← Anterior</button>
+    <button class="btn btn-next" onclick="nextStep(0)" id="next-0" style="background:#00c8d7;">Următor →</button>
+    <span class="step-counter" id="counter-0">1 / 6</span>
+    <button class="btn btn-reset" onclick="resetTest(0)">↺</button>
+  </div>
+</div>
+</div>
+
+<div class="panel " id="panel-1">
+<div style="margin-bottom:1.5rem;">
+  <h2 style="color:#f5a623;font-size:1.4rem;margin-bottom:0.3rem;">💨 Testul Eber</h2>
+  <p style="color:var(--muted);font-size:0.85rem;">Identificarea amoniacului prin metoda gazoasă · 5 paşi</p>
+</div>
+<div class="pipeline" id="pipe-1">
+  <div class="step-dot" onclick="goStep(1,0)">
+    <div class="circle" id="c-1-0" style="border-color:#f5a623;color:#f5a623;">1</div>
+    <div style="display:none"></div>
+    <div class="step-label">Pregătirea sistemu</div>
+  </div>
+  <div class="connector" id="conn-1-0" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(1,1)">
+    <div class="circle" id="c-1-1" style="border-color:#f5a623;color:#f5a623;">2</div>
+    <div style="display:none"></div>
+    <div class="step-label">Fixarea probei de </div>
+  </div>
+  <div class="connector" id="conn-1-1" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(1,2)">
+    <div class="circle" id="c-1-2" style="border-color:#f5a623;color:#f5a623;">3</div>
+    <div style="display:none"></div>
+    <div class="step-label">Închiderea sistemu</div>
+  </div>
+  <div class="connector" id="conn-1-2" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(1,3)">
+    <div class="circle" id="c-1-3" style="border-color:#f5a623;color:#f5a623;">4</div>
+    <div style="display:none"></div>
+    <div class="step-label">Observarea reacţie</div>
+  </div>
+  <div class="connector" id="conn-1-3" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(1,4)">
+    <div class="circle" id="c-1-4" style="border-color:#f5a623;color:#f5a623;">5</div>
+    <div class="step-label">Interpretare şi co</div>
+  </div>
+</div>
+<div class="step-content" id="content-1">
+  <div id="step-inner-1"></div>
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="prevStep(1)" id="prev-1">← Anterior</button>
+    <button class="btn btn-next" onclick="nextStep(1)" id="next-1" style="background:#f5a623;">Următor →</button>
+    <span class="step-counter" id="counter-1">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(1)">↺</button>
+  </div>
+</div>
+</div>
+
+<div class="panel " id="panel-2">
+<div style="margin-bottom:1.5rem;">
+  <h2 style="color:#e8445a;font-size:1.4rem;margin-bottom:0.3rem;">📊 pH-ul Cărnii</h2>
+  <p style="color:var(--muted);font-size:0.85rem;">Determinare cu hârtie indicator sau pH-metru · 5 paşi</p>
+</div>
+<div class="pipeline" id="pipe-2">
+  <div class="step-dot" onclick="goStep(2,0)">
+    <div class="circle" id="c-2-0" style="border-color:#e8445a;color:#e8445a;">1</div>
+    <div style="display:none"></div>
+    <div class="step-label">Pregătirea probei </div>
+  </div>
+  <div class="connector" id="conn-2-0" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(2,1)">
+    <div class="circle" id="c-2-1" style="border-color:#e8445a;color:#e8445a;">2</div>
+    <div style="display:none"></div>
+    <div class="step-label">Introducerea hârti</div>
+  </div>
+  <div class="connector" id="conn-2-1" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(2,2)">
+    <div class="circle" id="c-2-2" style="border-color:#e8445a;color:#e8445a;">3</div>
+    <div style="display:none"></div>
+    <div class="step-label">Virarea culorii</div>
+  </div>
+  <div class="connector" id="conn-2-2" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(2,3)">
+    <div class="circle" id="c-2-3" style="border-color:#e8445a;color:#e8445a;">4</div>
+    <div style="display:none"></div>
+    <div class="step-label">Citirea şi corecta</div>
+  </div>
+  <div class="connector" id="conn-2-3" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(2,4)">
+    <div class="circle" id="c-2-4" style="border-color:#e8445a;color:#e8445a;">5</div>
+    <div class="step-label">Interpretare compl</div>
+  </div>
+</div>
+<div class="step-content" id="content-2">
+  <div id="step-inner-2"></div>
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="prevStep(2)" id="prev-2">← Anterior</button>
+    <button class="btn btn-next" onclick="nextStep(2)" id="next-2" style="background:#e8445a;">Următor →</button>
+    <span class="step-counter" id="counter-2">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(2)">↺</button>
+  </div>
+</div>
+</div>
+
+<div class="panel " id="panel-3">
+<div style="margin-bottom:1.5rem;">
+  <h2 style="color:#a78bfa;font-size:1.4rem;margin-bottom:0.3rem;">🥛 Lactodensimetrul</h2>
+  <p style="color:var(--muted);font-size:0.85rem;">Determinarea densităţii laptelui · 5 paşi</p>
+</div>
+<div class="pipeline" id="pipe-3">
+  <div class="step-dot" onclick="goStep(3,0)">
+    <div class="circle" id="c-3-0" style="border-color:#a78bfa;color:#a78bfa;">1</div>
+    <div style="display:none"></div>
+    <div class="step-label">Aducerea laptelui </div>
+  </div>
+  <div class="connector" id="conn-3-0" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(3,1)">
+    <div class="circle" id="c-3-1" style="border-color:#a78bfa;color:#a78bfa;">2</div>
+    <div style="display:none"></div>
+    <div class="step-label">Turnarea laptelui </div>
+  </div>
+  <div class="connector" id="conn-3-1" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(3,2)">
+    <div class="circle" id="c-3-2" style="border-color:#a78bfa;color:#a78bfa;">3</div>
+    <div style="display:none"></div>
+    <div class="step-label">Introducerea lacto</div>
+  </div>
+  <div class="connector" id="conn-3-2" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(3,3)">
+    <div class="circle" id="c-3-3" style="border-color:#a78bfa;color:#a78bfa;">4</div>
+    <div style="display:none"></div>
+    <div class="step-label">Citirea scalei </div>
+  </div>
+  <div class="connector" id="conn-3-3" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(3,4)">
+    <div class="circle" id="c-3-4" style="border-color:#a78bfa;color:#a78bfa;">5</div>
+    <div class="step-label">Interpretarea rezu</div>
+  </div>
+</div>
+<div class="step-content" id="content-3">
+  <div id="step-inner-3"></div>
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="prevStep(3)" id="prev-3">← Anterior</button>
+    <button class="btn btn-next" onclick="nextStep(3)" id="next-3" style="background:#a78bfa;">Următor →</button>
+    <span class="step-counter" id="counter-3">1 / 5</span>
+    <button class="btn btn-reset" onclick="resetTest(3)">↺</button>
+  </div>
+</div>
+</div>
+
+<div class="panel " id="panel-4">
+<div style="margin-bottom:1.5rem;">
+  <h2 style="color:#2ecc71;font-size:1.4rem;margin-bottom:0.3rem;">🥚 Prospeţimea Oului</h2>
+  <p style="color:var(--muted);font-size:0.85rem;">Testul flotabilităţii în apă · 6 paşi</p>
+</div>
+<div class="pipeline" id="pipe-4">
+  <div class="step-dot" onclick="goStep(4,0)">
+    <div class="circle" id="c-4-0" style="border-color:#2ecc71;color:#2ecc71;">1</div>
+    <div style="display:none"></div>
+    <div class="step-label">Pregătirea vasului</div>
+  </div>
+  <div class="connector" id="conn-4-0" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(4,1)">
+    <div class="circle" id="c-4-1" style="border-color:#2ecc71;color:#2ecc71;">2</div>
+    <div style="display:none"></div>
+    <div class="step-label">Ou proaspăt </div>
+  </div>
+  <div class="connector" id="conn-4-1" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(4,2)">
+    <div class="circle" id="c-4-2" style="border-color:#2ecc71;color:#2ecc71;">3</div>
+    <div style="display:none"></div>
+    <div class="step-label">Ou de 1</div>
+  </div>
+  <div class="connector" id="conn-4-2" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(4,3)">
+    <div class="circle" id="c-4-3" style="border-color:#2ecc71;color:#2ecc71;">4</div>
+    <div style="display:none"></div>
+    <div class="step-label">Ou de 3</div>
+  </div>
+  <div class="connector" id="conn-4-3" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(4,4)">
+    <div class="circle" id="c-4-4" style="border-color:#2ecc71;color:#2ecc71;">5</div>
+    <div style="display:none"></div>
+    <div class="step-label">Ou stricat </div>
+  </div>
+  <div class="connector" id="conn-4-4" style="background:var(--border);margin-top:19px;height:2px;flex:1;"></div>
+  <div class="step-dot" onclick="goStep(4,5)">
+    <div class="circle" id="c-4-5" style="border-color:#2ecc71;color:#2ecc71;">6</div>
+    <div class="step-label">Clasificare comple</div>
+  </div>
+</div>
+<div class="step-content" id="content-4">
+  <div id="step-inner-4"></div>
+  <div class="nav-btns">
+    <button class="btn btn-prev" onclick="prevStep(4)" id="prev-4">← Anterior</button>
+    <button class="btn btn-next" onclick="nextStep(4)" id="next-4" style="background:#2ecc71;">Următor →</button>
+    <span class="step-counter" id="counter-4">1 / 6</span>
+    <button class="btn btn-reset" onclick="resetTest(4)">↺</button>
+  </div>
+</div>
+</div>
+
+<script>
+const TESTS = [{"title": "Testul Nessler", "subtitle": "Identificarea amoniacului din carne · 6 paşi", "steps": [{"title": "Pas 1: Recoltarea şi pregătirea probei", "num": "Pas 1/6", "content": "Se prelevează minim 5 g de carne dintr-o zonă profundă a probei. Se omogenizează şi se prepară extractul apos (raport 1:5 carne:apă distilată). Se filtrează până la limpezire.", "tip": "De ştiut"}, {"title": "Pas 2: Pipetarea extractului", "num": "Pas 2/6", "content": "Se pipetează exact 2 ml de extract de carne filtrat într-o eprubetă curată. Se pregăteşte simultan o probă martor cu apă distilată şi una de referinţă (carne proaspătă).", "tip": "Probe paralele"}, {"title": "Pas 3: Adăugarea reactivului Nessler", "num": "Pas 3/6", "content": "Se adaugă reactivul Nessler (tetaiodomercuriat dipotasic) picătură cu picătură, numărând exact. Se agită uşor după fiecare picătură şi se urmăreşte apariţia coloraţiei.", "tip": "Reactivul Nessler"}, {"title": "Pas 4: Reacţia chimică", "num": "Pas 4/6", "content": "Amoniacul prezent în extract reacţionează cu reactivul Nessler şi formează un complex colorat galben-portocaliu. Intensitatea culorii şi numărul de picături necesare indică concentraţia de NH₃.", "tip": "Reacţia chimică"}, {"title": "Pas 5: Interpretarea numărului de picături", "num": "Pas 5/6", "content": "Se numără câte picături de reactiv Nessler au fost necesare pentru a apărea coloraţia galbenă. Numărul de picături este cheia interpretării prospeţimii cărnii.", "tip": "Interpretare"}, {"title": "Pas 6: Concluzie şi raportare", "num": "Pas 6/6", "content": "Rezultatul testului Nessler este calitativ şi semicantitativ. Se raportează ca: absenţă amoniac / urme / amoniac prezent şi se corelează obligatoriu cu pH, testul Eber şi examinarea organoleptică.", "tip": "Buletin de analiză"}]}, {"title": "Testul Eber", "subtitle": "Identificarea amoniacului prin metoda gazoasă · 5 paşi", "steps": [{"title": "Pas 1: Pregătirea sistemului", "num": "Pas 1/5", "content": "Se introduce reactivul Eber (HCl 25% + etanol + eter etilic, raport 1:3:1) în eprubetă sau flacon. Se fixează un suport cu sârmă sau cârlig pe care se va atârna proba de carne.", "tip": "Reactivul Eber"}, {"title": "Pas 2: Fixarea probei de carne", "num": "Pas 2/5", "content": "Se atârnă o bucată de 3–5 g de carne pe sârma din interior, suspendată la 1–2 cm deasupra reactivului, fără contact direct cu lichidul. Contactul direct invalidează testul.", "tip": "Pregătirea probei"}, {"title": "Pas 3: Închiderea sistemului", "num": "Pas 3/5", "content": "Se astupă eprubeta cu un dop etanş şi se aşteaptă 3–5 minute. Vaporii de HCl din reactiv urcă şi intră în contact cu suprafaţa cărnii. NH₃ degajat reacţionează cu vaporii de HCl.", "tip": "Reacţia Eber"}, {"title": "Pas 4: Observarea reacţiei – gaz fumuriu", "num": "Pas 4/5", "content": "Dacă carnea conţine amoniac (carne în descompunere), apare un gaz fumuriu alb-cenuşiu vizibil în jurul şi deasupra probei de carne. Fumul este clorura de amoniu (NH₄Cl).", "tip": "Evaluarea fumului"}, {"title": "Pas 5: Interpretare şi concluzie", "num": "Pas 5/5", "content": "Testul Eber este calitativ şi rapid (5–10 minute total). Se corelează întotdeauna cu testul Nessler şi determinarea pH-ului pentru un rezultat complet şi credibil.", "tip": "Concluzie"}]}, {"title": "pH-ul Cărnii", "subtitle": "Determinare cu hârtie indicator sau pH-metru · 5 paşi", "steps": [{"title": "Pas 1: Pregătirea probei – incizia", "num": "Pas 1/5", "content": "Se face o incizie adâncă (2–3 cm) în proba de carne cu un cuţit steril, expunând ţesutul muscular intern. Alternativ, se prepară extract apos (5 g carne / 25 ml apă distilată).", "tip": "Pregătire probă"}, {"title": "Pas 2: Introducerea hârtiei indicator", "num": "Pas 2/5", "content": "Se introduce hârtia indicator de pH direct în incizia practicată sau în extractul filtrat. Se lasă 30 secunde de contact pentru impregnarea completă cu sucul din ţesut.", "tip": "Hârtia indicator"}, {"title": "Pas 3: Virarea culorii", "num": "Pas 3/5", "content": "Culoarea hârtiei se schimbă în funcţie de pH-ul probei. Virarea culorii are loc imediat ce hârtia a absorbit sucul din carne. Se scoate hârtia şi se compară imediat cu scala etalon.", "tip": "Virarea culorii"}, {"title": "Pas 4: Citirea şi corectarea valorii", "num": "Pas 4/5", "content": "Se citeşte valoarea pH prin comparaţie cu scala etalon a producătorului. Se notează valoarea numerică. Rezoluţia hârtiei indicator este ±0.2–0.5 unităţi pH.", "tip": "Exemplu citire"}, {"title": "Pas 5: Interpretare completă", "num": "Pas 5/5", "content": "Corelarea valorii pH cu starea sanitară a cărnii. Valoarea singură nu este suficientă – se interpretează împreună cu examenul organoleptic şi testele de amoniac.", "tip": "Tabel interpretare"}]}, {"title": "Lactodensimetrul", "subtitle": "Determinarea densităţii laptelui · 5 paşi", "steps": [{"title": "Pas 1: Aducerea laptelui la temperatura de referinţă", "num": "Pas 1/5", "content": "Se aduce proba de lapte la exact 20°C (temperatura de referinţă standard pentru lactodensimetru). Se omogenizează uşor prin răsturnare de 5–6 ori. Nu se agită puternic – spuma perturbă măsurarea.", "tip": "Corecţia temp."}, {"title": "Pas 2: Turnarea laptelui în cilindrul gradat", "num": "Pas 2/5", "content": "Se toarnă laptele în cilindrul gradat până la 3/4 din volum, pe peretele cilindrului pentru a evita formarea spumei. Spuma de pe suprafaţă se îndepărtează cu hârtie de filtru înainte de măsurare.", "tip": "Pregătire cilindru"}, {"title": "Pas 3: Introducerea lactodensimetrului", "num": "Pas 3/5", "content": "Se introduce lactodensimetrul uşor, lăsându-l să plutească liber. Nu trebuie să atingă pereţii sau fundul cilindrului. Se aşteaptă 1–2 minute pentru stabilizare completă.", "tip": "Poziţionare corectă"}, {"title": "Pas 4: Citirea scalei – meniscul", "num": "Pas 4/5", "content": "Se citeşte valoarea la nivelul inferior al meniscului (suprafaţa laptelui pe tija instrumentului). Ochiul trebuie să fie exact la nivelul suprafeţei laptelui pentru a evita eroarea de paralaxă.", "tip": "Eroarea de paralaxă"}, {"title": "Pas 5: Interpretarea rezultatelor", "num": "Pas 5/5", "content": "Valoarea densităţii indică autenticitatea şi calitatea laptelui. Densitatea anormală semnalează posibile fraude: diluare cu apă sau ecremare. Cele două fraude combinate pot masca reciproc efectele!", "tip": "Interpretare valori"}]}, {"title": "Prospeţimea Oului", "subtitle": "Testul flotabilităţii în apă · 6 paşi", "steps": [{"title": "Pas 1: Pregătirea vasului cu apă", "num": "Pas 1/6", "content": "Se umple un vas transparent (400–500 ml) cu apă de la robinet la temperatura camerei (18–22°C). Nu se foloseşte apă sărată sau caldă – acestea modifică densitatea mediului şi rezultatul.", "tip": "Principiu fizic"}, {"title": "Pas 2: Ou proaspăt – 0–7 zile", "num": "Pas 2/6", "content": "Oul proaspăt se scufundă complet şi ia o poziţie orizontală pe fundul vasului. Camera de aer este mică (≤4 mm), conţinutul intact, densitate mare. Clasificare UE: Clasa A extra.", "tip": "Clasa A extra UE"}, {"title": "Pas 3: Ou de 1–2 săptămâni", "num": "Pas 3/6", "content": "Aerul pătrunde treptat prin porii cojii, camera de aer creşte (4–6 mm). Oul se ridică uşor şi se înclină la 20–30°, cu capătul rotund (camera de aer) în sus. Albuşul uşor lichefiat.", "tip": "Clasa A UE"}, {"title": "Pas 4: Ou de 3–4 săptămâni", "num": "Pas 4/6", "content": "Camera de aer a crescut considerabil (6–9 mm). Oul stă vertical în apă, cu vârful ascuţit în jos şi capătul rotund în sus, ridicat de pe fund. Albuşul apos, gălbenuşul deplasat.", "tip": "Clasa B UE"}, {"title": "Pas 5: Ou stricat – >1 lună", "num": "Pas 5/6", "content": "Oul pluteşte la suprafaţa apei. Camera de aer este foarte mare (>9 mm), densitatea a scăzut sub densitatea apei. La spargere: miros sulfuros neplăcut. Risc de contaminare cu Salmonella.", "tip": "Clasa C UE"}, {"title": "Pas 6: Clasificare completă & concluzie", "num": "Pas 6/6", "content": "Testul flotabilităţii este un screening rapid, ieftin, fără echipament special. Se completează obligatoriu cu examinarea la ovoscop şi verificarea greutăţii. Temperatura de depozitare influenţează semnificativ viteza de îmbătrânire.", "tip": "Clasificare UE"}]}];
+const COLORS = ["#00c8d7", "#f5a623", "#e8445a", "#a78bfa", "#2ecc71"];
+const BG_COLORS = ["#003a40", "#3a2800", "#3a0010", "#1e1040", "#003a15"];
+const ICONS = ["\ud83e\uddea", "\ud83d\udca8", "\ud83d\udcca", "\ud83e\udd5b", "\ud83e\udd5a"];
+
+const state = TESTS.map(() => 0);
+
+function renderStep(ti, si) {
+  const test = TESTS[ti];
+  const step = test.steps[si];
+  const c = COLORS[ti];
+  const bg = BG_COLORS[ti];
+  const n = test.steps.length;
+  
+  // Update circles
+  for (let i = 0; i < n; i++) {
+    const circ = document.getElementById(`c-${ti}-${i}`);
+    if (!circ) continue;
+    if (i < si) {
+      circ.style.background = c;
+      circ.style.color = '#0d1821';
+      circ.innerHTML = '✓';
+    } else if (i === si) {
+      circ.style.background = c;
+      circ.style.color = '#0d1821';
+      circ.innerHTML = i + 1;
+      circ.style.boxShadow = `0 0 12px ${c}88`;
+    } else {
+      circ.style.background = 'transparent';
+      circ.style.color = c;
+      circ.innerHTML = i + 1;
+      circ.style.boxShadow = 'none';
+    }
+    // connector
+    const conn = document.getElementById(`conn-${ti}-${i}`);
+    if (conn) conn.style.background = i < si ? c : 'var(--border)';
+  }
+  
+  // Update content
+  const numText = step.num || `Pas ${si+1}/${n}`;
+  const inner = document.getElementById(`step-inner-${ti}`);
+  inner.innerHTML = `
+    <span class="badge" style="color:${c};">${numText}</span>
+    <h2>${step.title.replace(/^Pas \d+: /, '')}</h2>
+    <p>${step.content}</p>
+    ${step.tip ? `<div class="tip-box" style="background:${bg};border:1px solid ${c}44;color:${c};">💡 ${step.tip}</div>` : ''}
+  `;
+  
+  // Buttons
+  document.getElementById(`prev-${ti}`).disabled = si === 0;
+  document.getElementById(`prev-${ti}`).style.opacity = si === 0 ? '0.3' : '1';
+  const nextBtn = document.getElementById(`next-${ti}`);
+  if (si === n - 1) {
+    nextBtn.textContent = '✓ Finalizat';
+    nextBtn.style.opacity = '0.6';
+    nextBtn.disabled = true;
+  } else {
+    nextBtn.textContent = 'Următor →';
+    nextBtn.style.opacity = '1';
+    nextBtn.disabled = false;
+  }
+  document.getElementById(`counter-${ti}`).textContent = `${si+1} / ${n}`;
+}
+
+function nextStep(ti) {
+  const n = TESTS[ti].steps.length;
+  if (state[ti] < n - 1) { state[ti]++; renderStep(ti, state[ti]); }
+}
+function prevStep(ti) {
+  if (state[ti] > 0) { state[ti]--; renderStep(ti, state[ti]); }
+}
+function goStep(ti, si) { state[ti] = si; renderStep(ti, si); }
+function resetTest(ti) { state[ti] = 0; renderStep(ti, 0); }
+function showTest(ti) {
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===ti));
+  document.querySelectorAll('#nav button').forEach((b,i) => b.classList.toggle('active', i===ti));
+}
+
+// Init all
+TESTS.forEach((_, ti) => renderStep(ti, 0));
+</script>
+</body>
+</html>
