@@ -45,7 +45,11 @@ const TEACHERS = {
 
 // Animált bemutatók laboronként (beépítve iframe-ben)
 const LAB_DEMOS = {
-  lp4b: "laborator_animat_lp4b.html",
+  lp4b: [
+    { title: "📚 Curs LP4B",               url: "curs_lp4b.html" },
+    { title: "🧪 Teste Animate Pas cu Pas", url: "teste_animate_lp4b.html" },
+    { title: "🔬 Laborator Interactiv",     url: "laborator_animat_lp4b.html" },
+  ],
 };
 // ════════════════════════════════════════════════════════════
 // SUPABASE CONFIG
@@ -1157,7 +1161,7 @@ function AdminPanel({onBack, teacherName}) {
 
         {/* tabs */}
         <div style={{display:"flex",gap:4,marginBottom:20,background:"#fff",padding:4,borderRadius:12,border:"1.5px solid #b2ddc8",width:"fit-content"}}>
-          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"}].map(t=>(
+          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"},{id:"prezentari",label:"📽️ Prezentări"}].map(t=>(
             <button key={t.id} onClick={()=>setTab(t.id)}
               style={{padding:"8px 20px",borderRadius:9,border:"none",cursor:"pointer",fontSize:14,fontWeight:tab===t.id?700:400,
                 background:tab===t.id?"linear-gradient(135deg,#10b981,#059669)":"transparent",
@@ -1350,6 +1354,42 @@ function AdminPanel({onBack, teacherName}) {
             }
           </div>
         )}
+
+        {tab==="prezentari" && (
+          <div>
+            <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 16px"}}>📽️ Prezentări interactive pentru ore</h3>
+            <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Deschide prezentarea în browser și folosește ← → pentru navigare. F11 = ecran complet.</p>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {Object.entries(LAB_DEMOS).map(([labId, demos])=>{
+                const lab = LABS.find(l=>l.id===labId);
+                if(!lab) return null;
+                return (
+                  <div key={labId} style={{background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:14,padding:18}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                      <span style={{fontSize:24}}>{lab.icon}</span>
+                      <div>
+                        <div style={{fontWeight:700,color:"#0a2a18",fontSize:14}}>{lab.code}</div>
+                        <div style={{color:"#4a9a6a",fontSize:12}}>{lab.title}</div>
+                      </div>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                      {demos.map((d,i)=>(
+                        <a key={i} href={d.url} target="_blank" rel="noreferrer"
+                          style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",
+                            background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",
+                            border:"1px solid #86efac",borderRadius:9,
+                            textDecoration:"none",color:"#166534",fontSize:13,fontWeight:600}}>
+                          {d.title}
+                          <span style={{marginLeft:"auto",fontSize:11,opacity:0.6}}>↗</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1426,24 +1466,32 @@ function StudentLogin({session, onLogin}) {
 // DEMO SCREEN — animált bemutató beépített iframe-ben
 // ════════════════════════════════════════════════════════════
 function DemoScreen({lab, onBack}) {
-  const demoUrl = LAB_DEMOS[lab?.id];
+  const demos = LAB_DEMOS[lab?.id] || [];
+  const [activeTab, setActiveTab] = React.useState(0);
+  const demo = demos[activeTab];
   return (
     <div style={{display:"flex",flexDirection:"column",height:"100vh",background:"#0d1821"}}>
       <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 16px",
-        background:"#152030",borderBottom:"1px solid #1e3a4a",flexShrink:0}}>
+        background:"#152030",borderBottom:"1px solid #1e3a4a",flexShrink:0,flexWrap:"wrap"}}>
         <button onClick={onBack}
           style={{background:"#1e3a4a",border:"1px solid #2a5a6a",color:"#e2eaf0",
             borderRadius:8,padding:"6px 14px",fontSize:13,cursor:"pointer",fontWeight:600}}>
           ← Înapoi
         </button>
         <span style={{fontSize:20}}>{lab?.icon}</span>
-        <div>
-          <span style={{color:"#00c8d7",fontSize:11,fontWeight:700,textTransform:"uppercase"}}>{lab?.code}</span>
-          <span style={{color:"#e2eaf0",fontSize:14,fontWeight:600,marginLeft:8}}>Prezentare animată</span>
-        </div>
+        <span style={{color:"#00c8d7",fontSize:11,fontWeight:700,textTransform:"uppercase"}}>{lab?.code}</span>
+        {demos.length > 1 && demos.map((d,i) => (
+          <button key={i} onClick={()=>setActiveTab(i)}
+            style={{background:i===activeTab?"#00c8d7":"#1e3a4a",
+              color:i===activeTab?"#0d1821":"#e2eaf0",
+              border:"1px solid #2a5a6a",borderRadius:8,
+              padding:"6px 14px",fontSize:12,cursor:"pointer",fontWeight:700}}>
+            {d.title}
+          </button>
+        ))}
       </div>
-      {demoUrl
-        ? <iframe src={demoUrl} style={{flex:1,border:"none",width:"100%"}} title="Demo"/>
+      {demo
+        ? <iframe src={demo.url} style={{flex:1,border:"none",width:"100%"}} title={demo.title}/>
         : <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#6b8a9e",fontSize:16}}>
             📽️ Prezentarea animată pentru {lab?.code} nu este disponibilă încă.
           </div>
