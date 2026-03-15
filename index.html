@@ -72,14 +72,31 @@ const sb = (path, opts={}) => {
 
 const GROUPS = Array.from({length:20},(_,i)=>`Gr. ${i+1}`);
 
-const SPECIALIZATIONS = [
-  "Medicină Generală",
-  "Medicină Dentară",
-  "BFK / Kinetoterapie",
-  "Asistenți Medicali",
-  "Nutriție și Dietetică",
-];
-// Add new specializations here ↑ — they appear automatically everywhere
+// ════════════════════════════════════════════════════════════
+// NOMENCLATOR — editabil din panoul admin (tab Nomenclator)
+// ════════════════════════════════════════════════════════════
+const DEFAULT_NOMENCLATOR = {
+  specializations: [
+    "Medicină Dentară",
+    "Medicină Generală",
+    "BFK / Kinetoterapie",
+    "Asistenți Medicali",
+    "Nutriție și Dietetică",
+  ],
+  years: ["2025", "2026", "2027"],
+  modules: ["Modul 1", "Modul 2", "Modul 3", "Modul 4"],
+};
+function loadNomenclator() {
+  try {
+    const saved = localStorage.getItem("igiena_nomenclator");
+    return saved ? JSON.parse(saved) : DEFAULT_NOMENCLATOR;
+  } catch(e) { return DEFAULT_NOMENCLATOR; }
+}
+function saveNomenclator(n) {
+  localStorage.setItem("igiena_nomenclator", JSON.stringify(n));
+}
+// Keep SPECIALIZATIONS for backwards compat
+const SPECIALIZATIONS = loadNomenclator().specializations;
 
 
 const QR_DURATIONS = [
@@ -1176,7 +1193,11 @@ function AdminPanel({onBack, teacherName}) {
   const [tab, setTab]             = useState("qr"); // qr | results
   const [selLab, setSelLab]       = useState(LABS.find(l=>l.ready) || LABS[0]);
   const [duration, setDuration]   = useState(5);
-  const [semester, setSemester]   = useState("");
+  const [semSpec,   setSemSpec]   = useState("");
+  const [semYear,   setSemYear]   = useState("");
+  const [semMod,    setSemMod]    = useState("");
+  const [nomenclator, setNomenclator] = useState(loadNomenclator());
+  const semester = [semSpec, semYear, semMod].filter(Boolean).join(" · ");
   const [activeSession, setActiveSession] = useState(null);
   const [qrDataURL, setQrDataURL] = useState(null);
   const [timeLeft, setTimeLeft]   = useState(0);
@@ -1279,7 +1300,7 @@ function AdminPanel({onBack, teacherName}) {
 
         {/* tabs */}
         <div style={{display:"flex",gap:4,marginBottom:20,background:"#fff",padding:4,borderRadius:12,border:"1.5px solid #b2ddc8",width:"fit-content"}}>
-          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"},{id:"prezentari",label:"📽️ Prezentări"},{id:"fisiere",label:"📁 Fișiere mele"}].map(t=>(
+          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"},{id:"prezentari",label:"📽️ Prezentări"},{id:"fisiere",label:"📁 Fișiere mele"},{id:"nomenclator",label:"🗂️ Nomenclator"}].map(t=>(
             <button key={t.id} onClick={()=>setTab(t.id)}
               style={{padding:"8px 20px",borderRadius:9,border:"none",cursor:"pointer",fontSize:14,fontWeight:tab===t.id?700:400,
                 background:tab===t.id?"linear-gradient(135deg,#10b981,#059669)":"transparent",
@@ -1304,13 +1325,22 @@ function AdminPanel({onBack, teacherName}) {
                 ))}
               </select>
 
-              <label style={S.label}>📅 Semestru / Modul <span style={{fontWeight:400,color:"#6a9a80",fontSize:12}}>(opțional)</span></label>
-              <input
-                style={{...S.input, marginBottom:16}}
-                placeholder="ex. 2025/26-M3"
-                value={semester}
-                onChange={e => setSemester(e.target.value)}
-              />
+              <label style={S.label}>📅 Clasificare sesiune <span style={{fontWeight:400,color:"#6a9a80",fontSize:12}}>(opțional)</span></label>
+              <select style={{...S.input, marginBottom:8}} value={semSpec} onChange={e=>setSemSpec(e.target.value)}>
+                <option value="">— Specializare —</option>
+                {nomenclator.specializations.map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+              <div style={{display:"flex",gap:8,marginBottom:16}}>
+                <select style={{...S.input,flex:1}} value={semYear} onChange={e=>setSemYear(e.target.value)}>
+                  <option value="">— An —</option>
+                  {nomenclator.years.map(y=><option key={y} value={y}>{y}</option>)}
+                </select>
+                <select style={{...S.input,flex:1}} value={semMod} onChange={e=>setSemMod(e.target.value)}>
+                  <option value="">— Modul —</option>
+                  {nomenclator.modules.map(m=><option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
+              {semester && <div style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:8,padding:"6px 12px",marginBottom:16,fontSize:13,color:"#166534",fontWeight:600}}>📅 {semester}</div>}
 
               <label style={S.label}>Durată valabilitate QR</label>
               <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
@@ -1531,11 +1561,90 @@ function AdminPanel({onBack, teacherName}) {
         {tab==="fisiere" && (
           <FileManager teacherName={teacherName} selLab={selLab} />
         )}
+
+        {tab==="nomenclator" && (
+          <NomenclatorEditor nomenclator={nomenclator} onChange={n=>{setNomenclator(n);saveNomenclator(n);}} />
+        )}
       </div>
     </div>
   );
 }
 
+
+
+// ════════════════════════════════════════════════════════════
+// NOMENCLATOR EDITOR
+// ════════════════════════════════════════════════════════════
+function NomenclatorEditor({nomenclator, onChange}) {
+  const [newSpec, setNewSpec] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [newMod,  setNewMod]  = useState("");
+
+  const addItem = (key, val, reset) => {
+    const v = val.trim();
+    if (!v) return;
+    if (nomenclator[key].includes(v)) return;
+    onChange({...nomenclator, [key]: [...nomenclator[key], v]});
+    reset("");
+  };
+  const removeItem = (key, val) => {
+    onChange({...nomenclator, [key]: nomenclator[key].filter(x=>x!==val)});
+  };
+  const reset = () => { onChange(DEFAULT_NOMENCLATOR); saveNomenclator(DEFAULT_NOMENCLATOR); };
+
+  const Section = ({title, icon, itemKey, items, newVal, setNewVal, placeholder}) => (
+    <div style={{background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:14,padding:20,marginBottom:14}}>
+      <div style={{fontWeight:700,fontSize:14,color:"#1a3a28",marginBottom:12}}>{icon} {title}</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>
+        {items.map(item=>(
+          <div key={item} style={{display:"flex",alignItems:"center",gap:6,background:"#f0fdf4",border:"1px solid #86efac",borderRadius:20,padding:"4px 10px 4px 12px"}}>
+            <span style={{fontSize:13,color:"#166534",fontWeight:500}}>{item}</span>
+            <button onClick={()=>removeItem(itemKey,item)}
+              style={{background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:14,lineHeight:1,padding:"0 2px"}}>×</button>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:8}}>
+        <input style={{...S.input,flex:1,marginBottom:0}} placeholder={placeholder}
+          value={newVal} onChange={e=>setNewVal(e.target.value)}
+          onKeyDown={e=>e.key==="Enter"&&addItem(itemKey,newVal,setNewVal)}/>
+        <button onClick={()=>addItem(itemKey,newVal,setNewVal)}
+          style={{padding:"10px 18px",background:"#10b981",color:"#fff",border:"none",borderRadius:10,fontWeight:700,cursor:"pointer",fontSize:13,whiteSpace:"nowrap"}}>
+          + Adaugă
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+        <div>
+          <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 4px"}}>🗂️ Nomenclator</h3>
+          <p style={{color:"#4a9a6a",fontSize:13,margin:0}}>Gestionează specializările, anii și modulele disponibile</p>
+        </div>
+        <button onClick={reset}
+          style={{padding:"8px 14px",background:"#fff",border:"1.5px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:12,cursor:"pointer",fontWeight:600}}>
+          ↺ Reset implicit
+        </button>
+      </div>
+
+      <Section title="Specializări" icon="🎓" itemKey="specializations"
+        items={nomenclator.specializations} newVal={newSpec} setNewVal={setNewSpec}
+        placeholder="ex. Farmacie" />
+      <Section title="Ani" icon="📆" itemKey="years"
+        items={nomenclator.years} newVal={newYear} setNewVal={setNewYear}
+        placeholder="ex. 2027" />
+      <Section title="Module" icon="📚" itemKey="modules"
+        items={nomenclator.modules} newVal={newMod} setNewVal={setNewMod}
+        placeholder="ex. Modul 5" />
+
+      <p style={{fontSize:12,color:"#94a3b8",marginTop:8}}>
+        💾 Salvat automat în browser. Modificările sunt vizibile imediat în generarea QR.
+      </p>
+    </div>
+  );
+}
 
 // ════════════════════════════════════════════════════════════
 // FILE MANAGER — minden tanár fájljai LP-enként
