@@ -1185,8 +1185,10 @@ function AdminPanel({onBack, teacherName}) {
 
   // results state
   const [results, setResults]     = useState([]);
-  const [labFilter, setLabFilter] = useState("all");
-  const [grpFilter, setGrpFilter] = useState("all");
+  const [labFilter,  setLabFilter]  = useState("all");
+  const [grpFilter,  setGrpFilter]  = useState("all");
+  const [semFilter,  setSemFilter]  = useState("all");
+  const [specFilter, setSpecFilter] = useState("all");
   const [nameFilter, setNameFilter] = useState("");
 
   useEffect(() => {
