@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP5B – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#0d1821;--panel:#152030;--border:#1e3a4a;--blue:#2A9DBF;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--purple:#a78bfa;--text:#e2eaf0;--muted:#6b8a9e;--white:#ffffff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#0d1821 60%,#152030);}
+  .header-icon{font-size:2.4rem;}header h1{font-size:1.5rem;font-weight:800;color:var(--white);}header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:170px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);background:rgba(255,255,255,.03);}nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}.stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:var(--bg);}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);border-color:var(--muted);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .swim{animation:swimAnim 3s ease-in-out infinite;}
+  @keyframes swimAnim{0%,100%{transform:translate(0,0) rotate(0deg);}25%{transform:translate(3px,-2px) rotate(15deg);}75%{transform:translate(-3px,2px) rotate(-15deg);}}
+  .smoke-puff{opacity:0;transition:opacity .5s;}.smoke-puff.show{opacity:1;animation:puffFloat 2s ease-in-out infinite;}
+  @keyframes puffFloat{0%,100%{transform:translateY(0) scale(1);opacity:.7;}50%{transform:translateY(-8px) scale(1.1);opacity:1;}}
+  .pulse-glow{animation:pulseGlow 1.5s ease-in-out infinite;}
+  @keyframes pulseGlow{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 6px currentColor);}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--teal);opacity:.04;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🦠</div>
+  <div>
+    <h1>LP5B – Teste Animate Interactive</h1>
+    <p>Bacterioscopie · Trichinoscopie · Cisticercoză · NTG Lapte · Testul Eber</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">🔬 Bacterioscopie</button>
+  <button onclick="showTest(1)">🐛 Trichinoscopie</button>
+  <button onclick="showTest(2)">🪱 Cisticercoză</button>
+  <button onclick="showTest(3)">🥛 NTG Lapte</button>
+  <button onclick="showTest(4)">💨 Eber Carne</button>
+</nav>
+
+<!-- PANEL 0: BACTERIOSCOPIE -->
+<div class="test-panel active" id="panel-0">
+  <div class="pipeline" id="pipeline-0"></div>
+  <div class="stage-card" id="card-0">
+    <div class="stage-visual">
+      <svg id="svg-bact" width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <clipPath id="scope-clip-0"><circle cx="130" cy="130" r="108"/></clipPath>
+          <radialGradient id="scope-vig" cx="50%" cy="50%" r="50%">
+            <stop offset="65%" stop-color="transparent"/>
+            <stop offset="100%" stop-color="#000" stop-opacity=".75"/>
+          </radialGradient>
+        </defs>
+        <circle cx="130" cy="130" r="120" fill="#1a2a35" stroke="#2A9DBF" stroke-width="3"/>
+        <circle cx="130" cy="130" r="115" fill="#0a0e18" stroke="#1e3a4a" stroke-width="1"/>
+        <circle id="bact-field-bg" cx="130" cy="130" r="108" fill="#1a1a08"/>
+        <!-- Fresh: sparse cocci -->
+        <g id="bact-fresh" clip-path="url(#scope-clip-0)" style="opacity:0;transition:opacity .8s">
+          <circle cx="90" cy="110" r="3.5" fill="#7B5EA7"/><circle cx="95" cy="110" r="3.5" fill="#7B5EA7"/>
+          <circle cx="160" cy="148" r="3"   fill="#7B5EA7"/>
+          <circle cx="115" cy="163" r="3.5" fill="#7B5EA7"/>
+          <circle cx="150" cy="103" r="3"   fill="#7B5EA7"/>
+          <circle cx="180" cy="135" r="3"   fill="#E8445A"/>
+          <text x="130" y="205" text-anchor="middle" font-size="9" fill="#4a9a4a" font-family="JetBrains Mono,monospace">cativa germeni izolati</text>
+        </g>
+        <!-- Altered: dense bacteria + tissue fragments -->
+        <g id="bact-altered" clip-path="url(#scope-clip-0)" style="opacity:0;transition:opacity .8s">
+          <g class="swim"><rect x="65" y="105" width="11" height="4" rx="2" fill="#E8445A" transform="rotate(-15,70,107)"/></g>
+          <g class="swim" style="animation-delay:-.5s"><rect x="83" y="92"  width="11" height="4" rx="2" fill="#E8445A" transform="rotate(20,88,94)"/></g>
+          <g class="swim" style="animation-delay:-1s"><rect x="145" y="110" width="11" height="4" rx="2" fill="#E8445A" transform="rotate(-30,150,112)"/></g>
+          <g class="swim" style="animation-delay:-1.5s"><rect x="168" y="133" width="11" height="4" rx="2" fill="#E8445A" transform="rotate(10,173,135)"/></g>
+          <g class="swim" style="animation-delay:-.8s"><rect x="103" y="153" width="11" height="4" rx="2" fill="#E8445A" transform="rotate(40,108,155)"/></g>
+          <g class="swim" style="animation-delay:-.3s"><rect x="128" y="88"  width="11" height="4" rx="2" fill="#E8445A" transform="rotate(-20,133,90)"/></g>
+          <g class="swim" style="animation-delay:-1.2s"><rect x="76" y="143" width="11" height="4" rx="2" fill="#E8445A" transform="rotate(25,81,145)"/></g>
+          <circle cx="100" cy="118" r="4" fill="#7B5EA7"/><circle cx="107" cy="116" r="4" fill="#7B5EA7"/><circle cx="104" cy="124" r="4" fill="#7B5EA7"/>
+          <circle cx="153" cy="148" r="4" fill="#7B5EA7"/><circle cx="160" cy="146" r="4" fill="#7B5EA7"/>
+          <circle cx="138" cy="168" r="3.5" fill="#7B5EA7"/><circle cx="145" cy="166" r="3.5" fill="#7B5EA7"/>
+          <path d="M85,132 Q102,125 115,135 Q109,149 92,145 Z" fill="#8B3A2A" opacity=".7"/>
+          <path d="M143,122 Q160,117 168,127 Q163,139 148,135 Z" fill="#8B3A2A" opacity=".6"/>
+          <path d="M63,157 Q88,152 113,159 Q118,165 113,169 Q88,162 63,165 Z" fill="#4A7A2A" opacity=".6"/>
+          <text x="130" y="208" text-anchor="middle" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">&gt;20 germeni + fragmente</text>
+        </g>
+        <circle cx="130" cy="130" r="108" fill="url(#scope-vig)"/>
+        <line x1="130" y1="30" x2="130" y2="230" stroke="#2A9DBF" stroke-width=".5" opacity=".25"/>
+        <line x1="30" y1="130" x2="230" y2="130" stroke="#2A9DBF" stroke-width=".5" opacity=".25"/>
+        <line id="bact-scale" x1="168" y1="218" x2="208" y2="218" stroke="#6b8a9e" stroke-width="1.5" opacity="0"/>
+        <text id="bact-scale-lbl" x="188" y="228" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace" opacity="0">10 µm</text>
+        <circle cx="130" cy="130" r="122" fill="none" stroke="#1e3a4a" stroke-width="2"/>
+      </svg>
+      <div class="vis-label" id="bact-vis-label">Câmp microscopic — ob. x100, imersie</div>
+    </div>
+    <div class="stage-info" id="info-0"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-0" onclick="prevStep(0)" disabled>← Înapoi</button>
+    <button class="btn btn-primary" id="next-0" onclick="nextStep(0)">Următorul pas →</button>
+    <span class="step-counter" id="counter-0">Pas 1/6</span>
+    <button class="btn btn-reset" onclick="resetTest(0)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- PANEL 1: TRICHINOSCOPIE -->
+<div class="test-panel" id="panel-1">
+  <div class="pipeline" id="pipeline-1"></div>
+  <div class="stage-card" id="card-1">
+    <div class="stage-visual">
+      <svg id="svg-trich" width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <clipPath id="scope-clip-1"><circle cx="130" cy="130" r="108"/></clipPath>
+          <radialGradient id="trich-vig" cx="50%" cy="50%" r="50%">
+            <stop offset="65%" stop-color="transparent"/>
+            <stop offset="100%" stop-color="#000" stop-opacity=".75"/>
+          </radialGradient>
+        </defs>
+        <circle cx="130" cy="130" r="120" fill="#1a2030" stroke="#a78bfa" stroke-width="3"/>
+        <circle cx="130" cy="130" r="115" fill="#080c12" stroke="#2a1a4a" stroke-width="1"/>
+        <circle cx="130" cy="130" r="108" fill="#180e08"/>
+        <!-- Muscle fibers background -->
+        <g id="trich-muscle" clip-path="url(#scope-clip-1)" style="opacity:0;transition:opacity .8s">
+          <rect x="22" y="72"  width="216" height="8" rx="1" fill="#4A2418" opacity=".65"/>
+          <rect x="22" y="87"  width="216" height="6" rx="1" fill="#5A2A1A" opacity=".55"/>
+          <rect x="22" y="100" width="216" height="8" rx="1" fill="#4A2018" opacity=".65"/>
+          <rect x="22" y="115" width="216" height="6" rx="1" fill="#5A2A1A" opacity=".55"/>
+          <rect x="22" y="128" width="216" height="8" rx="1" fill="#4A2018" opacity=".65"/>
+          <rect x="22" y="143" width="216" height="6" rx="1" fill="#5A2A1A" opacity=".55"/>
+          <rect x="22" y="156" width="216" height="8" rx="1" fill="#4A2018" opacity=".65"/>
+          <rect x="22" y="171" width="216" height="6" rx="1" fill="#5A2A1A" opacity=".55"/>
+          <rect x="22" y="184" width="216" height="7" rx="1" fill="#4A2018" opacity=".6"/>
+          <circle cx="55"  cy="90"  r="2" fill="#8B4A3A" opacity=".8"/>
+          <circle cx="100" cy="104" r="2" fill="#8B4A3A" opacity=".8"/>
+          <circle cx="160" cy="118" r="2" fill="#8B4A3A" opacity=".8"/>
+          <circle cx="85"  cy="131" r="2" fill="#8B4A3A" opacity=".8"/>
+          <circle cx="185" cy="145" r="2" fill="#8B4A3A" opacity=".8"/>
+        </g>
+        <!-- Larva cyst 1 -->
+        <g id="trich-larvae-1" clip-path="url(#scope-clip-1)" style="opacity:0;transition:opacity 1s">
+          <ellipse cx="88"  cy="118" rx="21" ry="12" fill="none" stroke="#D4C870" stroke-width="1.8"/>
+          <ellipse cx="88"  cy="118" rx="18" ry="10" fill="#F5F0A0" opacity=".22"/>
+          <path d="M74,118 Q79,110 88,112 Q97,114 99,118 Q97,125 88,127 Q79,129 75,123 Q73,120 74,118" fill="none" stroke="#8B5A20" stroke-width="2.5"/>
+          <circle cx="74" cy="118" r="3" fill="#8B5A20"/>
+          <text x="88" y="98" text-anchor="middle" font-size="8" fill="#D4C870" font-family="JetBrains Mono,monospace">chist viabil</text>
+        </g>
+        <!-- Larva cyst 2 -->
+        <g id="trich-larvae-2" clip-path="url(#scope-clip-1)" style="opacity:0;transition:opacity 1s;transition-delay:.3s">
+          <ellipse cx="160" cy="147" rx="20" ry="11" fill="none" stroke="#D4C870" stroke-width="1.8"/>
+          <ellipse cx="160" cy="147" rx="17" ry="9"  fill="#F5F0A0" opacity=".22"/>
+          <path d="M146,147 Q151,139 160,141 Q169,143 170,147 Q168,154 160,156 Q151,158 147,152 Q145,149 146,147" fill="none" stroke="#8B5A20" stroke-width="2.5"/>
+          <circle cx="146" cy="147" r="3" fill="#8B5A20"/>
+        </g>
+        <!-- Larva cyst 3 -->
+        <g id="trich-larvae-3" clip-path="url(#scope-clip-1)" style="opacity:0;transition:opacity 1s;transition-delay:.6s">
+          <ellipse cx="115" cy="175" rx="19" ry="11" fill="none" stroke="#C4B860" stroke-width="1.8"/>
+          <ellipse cx="115" cy="175" rx="16" ry="9"  fill="#F5F0A0" opacity=".18"/>
+          <path d="M102,175 Q107,167 115,169 Q123,171 125,175 Q123,182 115,184 Q107,185 103,179" fill="none" stroke="#8B5A20" stroke-width="2.5"/>
+          <circle cx="102" cy="175" r="3" fill="#8B5A20"/>
+        </g>
+        <!-- Calcified cyst -->
+        <g id="trich-calcif" clip-path="url(#scope-clip-1)" style="opacity:0;transition:opacity .8s">
+          <ellipse cx="188" cy="97" rx="17" ry="10" fill="#5A5A3A" stroke="#8A8A5A" stroke-width="1.5"/>
+          <ellipse cx="188" cy="97" rx="13" ry="8"  fill="#3A3A2A" opacity=".8"/>
+          <text x="188" y="80" text-anchor="middle" font-size="8" fill="#8A8A5A" font-family="JetBrains Mono,monospace">calcificat</text>
+        </g>
+        <!-- Counter -->
+        <g id="trich-counter-g" style="opacity:0;transition:opacity .5s">
+          <rect x="22" y="22" width="65" height="22" rx="4" fill="#1a1030" opacity=".88"/>
+          <text id="trich-count-txt" x="54" y="37" text-anchor="middle" font-size="11" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-weight="bold">0 larve</text>
+        </g>
+        <line x1="168" y1="218" x2="208" y2="218" stroke="#6b8a9e" stroke-width="1.5" opacity=".5"/>
+        <text x="188" y="228" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">100 µm</text>
+        <circle cx="130" cy="130" r="108" fill="url(#trich-vig)"/>
+        <circle cx="130" cy="130" r="122" fill="none" stroke="#2a1a4a" stroke-width="2"/>
+      </svg>
+      <div class="vis-label" id="trich-vis-label">Câmp trichinoscopic — sectiune carne</div>
+    </div>
+    <div class="stage-info" id="info-1"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-1" onclick="prevStep(1)" disabled>← Înapoi</button>
+    <button class="btn btn-primary" id="next-1" onclick="nextStep(1)">Următorul pas →</button>
+    <span class="step-counter" id="counter-1">Pas 1/7</span>
+    <button class="btn btn-reset" onclick="resetTest(1)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- PANEL 2: CISTICERCOZĂ -->
+<div class="test-panel" id="panel-2">
+  <div class="pipeline" id="pipeline-2"></div>
+  <div class="stage-card" id="card-2">
+    <div class="stage-visual">
+      <svg id="svg-cist" width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <clipPath id="scope-clip-2"><circle cx="130" cy="130" r="108"/></clipPath>
+          <radialGradient id="cist-vig" cx="50%" cy="50%" r="50%">
+            <stop offset="65%" stop-color="transparent"/>
+            <stop offset="100%" stop-color="#000" stop-opacity=".75"/>
+          </radialGradient>
+          <radialGradient id="cist-glow" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#FFFFF0" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#D4C870" stop-opacity=".1"/>
+          </radialGradient>
+          <radialGradient id="cist-glow2" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#F0E8FF" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#9B70D4" stop-opacity=".1"/>
+          </radialGradient>
+        </defs>
+        <circle cx="130" cy="130" r="120" fill="#1a2030" stroke="#9B70D4" stroke-width="3"/>
+        <circle cx="130" cy="130" r="115" fill="#0a0a18" stroke="#2a1a4a" stroke-width="1"/>
+        <circle cx="130" cy="130" r="108" fill="#1A0A0A"/>
+        <!-- Muscle tissue -->
+        <g id="cist-tissue" clip-path="url(#scope-clip-2)" style="opacity:0;transition:opacity .8s">
+          <rect x="22" y="55"  width="216" height="13" rx="1" fill="#5A2418" opacity=".75"/>
+          <rect x="22" y="76"  width="216" height="11" rx="1" fill="#4A1A10" opacity=".7"/>
+          <rect x="22" y="95"  width="216" height="13" rx="1" fill="#5A2418" opacity=".75"/>
+          <rect x="22" y="116" width="216" height="11" rx="1" fill="#4A1A10" opacity=".7"/>
+          <rect x="22" y="135" width="216" height="13" rx="1" fill="#5A2418" opacity=".75"/>
+          <rect x="22" y="156" width="216" height="11" rx="1" fill="#4A1A10" opacity=".7"/>
+          <rect x="22" y="175" width="216" height="13" rx="1" fill="#5A2418" opacity=".7"/>
+          <rect x="22" y="196" width="216" height="10" rx="1" fill="#4A1A10" opacity=".65"/>
+        </g>
+        <!-- C. bovis (T. saginata) — yellow-white, no hooks -->
+        <g id="cist-bovis" clip-path="url(#scope-clip-2)" style="opacity:0;transition:opacity 1s">
+          <!-- Host capsule -->
+          <ellipse cx="100" cy="130" rx="40" ry="27" fill="#4A2A1A" stroke="#7A4A2A" stroke-width="1.5"/>
+          <!-- Vesicle wall -->
+          <ellipse cx="100" cy="130" rx="33" ry="22" fill="#F8F4D0" opacity=".92" stroke="#D4C870" stroke-width="2"/>
+          <!-- Interior -->
+          <ellipse cx="100" cy="130" rx="29" ry="19" fill="url(#cist-glow)" opacity=".7"/>
+          <!-- Scolex with 4 suckers, NO hooks -->
+          <circle cx="84"  cy="126" r="8"   fill="#EDE0A0" stroke="#C4B060" stroke-width="1.5"/>
+          <circle cx="84"  cy="126" r="5"   fill="#D0B840"/>
+          <circle cx="81" cy="123" r="2" fill="#A09040" opacity=".8"/>
+          <circle cx="87" cy="123" r="2" fill="#A09040" opacity=".8"/>
+          <circle cx="81" cy="129" r="2" fill="#A09040" opacity=".8"/>
+          <circle cx="87" cy="129" r="2" fill="#A09040" opacity=".8"/>
+          <!-- No rostellum label -->
+          <text x="100" y="168" text-anchor="middle" font-size="8.5" fill="#D4C870" font-family="JetBrains Mono,monospace">C. bovis — fara carlige</text>
+          <text x="100" y="178" text-anchor="middle" font-size="8" fill="#8B7A30" font-family="JetBrains Mono,monospace">T. saginata (vita)</text>
+        </g>
+        <!-- C. cellulosae (T. solium) — opaque, with hooks -->
+        <g id="cist-cellulosae" clip-path="url(#scope-clip-2)" style="opacity:0;transition:opacity 1s">
+          <ellipse cx="160" cy="118" rx="33" ry="22" fill="#3A1A2A" stroke="#6A3A5A" stroke-width="1.5"/>
+          <ellipse cx="160" cy="118" rx="27" ry="18" fill="#EDE0F8" opacity=".88" stroke="#9B70D4" stroke-width="2"/>
+          <ellipse cx="160" cy="118" rx="23" ry="15" fill="url(#cist-glow2)" opacity=".65"/>
+          <!-- Scolex with rostellum + hook crown -->
+          <circle cx="145" cy="114" r="7"   fill="#D8C0F0" stroke="#9B70D4" stroke-width="1.5"/>
+          <circle cx="145" cy="114" r="4.5" fill="#B090D8"/>
+          <!-- Double crown of hooks (triangles) -->
+          <polygon points="142,108 144,104 146,108" fill="#5A38A0"/>
+          <polygon points="145,106 147,102 149,106" fill="#5A38A0"/>
+          <polygon points="139,110 141,106 143,110" fill="#5A38A0"/>
+          <polygon points="148,107 150,103 152,107" fill="#7A58C0"/>
+          <polygon points="140,106 142,102 144,106" fill="#7A58C0"/>
+          <text x="160" y="150" text-anchor="middle" font-size="8.5" fill="#a78bfa" font-family="JetBrains Mono,monospace">C. cellulosae — CU carlige!</text>
+          <text x="160" y="160" text-anchor="middle" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">T. solium (porc) — PERICOL</text>
+        </g>
+        <line x1="168" y1="218" x2="208" y2="218" stroke="#6b8a9e" stroke-width="1.5" opacity=".5"/>
+        <text x="188" y="228" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">5 mm</text>
+        <circle cx="130" cy="130" r="108" fill="url(#cist-vig)"/>
+        <circle cx="130" cy="130" r="122" fill="none" stroke="#3a1a5a" stroke-width="2"/>
+      </svg>
+      <div class="vis-label" id="cist-vis-label">Inspectie macroscopica musculatura</div>
+    </div>
+    <div class="stage-info" id="info-2"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-2" onclick="prevStep(2)" disabled>← Înapoi</button>
+    <button class="btn btn-primary" id="next-2" onclick="nextStep(2)">Următorul pas →</button>
+    <span class="step-counter" id="counter-2">Pas 1/6</span>
+    <button class="btn btn-reset" onclick="resetTest(2)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- PANEL 3: NTG LAPTE -->
+<div class="test-panel" id="panel-3">
+  <div class="pipeline" id="pipeline-3"></div>
+  <div class="stage-card" id="card-3">
+    <div class="stage-visual">
+      <svg id="svg-ntg" width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <radialGradient id="agar-g" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#2A4A2A"/>
+            <stop offset="100%" stop-color="#1A3018"/>
+          </radialGradient>
+        </defs>
+        <!-- Milk tube -->
+        <rect x="25" y="28" width="34" height="122" rx="17" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+        <rect id="ntg-milk-fill" x="27" y="48" width="30" height="100" rx="15" fill="#F5F0E8"/>
+        <text x="42" y="23" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Lapte</text>
+        <!-- Dilution tubes -->
+        <g id="ntg-dilutions" style="opacity:0;transition:opacity .8s">
+          <rect x="73"  y="53" width="24" height="82" rx="12" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1"/>
+          <rect x="75"  y="63" width="20" height="70" rx="10" fill="#F5F0E8" opacity=".75"/>
+          <text x="85" y="48" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1:10</text>
+          <rect x="108" y="58" width="24" height="77" rx="12" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1"/>
+          <rect x="110" y="68" width="20" height="65" rx="10" fill="#F5F0E8" opacity=".5"/>
+          <text x="120" y="53" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1:100</text>
+          <rect x="143" y="63" width="24" height="72" rx="12" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1"/>
+          <rect x="145" y="73" width="20" height="60" rx="10" fill="#F5F0E8" opacity=".3"/>
+          <text x="155" y="58" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">1:1000</text>
+          <line x1="59" y1="88" x2="73" y2="98" stroke="#2A9DBF" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="97" y1="94" x2="108" y2="98" stroke="#2A9DBF" stroke-width=".8" stroke-dasharray="3,2"/>
+          <line x1="132" y1="97" x2="143" y2="100" stroke="#2A9DBF" stroke-width=".8" stroke-dasharray="3,2"/>
+        </g>
+        <!-- Incubator -->
+        <g id="ntg-incubator-box" style="opacity:0;transition:opacity .8s">
+          <rect x="178" y="28" width="72" height="100" rx="7" fill="#152030" stroke="#f5a623" stroke-width="1.5"/>
+          <text x="214" y="60" text-anchor="middle" font-size="17" fill="#f5a623" font-family="JetBrains Mono,monospace" font-weight="bold">30°C</text>
+          <text x="214" y="78" text-anchor="middle" font-size="10" fill="#6b8a9e" font-family="JetBrains Mono,monospace">72 ore</text>
+          <text x="214" y="45" text-anchor="middle" font-size="8.5" fill="#f5a623" font-family="JetBrains Mono,monospace">TERMOSTAT</text>
+          <path d="M188,100 Q200,95 212,100 Q224,105 236,100" fill="none" stroke="#f5a623" stroke-width="1" opacity=".5"/>
+        </g>
+        <!-- Petri dish -->
+        <ellipse cx="105" cy="198" rx="90" ry="21" fill="#0a1520" stroke="#2A9DBF" stroke-width="1.5"/>
+        <ellipse id="ntg-agar-e" cx="105" cy="195" rx="84" ry="19" fill="url(#agar-g)"/>
+        <!-- Few colonies -->
+        <g id="ntg-col-few" style="opacity:0;transition:opacity .8s">
+          <circle cx="58"  cy="193" r="5"   fill="#2ecc71" opacity=".9"/>
+          <circle cx="95"  cy="198" r="4.5" fill="#2ecc71" opacity=".85"/>
+          <circle cx="128" cy="191" r="5.5" fill="#2ecc71" opacity=".9"/>
+          <circle cx="160" cy="196" r="4"   fill="#f5a623" opacity=".8"/>
+          <circle cx="78"  cy="200" r="3.5" fill="#2ecc71" opacity=".8"/>
+          <text x="105" y="216" text-anchor="middle" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">colonie conform &lt;300/placa</text>
+        </g>
+        <!-- Many colonies TNTC -->
+        <g id="ntg-col-many" style="opacity:0;transition:opacity .8s">
+          <circle cx="38"  cy="195" r="4"   fill="#2ecc71"/>
+          <circle cx="52"  cy="201" r="3.5" fill="#f5a623"/>
+          <circle cx="65"  cy="191" r="4.5" fill="#2ecc71"/>
+          <circle cx="78"  cy="198" r="4"   fill="#2ecc71"/>
+          <circle cx="90"  cy="192" r="4.5" fill="#f5a623"/>
+          <circle cx="103" cy="199" r="4"   fill="#2ecc71"/>
+          <circle cx="116" cy="193" r="4.5" fill="#2ecc71"/>
+          <circle cx="128" cy="199" r="4"   fill="#f5a623"/>
+          <circle cx="140" cy="192" r="4.5" fill="#2ecc71"/>
+          <circle cx="152" cy="197" r="4"   fill="#2ecc71"/>
+          <circle cx="163" cy="192" r="4"   fill="#f5a623"/>
+          <circle cx="173" cy="198" r="3.5" fill="#2ecc71"/>
+          <circle cx="58"  cy="204" r="3"   fill="#2ecc71"/>
+          <circle cx="108" cy="204" r="3"   fill="#f5a623"/>
+          <text x="105" y="218" text-anchor="middle" font-size="8.5" fill="#f5a623" font-family="JetBrains Mono,monospace">TNTC &gt;300 colonii NECONFORM</text>
+        </g>
+        <text id="ntg-result-val" x="105" y="238" text-anchor="middle" font-size="11" fill="#2ecc71" font-family="JetBrains Mono,monospace" font-weight="bold" opacity="0">---</text>
+      </svg>
+      <div class="vis-label" id="ntg-vis-label">Placi Petri — PCA 30°C/72h (ISO 4833-1)</div>
+    </div>
+    <div class="stage-info" id="info-3"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-3" onclick="prevStep(3)" disabled>← Înapoi</button>
+    <button class="btn btn-primary" id="next-3" onclick="nextStep(3)">Următorul pas →</button>
+    <span class="step-counter" id="counter-3">Pas 1/6</span>
+    <button class="btn btn-reset" onclick="resetTest(3)">↺ Resetare</button>
+  </div>
+</div>
+
+<!-- PANEL 4: EBER -->
+<div class="test-panel" id="panel-4">
+  <div class="pipeline" id="pipeline-4"></div>
+  <div class="stage-card" id="card-4">
+    <div class="stage-visual">
+      <svg id="svg-eber" width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <linearGradient id="e-tg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1e3a4a"/><stop offset="35%" stop-color="#254a5a"/><stop offset="65%" stop-color="#254a5a"/><stop offset="100%" stop-color="#1e3a4a"/>
+          </linearGradient>
+          <linearGradient id="e-lg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a0c0d8"/><stop offset="50%" stop-color="#c0d8f0"/><stop offset="100%" stop-color="#a0c0d8"/>
+          </linearGradient>
+        </defs>
+        <!-- Tube -->
+        <rect x="90" y="32" width="80" height="190" rx="40" fill="url(#e-tg)" stroke="#3a6a8a" stroke-width="2"/>
+        <rect x="95" y="48" width="12" height="155" rx="6" fill="white" opacity=".06"/>
+        <!-- Liquid -->
+        <rect id="e-liq-r" x="93" y="152" width="74" height="62" fill="url(#e-lg)" opacity=".85"/>
+        <ellipse cx="130" cy="214" rx="37" ry="13" fill="#a0c0d8" opacity=".85"/>
+        <ellipse cx="130" cy="152" rx="37" ry="8"  fill="#c8e0f0" opacity=".7"/>
+        <!-- Stopper -->
+        <rect id="e-stopper" x="93" y="24" width="74" height="14" rx="7" fill="#4a6070" stroke="#3a5060" stroke-width="1"/>
+        <!-- Wire + meat -->
+        <line x1="130" y1="38" x2="130" y2="102" stroke="#8a9aaa" stroke-width="2.5"/>
+        <path d="M130,102 Q122,114 118,123" stroke="#8a9aaa" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="118" cy="132" rx="14" ry="9" fill="#8B3A2A"/>
+        <ellipse cx="118" cy="126" rx="12" ry="7" fill="#A04030"/>
+        <path d="M109,127 Q115,124 122,128 Q118,131 111,130 Z" fill="#C05040" opacity=".5"/>
+        <!-- Gap indicator -->
+        <g id="e-gap" style="opacity:0;transition:opacity .8s">
+          <line x1="152" y1="135" x2="152" y2="152" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <line x1="148" y1="135" x2="156" y2="135" stroke="#f5a623" stroke-width="1"/>
+          <line x1="148" y1="152" x2="156" y2="152" stroke="#f5a623" stroke-width="1"/>
+          <text x="168" y="145" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">1-2 cm</text>
+        </g>
+        <!-- Smoke -->
+        <g id="e-sm1" class="smoke-puff"><ellipse cx="120" cy="112" rx="10" ry="6" fill="#ddd"/></g>
+        <g id="e-sm2" class="smoke-puff" style="animation-delay:-.7s"><ellipse cx="127" cy="100" rx="13" ry="7" fill="#d5d5d5"/></g>
+        <g id="e-sm3" class="smoke-puff" style="animation-delay:-1.3s"><ellipse cx="121" cy="87"  rx="9"  ry="5" fill="#ccc"/></g>
+        <g id="e-sm4" class="smoke-puff" style="animation-delay:-.3s"><ellipse cx="131" cy="74"  rx="11" ry="6" fill="#d8d8d8"/></g>
+        <!-- Warning -->
+        <g id="e-warn" style="opacity:0;transition:opacity .6s">
+          <circle cx="195" cy="88" r="22" fill="rgba(232,68,90,.2)" stroke="#e8445a" stroke-width="2"/>
+          <text x="195" y="83" text-anchor="middle" font-size="20" fill="#e8445a" font-weight="bold">!</text>
+          <text x="195" y="97" text-anchor="middle" font-size="8.5" fill="#e8445a" font-family="Syne,sans-serif" font-weight="bold">NH4Cl</text>
+        </g>
+        <!-- Equation + result -->
+        <text id="e-chem" x="130" y="243" text-anchor="middle" font-size="9.5" fill="#a78bfa" font-family="JetBrains Mono,monospace" opacity="0">NH3 + HCl → NH4Cl ↑</text>
+        <text id="e-res" x="130" y="257" text-anchor="middle" font-size="11" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700" opacity="0">CARNE ALTERATA</text>
+      </svg>
+      <div class="vis-label" id="eber-vis-label">Sistemul Eber — eprubeta etansa</div>
+    </div>
+    <div class="stage-info" id="info-4"></div>
+  </div>
+  <div class="controls">
+    <button class="btn btn-secondary" id="prev-4" onclick="prevStep(4)" disabled>← Înapoi</button>
+    <button class="btn btn-primary" id="next-4" onclick="nextStep(4)">Următorul pas →</button>
+    <span class="step-counter" id="counter-4">Pas 1/5</span>
+    <button class="btn btn-reset" onclick="resetTest(4)">↺ Resetare</button>
+  </div>
+</div>
+
+<script>
+function g(id){return document.getElementById(id);}
+const VL_IDS = ['bact','trich','cist','ntg','eber'];
+function setVL(ti,txt){const el=g(VL_IDS[ti]+'-vis-label');if(el)el.textContent=txt;}
+
+const TESTS=[
+  {title:"Bacterioscopia Carnii",color:"#2A9DBF",steps:[
+    {label:"Recoltare",icon:"🧫",title:"Recoltarea probei de carne",badge:"Pas 1 din 6",
+     text:"Se recolteaza <strong>100-150 g</strong> in conditii stricte de asepsie. <em>Doua frotiuri</em>: unul de pe suprafata exterioara, altul din profunzime (sectiune sterila).",
+     note:"Transport max. 6 ore la 0-4 grade C. ISO 17604:2015.",
+     svg:()=>{g('bact-field-bg').setAttribute('fill','#1a1a08');g('bact-fresh').style.opacity='0';g('bact-altered').style.opacity='0';g('bact-scale').style.opacity='0';g('bact-scale-lbl').style.opacity='0';setVL(0,'Pregatire frotiu — ob. x100, imersie');}},
+    {label:"Coloratie Gram",icon:"🎨",title:"Coloratia Gram — 4 etape",badge:"Pas 2 din 6",
+     text:"1. <strong>Cristal violet</strong> (30 sec) + Lugol (1 min)<br>2. <strong>Decolorare</strong> alcool-acetona (10-15 sec)<br>3. <strong>Safranina</strong> (30 sec) — Gram+: violet | Gram-: roz",
+     note:"Gram+ = roz rosu (bacili gram neg) | Gram+ = violet (coci).",
+     svg:()=>{g('bact-field-bg').setAttribute('fill','#0a0618');setVL(0,'Frotiu colorat Gram — camp microscopic');}},
+    {label:"Carne proaspata",icon:"✅",title:"Aspect microscopic — Carne PROASPATA",badge:"Pas 3 din 6",
+     text:"<strong>Frotiu suprafata</strong>: putini germeni izolati (coci/bacili), <em>fara fragmente tisulare aderente</em>. <strong>Frotiu profunzime</strong>: germeni ABSENTI.",
+     note:"Norma: max 20 germeni/camp suprafata, 0 in profunzime (Reg. CE 2073/2005).",
+     result:[{cls:'good',text:'✅ ≤20 germeni/camp + fara fragmente = PROASPATA'}],
+     svg:()=>{g('bact-field-bg').setAttribute('fill','#0a0e18');g('bact-fresh').style.opacity='1';g('bact-altered').style.opacity='0';g('bact-scale').style.opacity='.7';g('bact-scale-lbl').style.opacity='.7';setVL(0,'PROASPATA — germeni rari, camp curat');}},
+    {label:"Carne alterata",icon:"⚠️",title:"Aspect microscopic — Carne ALTERATA",badge:"Pas 4 din 6",
+     text:"<strong>Frotiu suprafata</strong>: bacili rosii (Gram-) + coci violeti (Gram+), mucegaiuri, <em>fragmente tisulare brune in descompunere</em>. <strong>Profunzime</strong>: germeni prezenti.",
+     note:"Bacilii rosi (E.coli, Pseudomonas) = Gram-. Coci violeti (Stafilococ) = Gram+. Fragmentele = cheratina.",
+     result:[{cls:'positive',text:'🔴 >20 g/camp + fragmente tisulare + mucegaiuri = ALTERATA'}],
+     svg:()=>{g('bact-fresh').style.opacity='0';g('bact-altered').style.opacity='1';g('bact-field-bg').setAttribute('fill','#100808');setVL(0,'ALTERATA — germeni densi + fragmente tisulare');}},
+    {label:"Norme",icon:"📊",title:"Norme bacteriologice — Reg. CE 2073/2005",badge:"Pas 5 din 6",
+     text:"<b>Mezeluri:</b> Salmonella 0/25g · E. coli max 1 UFC/g · Coliformi max 10 UFC/g · Listeria 0/25g (RTE).<br><b>Carne:</b> max 20 germeni/camp suprafata, 0 profunzime.",
+     note:"Bacterioscopia = screening rapid calitativ. Se completeaza cu culturi cantitative (NTG, Salmonella).",
+     svg:()=>{g('bact-altered').style.opacity='0.3';setVL(0,'Norme Reg. (CE) 2073/2005');}},
+    {label:"Concluzie",icon:"📋",title:"Concluzie & Corelatii",badge:"Pas 6 din 6",
+     text:"Bacterioscopia este <strong>rapida si calitativa</strong>. Obligatoriu corelata cu: pH + Nessler + Eber (chimic) + culturi cantitative (NTG, identificare patogeni).",
+     note:"ISO 17604:2015 · ISO 4833-1:2013 · Reg. (CE) 2073/2005.",
+     result:[{cls:'good',text:'✅ Proaspata: ≤20g/camp, 0 profunzime'},{cls:'positive',text:'🔴 Alterata: >20g/camp + fragmente + germeni in profunzime'}],
+     svg:()=>{g('bact-altered').style.opacity='0';g('bact-fresh').style.opacity='1';g('bact-field-bg').setAttribute('fill','#0a0e18');setVL(0,'Camp microscopic final — ob. x100');}}
+  ]},
+  {title:"Trichinoscopia",color:"#a78bfa",steps:[
+    {label:"Importanta",icon:"⚠️",title:"Ce vedem la trichinoscop?",badge:"Pas 1 din 7",
+     text:"In campul trichinoscopic vedem <strong>sectiuni longitudinale de muschi</strong> comprimate. La carne infestata apar <em>larvele enchist</em>: structuri ovale galbui-transparente cu larva spiralata inauntru.",
+     note:"Reg. (UE) 1375/2015: control obligatoriu la TOATE porcinele si vanatul. Zero toleranta UE.",
+     svg:()=>{g('trich-muscle').style.opacity='0';g('trich-larvae-1').style.opacity='0';g('trich-larvae-2').style.opacity='0';g('trich-larvae-3').style.opacity='0';g('trich-calcif').style.opacity='0';g('trich-counter-g').style.opacity='0';setVL(1,'Camp trichinoscopic — sectiune carne');}},
+    {label:"Fibre musculare",icon:"🔬",title:"Aspectul fibrelor musculare normale",badge:"Pas 2 din 7",
+     text:"In campul microscopic, o sectiune normala (negativa) arata doar <strong>fibrele musculare striatite</strong>: benzi orizontale paralele, roz-maronii, cu nuclei alungiti de-a lungul lor.",
+     note:"Examinare sistematica: 14 campuri/specimen. Se parcurge toata suprafata lamelei sistematic.",
+     svg:()=>{g('trich-muscle').style.opacity='1';setVL(1,'Fibre musculare striatite — camp negativ');}},
+    {label:"Camp negativ",icon:"✅",title:"Camp trichinoscopic NEGATIV",badge:"Pas 3 din 7",
+     text:"Camp negativ: doar fibre musculare, niciun chist vizibil, nicio larva. Celule clare, striatii fine.",
+     note:"Se verifica 14 campuri per specimen. Toate negative = carne admisa la consum.",
+     result:[{cls:'good',text:'✅ 0/14 campuri pozitive = CARNE NEINFESTATA'}],
+     svg:()=>{g('trich-muscle').style.opacity='1';g('trich-larvae-1').style.opacity='0';g('trich-larvae-2').style.opacity='0';g('trich-larvae-3').style.opacity='0';g('trich-calcif').style.opacity='0';g('trich-counter-g').style.opacity='1';g('trich-count-txt').textContent='0 larve';g('trich-count-txt').setAttribute('fill','#2ecc71');setVL(1,'NEGATIV — fibre musculare fara chisturi');}},
+    {label:"Larva enchist",icon:"🔍",title:"Aspectul larvei enchist viabile",badge:"Pas 4 din 7",
+     text:"Larva enchist = <strong>structura ovala/lemon-shape, galbui-transparenta</strong>, 300-600 µm. Inauntru: <em>larva spiralata 1-2 spirale</em>, cu scolexul (capul) vizibil ca punct dens la un capat al chistului.",
+     note:"Chistul are 2 straturi: capsula externa (tesut conjunctiv al gazdei) + peretele propriu al chistului.",
+     svg:()=>{g('trich-muscle').style.opacity='1';g('trich-larvae-1').style.opacity='1';g('trich-counter-g').style.opacity='1';g('trich-count-txt').textContent='1 larva';g('trich-count-txt').setAttribute('fill','#e8445a');setVL(1,'Chist viabil — forma ovala, larva spiralata');}},
+    {label:"Infestare masiva",icon:"🔢",title:"Camp pozitiv — Infestare masiva",badge:"Pas 5 din 7",
+     text:"Campul arata <strong>3 chisturi viabile</strong> (transparente, galbui) + 1 calcificat (gri-inchis = larva moarta veche).<br><b>Masiva</b>: >5 campuri pozitive din 14.<br><b>Slaba</b>: <5 campuri din 14.",
+     note:"Chist calcificat = infestare veche. Chist translucid = larva VIABILA = pericol actual de boala!",
+     result:[{cls:'positive',text:'🔴 3 chisturi viabile + 1 calcificat = CARNE RESPINSA INTEGRAL'}],
+     svg:()=>{g('trich-muscle').style.opacity='1';g('trich-larvae-1').style.opacity='1';g('trich-larvae-2').style.opacity='1';g('trich-larvae-3').style.opacity='1';g('trich-calcif').style.opacity='1';g('trich-counter-g').style.opacity='1';g('trich-count-txt').textContent='3+1 larve';g('trich-count-txt').setAttribute('fill','#e8445a');setVL(1,'POZITIV — 3 chisturi viabile + 1 calcificat');}},
+    {label:"Profilaxie",icon:"🛡️",title:"Prevenirea Trichinelozei",badge:"Pas 6 din 7",
+     text:"Inactivare larve: <strong>77°C</strong> temperatura interna (NU microunde — inegale!) | -15°C/20 zile sau -32°C/24h (congelare) | Deratizare. <em>Afumarea si sararea usoara NU distrug larvele!</em>",
+     note:"ISO 18743:2015 — digestia artificiala = metoda mai sensibila decat trichinoscopia clasica.",
+     svg:()=>{setVL(1,'Metode de inactivare larve T. spiralis');}},
+    {label:"Concluzie",icon:"📋",title:"Concluzie & Cadru Legal",badge:"Pas 7 din 7",
+     text:"Trichinoscopia obligatorie prin Reg. (UE) 1375/2015. <em>O singura larva viabila = CONFISCARE INTEGRALA</em>. Digestia artificiala (ISO 18743) = metoda preferata azi in laboratoare.",
+     note:"Romania: cazuri anuale de trichineloza din taieri clandestine (mistret, porc casnic necontrolat).",
+     result:[{cls:'good',text:'✅ Negativ: carne admisa la consum'},{cls:'positive',text:'🔴 Orice larva = CONFISCARE integrala, zero toleranta'}],
+     svg:()=>{g('trich-larvae-1').style.opacity='0';g('trich-larvae-2').style.opacity='0';g('trich-larvae-3').style.opacity='0';g('trich-calcif').style.opacity='0';g('trich-count-txt').textContent='0 larve';g('trich-count-txt').setAttribute('fill','#2ecc71');setVL(1,'NEGATIV — carne admisa la consum ✓');}}
+  ]},
+  {title:"Cisticercoza",color:"#9B70D4",steps:[
+    {label:"Agenti",icon:"🪱",title:"C. bovis vs. C. cellulosae — diferente cheie",badge:"Pas 1 din 6",
+     text:"<strong>T. saginata → C. bovis</strong> (vita): vesicula alba-galbuie, 6-18mm, scolex fara carlige.<br><strong>T. solium → C. cellulosae</strong> (porc): ovoidal, opalescent, scolex cu coroana dubla de carlige.",
+     note:"T. solium: PERICOL — neurocisticercoza cerebrala = prima cauza de epilepsie dobandita (OMS).",
+     svg:()=>{g('cist-tissue').style.opacity='0';g('cist-bovis').style.opacity='0';g('cist-cellulosae').style.opacity='0';setVL(2,'Inspectie macroscopica musculatura');}},
+    {label:"Inspectie",icon:"🔍",title:"Examenul macroscopic la abator",badge:"Pas 2 din 6",
+     text:"Inspectare <strong>cu ochiul liber sau cu lupa</strong>. Zone obligatorii: muschi masticatori, inima, limba, diafragma, musculatura intercostala. Control obligatoriu: bovine >3 luni.",
+     note:"Cisticercii sunt vizibili ca vezicule mici, albe-galbui, in musculatura. Uneori chisturi calcificate (gri).",
+     svg:()=>{g('cist-tissue').style.opacity='1';setVL(2,'Sectiune musculara — inspectie cu lupa');}},
+    {label:"C. bovis",icon:"🟡",title:"Aspectul C. bovis (T. saginata) la vita",badge:"Pas 3 din 6",
+     text:"Cisticercul apare ca o <strong>vesicula ovala, translucida, alba-galbuie</strong>, 6-18mm. Inauntru: scolexul cu <em>4 ventuze (fara carlige)</em> — T. saginata nu are rostellum armat.",
+     note:"Vezicul vie = translucida. Vezicul moarta = calcificata, dura, opaca (infestare veche).",
+     result:[{cls:'warning',text:'⚠️ C. bovis identificat — decizie veterinara obligatorie'}],
+     svg:()=>{g('cist-tissue').style.opacity='1';g('cist-bovis').style.opacity='1';g('cist-cellulosae').style.opacity='0';setVL(2,'C. bovis — scolex fara carlige (T. saginata)');}},
+    {label:"C. cellulosae",icon:"🔴",title:"Aspectul C. cellulosae (T. solium) la porc",badge:"Pas 4 din 6",
+     text:"Cisticercul apare <strong>ovoidal, opalescent, alb-gri</strong>. Scolexul are <em>rostellum armat cu coroana dubla de carlige</em> — vizibili ca puncte dense in forma de arc sub microscopul lupa.",
+     note:"Diferenta cheie: carligele = T. solium. Pericol de neurocisticercoza = migrare cerebrala!",
+     result:[{cls:'positive',text:'🔴 C. cellulosae cu carlige = T. SOLIUM — PERICOL maxim'}],
+     svg:()=>{g('cist-tissue').style.opacity='1';g('cist-bovis').style.opacity='.25';g('cist-cellulosae').style.opacity='1';setVL(2,'C. cellulosae — scolex CU carlige (T. solium)');}},
+    {label:"Decizie",icon:"⚖️",title:"Criterii de confiscare / admitere",badge:"Pas 5 din 6",
+     text:"<strong>Infestare generalizata</strong> (>1 cisticercus/40 cm²): CONFISCARE INTEGRALA.<br><strong>Infestare localizata</strong> + decontaminare: 56°C/5 min SAU -10°C/9 zile SAU sarare indelungata.",
+     note:"C. cellulosae (T. solium) = confiscare integrala indiferent de grad. Zero derogari.",
+     result:[{cls:'positive',text:'🔴 Generalizata → CONFISCARE'},{cls:'warning',text:'⚠️ Localizata → decontaminare obligatorie'}],
+     svg:()=>{setVL(2,'Criterii de decizie veterinara');}},
+    {label:"Concluzie",icon:"📋",title:"Prevenire & Concluzie",badge:"Pas 6 din 6",
+     text:"Prevenire: <strong>control veterinar obligatoriu la abator</strong> + preparare termica >56°C + igiena individuala (legume spalate, apa potabila) + interzicerea consumului de carne necontrolata.",
+     note:"Neurocisticercoza (T. solium) = urgenta neurologica. Tratament: albendazol + corticosteroizi.",
+     result:[{cls:'good',text:'✅ Control abator = singura garantie de siguranta'}],
+     svg:()=>{g('cist-bovis').style.opacity='.35';g('cist-cellulosae').style.opacity='.35';setVL(2,'Control abator + preparare termica = preventie');}}
+  ]},
+  {title:"NTG Lapte",color:"#2ecc71",steps:[
+    {label:"Semnificatie",icon:"🥛",title:"NTG — Indicatorul calitatii igienice",badge:"Pas 1 din 6",
+     text:"<strong>Numarul Total de Germeni</strong> (NTG) = gradul total de contaminare microbiana a laptelui. Reflecta igiena intregului lant: muls → transport → pasteurizare → imbuteliere.",
+     note:"ISO 4833-1:2013 | Reg. CE 853/2004: lapte crud <100.000 UFC/ml | lapte pasteurizat <300.000 UFC/ml.",
+     svg:()=>{g('ntg-dilutions').style.opacity='0';g('ntg-incubator-box').style.opacity='0';g('ntg-col-few').style.opacity='0';g('ntg-col-many').style.opacity='0';g('ntg-result-val').style.opacity='0';setVL(3,'Placi Petri — PCA 30°C/72h (ISO 4833-1)');}},
+    {label:"Dilutii seriale",icon:"🧪",title:"Prepararea dilutiilor seriale",badge:"Pas 2 din 6",
+     text:"Dilutii zecimale in solutie peptonata sterila: 1:10 → 1:100 → 1:1000. Agitare energica. Scopul: obtinerea unui numar <em>numarabil de colonii</em> (20-300/placa).",
+     note:"Se insamenanteaza minim 2 dilutii consecutive in duplicat. Pipetare cu pipete sterile.",
+     svg:()=>{g('ntg-dilutions').style.opacity='1';setVL(3,'Dilutii seriale 1:10 · 1:100 · 1:1000');}},
+    {label:"Insamantare + incubare",icon:"🌡️",title:"Insamantare PCA + Incubare 30°C/72h",badge:"Pas 3 din 6",
+     text:"1 ml din fiecare dilutie pe Plate Count Agar (PCA). Distribuire uniforma. <strong>30°C ± 1°C, 72 ± 3 ore</strong> in termostat, capac in jos (evitare condens).",
+     note:"PCA = mediu nutritiv neseleciv pentru NTG. Temperatura 30°C = optima pentru bacterii mezofile.",
+     svg:()=>{g('ntg-dilutions').style.opacity='1';g('ntg-incubator-box').style.opacity='1';setVL(3,'Termostat 30°C / 72 ore — PCA');}},
+    {label:"Lapte conform",icon:"✅",title:"Rezultat CONFORM — colonii numarabile",badge:"Pas 4 din 6",
+     text:"Placi cu <strong>20-300 colonii</strong> = numarabile. Colonii rotunde, albe-gri sau crem (bacterii mezofile aerobe). Formula: NTG = N colonii × 1/dilutie.",
+     note:"Exemplu: 45 colonii pe placa 1:10000 → NTG = 45 × 10000 = 450.000 UFC/ml.",
+     result:[{cls:'good',text:'✅ <300.000 UFC/ml — lapte pasteurizat CONFORM'}],
+     svg:()=>{g('ntg-incubator-box').style.opacity='.4';g('ntg-col-few').style.opacity='1';g('ntg-col-many').style.opacity='0';g('ntg-result-val').style.opacity='1';g('ntg-result-val').textContent='180.000 UFC/ml ✓';g('ntg-result-val').setAttribute('fill','#2ecc71');setVL(3,'CONFORM — colonii numarabile (20-300/placa)');}},
+    {label:"Lapte neconform",icon:"🔴",title:"Rezultat NECONFORM — TNTC",badge:"Pas 5 din 6",
+     text:"<strong>TNTC (Too Numerous To Count)</strong> = >300 colonii/placa. Indica: igiena deficitara la muls, recontaminare post-pasteurizare sau pasteurizare insuficienta.",
+     note:"La TNTC pe toate dilutiile: se raporteaza ca depasire. Lot neconform, retras din comert.",
+     result:[{cls:'positive',text:'🔴 TNTC >300.000 UFC/ml — NECONFORM, retragere lot'}],
+     svg:()=>{g('ntg-col-few').style.opacity='0';g('ntg-col-many').style.opacity='1';g('ntg-result-val').textContent='>300.000 UFC/ml ✗';g('ntg-result-val').setAttribute('fill','#e8445a');setVL(3,'NECONFORM — TNTC (>300 colonii/placa)');}},
+    {label:"Concluzie",icon:"📋",title:"Interpretare & Actiuni corective",badge:"Pas 6 din 6",
+     text:"NTG ridicat = igiena deficitara undeva in lant. Investigare: muls (igienizare uger, maini) → transport (lant frigorific) → pasteurizare (temperatura/timp) → imbuteliere (recontaminare).",
+     note:"ISO 4833-1:2013 · Reg. (CE) 853/2004 · Reg. (CE) 2073/2005.",
+     result:[{cls:'good',text:'✅ <300.000 UFC/ml = lapte pasteurizat conform'},{cls:'positive',text:'🔴 >300.000 UFC/ml = neconform — retragere lot'}],
+     svg:()=>{g('ntg-col-few').style.opacity='1';g('ntg-col-many').style.opacity='0';g('ntg-result-val').textContent='< 300.000 UFC/ml';g('ntg-result-val').setAttribute('fill','#2ecc71');setVL(3,'Placi Petri — colonii numarabile ✓');}}
+  ]},
+  {title:"Testul Eber — Carne",color:"#a78bfa",steps:[
+    {label:"Reactiv",icon:"⚗️",title:"Reactivul Eber — Compozitie si aspect",badge:"Pas 1 din 5",
+     text:"Reactivul Eber: <strong>HCl 25% + etanol absolut + eter etilic (1:3:1)</strong>. Lichid transparent-albastru deschis. Se introduce in eprubeta. Se fixeaza suportul cu sarma pentru carne.",
+     note:"ATENTIE: lucru sub nisa aspiratoare! HCl si eterul sunt volatile si iritante.",
+     svg:()=>{['e-sm1','e-sm2','e-sm3','e-sm4'].forEach(id=>{const el=g(id);el.classList.remove('show');el.style.opacity='0';});g('e-warn').style.opacity='0';g('e-chem').style.opacity='0';g('e-res').style.opacity='0';g('e-gap').style.opacity='0';g('e-stopper').setAttribute('fill','#4a6070');setVL(4,'Eprubeta cu reactiv Eber — lichid transparent');}},
+    {label:"Fixare proba",icon:"🥩",title:"Fixarea probei de carne",badge:"Pas 2 din 5",
+     text:"Se agata <strong>3-5 g de carne</strong> pe sarma suspendata la <em>1-2 cm deasupra reactivului</em>, fara contact direct. Contactul direct cu HCl = fals pozitiv!",
+     note:"Carnea fara apa adaugata. Suprafata expusa direct vaporilor de HCl ce se ridica din reactiv.",
+     svg:()=>{g('e-gap').style.opacity='1';setVL(4,'Carne suspendata 1-2 cm deasupra reactivului');}},
+    {label:"Sistem inchis",icon:"🔒",title:"Inchiderea etansa — 3-5 minute",badge:"Pas 3 din 5",
+     text:"Se astupa eprubeta cu <strong>dop etans</strong> si se asteapta 3-5 minute. Vaporii de HCl urca si intra in contact cu suprafata carnii. NH3 eliberat din carnea alterata reactioneaza cu HCl.",
+     note:"Reactia: NH3 (carne alterata) + HCl (vapori) → NH4Cl (clorura de amoniu) = fum alb vizibil.",
+     svg:()=>{g('e-stopper').setAttribute('fill','#2A4A5A');setVL(4,'Sistem inchis — vapori HCl in contact cu carnea');}},
+    {label:"Reactie pozitiva",icon:"💨",title:"Fumul alb — NH4Cl vizibil",badge:"Pas 4 din 5",
+     text:"La carnea alterata apare <strong>gaz fumuriu alb-cenusiu</strong> in jurul si deasupra probei. Este <em>clorura de amoniu (NH4Cl)</em> formata prin reactia NH3 + HCl.",
+     note:"Intensitatea fumului coreleaza cu gradul de descompunere. Fum dens = alterare avansata.",
+     result:[{cls:'positive',text:'🔴 Fum alb vizibil = NH4Cl = CARNE ALTERATA'}],
+     svg:()=>{['e-sm1','e-sm2','e-sm3','e-sm4'].forEach((id,i)=>{setTimeout(()=>{const el=g(id);el.style.opacity='.85';el.classList.add('show');},i*200);});g('e-warn').style.opacity='1';g('e-chem').style.opacity='1';setVL(4,'POZITIV — fum alb NH4Cl vizibil');}},
+    {label:"Interpretare",icon:"📊",title:"Interpretare & Corelatii obligatorii",badge:"Pas 5 din 5",
+     text:"Testul Eber este <strong>calitativ si rapid</strong> (5-10 min). Se coreleaza obligatoriu cu: Testul Nessler (semicantitativ NH3) + pH carne + examen organoleptic.",
+     note:"Eber singur NU este suficient pentru decizia finala. Este un screening rapid complementar.",
+     result:[{cls:'good',text:'✅ Negativ: fara fum = carne proaspata'},{cls:'positive',text:'🔴 Pozitiv: fum alb NH4Cl = carne alterata — RESPINSA'}],
+     svg:()=>{g('e-res').style.opacity='1';setVL(4,'Interpretare finala — corelat cu Nessler + pH');}}
+  ]}
+];
+
+const curStep=[0,0,0,0,0];
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  g('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=g('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  g('card-'+ti).classList.toggle('highlight',si>0);
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result) step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  g('info-'+ti).innerHTML=html;
+  g('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  g('prev-'+ti).disabled=si===0;
+  const nb=g('next-'+ti);nb.disabled=si===total-1;nb.textContent=si===total-1?'✓ Finalizat':'Urmatorul pas →';nb.style.background=si===total-1?'#2ecc71':t.color;
+  if(step.svg) step.svg();
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=g('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>
