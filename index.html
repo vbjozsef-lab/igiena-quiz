@@ -72,16 +72,6 @@ const sb = (path, opts={}) => {
 
 const GROUPS = Array.from({length:20},(_,i)=>`Gr. ${i+1}`);
 
-const SPECIALIZATIONS = [
-  "Medicină Generală",
-  "Medicină Dentară",
-  "BFK / Kinetoterapie",
-  "Asistenți Medicali",
-  "Nutriție și Dietetică",
-];
-// Add new specializations here ↑ — they appear automatically everywhere
-
-
 const QR_DURATIONS = [
   {label:"3 minute",  value:3},
   {label:"5 minute",  value:5},
@@ -946,8 +936,7 @@ async function addSession(session) {
       lab_id: session.labId,
       lab_code: session.labCode,
       expires_at: session.expiresAt,
-      teacher: session.teacher || "",
-      semester: session.semester || ""
+      teacher: session.teacher || ""
     })
   });
   if (!res.ok) {
@@ -973,9 +962,7 @@ async function addResult(result) {
       total: result.total,
       pct: result.pct,
       time_used: result.timeUsed,
-      teacher: result.teacher || "",
-      semester: result.semester || "",
-      specialization: result.specialization || ""
+      teacher: result.teacher || ""
     })
   });
 }
@@ -987,7 +974,7 @@ async function getSession(token) {
   console.log("getSession data:", data);
   if (!data.length) return null;
   const s = data[0];
-  return { token: s.id, labId: s.lab_id, labCode: s.lab_code, labTitle: s.lab_title, duration: s.duration, expiresAt: s.expires_at, createdAt: new Date(s.created_at).getTime(), teacher: s.teacher || "", semester: s.semester || "" };
+  return { token: s.id, labId: s.lab_id, labCode: s.lab_code, labTitle: s.lab_title, duration: s.duration, expiresAt: s.expires_at, createdAt: new Date(s.created_at).getTime(), teacher: s.teacher || "" };
 }
 async function markSessionUsed(token, studentName) {
   // Just log — recorded via result entry
@@ -1001,9 +988,7 @@ async function loadResults() {
     module: r.module, moduleTitle: r.module_title,
     score: r.score, total: r.total, pct: r.pct,
     timestamp: new Date(r.created_at).getTime(), timeUsed: r.time_used,
-    teacher: r.teacher || "",
-    semester: r.semester || "",
-    specialization: r.specialization || ""
+    teacher: r.teacher || ""
   }));
 }
 
@@ -1174,7 +1159,6 @@ function AdminPanel({onBack, teacherName}) {
   const [tab, setTab]             = useState("qr"); // qr | results
   const [selLab, setSelLab]       = useState(LABS.find(l=>l.ready) || LABS[0]);
   const [duration, setDuration]   = useState(5);
-  const [semester, setSemester]   = useState("");
   const [activeSession, setActiveSession] = useState(null);
   const [qrDataURL, setQrDataURL] = useState(null);
   const [timeLeft, setTimeLeft]   = useState(0);
@@ -1210,7 +1194,7 @@ function AdminPanel({onBack, teacherName}) {
     setGenerating(true);
     const token = generateToken();
     const expiresAt = Date.now() + duration * 60 * 1000;
-    const session = { token, labId: selLab.id, labTitle: selLab.title, labCode: selLab.code, duration, expiresAt, createdAt: Date.now(), usedBy:[], teacher: teacherName, semester: semester.trim() };
+    const session = { token, labId: selLab.id, labTitle: selLab.title, labCode: selLab.code, duration, expiresAt, createdAt: Date.now(), usedBy:[], teacher: teacherName };
     await addSession(session);
     const url = `${getBaseURL()}?token=${token}`;
     const dataURL = await generateQRDataURL(url);
@@ -1231,12 +1215,10 @@ function AdminPanel({onBack, teacherName}) {
     const toExport = results.filter(r =>
       (labFilter==="all"||r.labId===labFilter) &&
       (grpFilter==="all"||r.group===grpFilter) &&
-      (semFilter==="all"||r.semester===semFilter) &&
-      (specFilter==="all"||r.specialization===specFilter) &&
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
-    const header = "Semestru,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
-    const rows = toExport.map(r=>`"${r.semester||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
+    const header = "Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
+    const rows = toExport.map(r=>`"${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
     a.download=`igiena_rezultate_${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -1246,13 +1228,9 @@ function AdminPanel({onBack, teacherName}) {
   const timerColor = timeLeft < 60 ? "#dc2626" : timeLeft < 120 ? "#ca8a04" : "#16a34a";
 
   const allGroups = [...new Set(results.map(r=>r.group).filter(Boolean))].sort();
-  const allSemesters = [...new Set(results.map(r=>r.semester).filter(Boolean))].sort().reverse();
-  const allSpecs = [...new Set(results.map(r=>r.specialization).filter(Boolean))].sort();
   const filteredResults = results
     .filter(r => labFilter==="all"||r.labId===labFilter)
     .filter(r => grpFilter==="all"||r.group===grpFilter)
-    .filter(r => semFilter==="all"||r.semester===semFilter)
-    .filter(r => specFilter==="all"||r.specialization===specFilter)
     .filter(r => !nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()));
 
   return (
@@ -1294,14 +1272,6 @@ function AdminPanel({onBack, teacherName}) {
                   <option key={l.id} value={l.id}>{l.code} – {l.title}{!l.ready?" (în pregătire)":""}</option>
                 ))}
               </select>
-
-              <label style={S.label}>📅 Semestru / Modul <span style={{fontWeight:400,color:"#6a9a80",fontSize:12}}>(opțional)</span></label>
-              <input
-                style={{...S.input, marginBottom:16}}
-                placeholder="ex. 2025/26-M3"
-                value={semester}
-                onChange={e => setSemester(e.target.value)}
-              />
 
               <label style={S.label}>Durată valabilitate QR</label>
               <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
@@ -1416,16 +1386,6 @@ function AdminPanel({onBack, teacherName}) {
             {/* filters + export */}
             <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
               <input style={{...S.input,flex:1,minWidth:160}} placeholder="🔍 Caută după nume..." value={nameFilter} onChange={e=>setNameFilter(e.target.value)}/>
-              <select style={{...S.input,width:"auto",minWidth:140}} value={semFilter} onChange={e=>setSemFilter(e.target.value)}>
-                <option value="all">📅 Toate semestrele</option>
-                {allSemesters.map(s=><option key={s} value={s}>{s}</option>)}
-                <option value="">Fără semestru</option>
-              </select>
-              <select style={{...S.input,width:"auto",minWidth:150}} value={specFilter} onChange={e=>setSpecFilter(e.target.value)}>
-                <option value="all">🎓 Toate specializările</option>
-                {allSpecs.map(s=><option key={s} value={s}>{s}</option>)}
-                <option value="">Fără specializare</option>
-              </select>
               <select style={{...S.input,width:"auto",minWidth:120}} value={grpFilter} onChange={e=>setGrpFilter(e.target.value)}>
                 <option value="all">Toate grupele</option>
                 {allGroups.map(g=><option key={g} value={g}>{g}</option>)}
@@ -1445,7 +1405,7 @@ function AdminPanel({onBack, teacherName}) {
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
                   <thead>
                     <tr style={{background:"#f0f9f4"}}>
-                      {["Semestru","Specializare","Profesor","Nume","Grupă","Lab","Modul","Scor","%","Timp","Data"].map(h=>(
+                      {["Nume","Grupă","Lab","Modul","Scor","%","Timp","Data"].map(h=>(
                         <th key={h} style={{textAlign:"left",padding:"10px 12px",borderBottom:"1.5px solid #b2ddc8",color:"#1a6a40",fontSize:11,textTransform:"uppercase",letterSpacing:"0.06em"}}>{h}</th>
                       ))}
                     </tr>
@@ -1456,15 +1416,6 @@ function AdminPanel({onBack, teacherName}) {
                       const d=new Date(r.timestamp);
                       return (
                         <tr key={i} style={{background:i%2===0?"#f8fdfb":"#fff"}}>
-                          <td style={{padding:"9px 12px"}}>
-                            {r.semester ? <span style={{background:"#fef3c7",color:"#92400e",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700}}>📅 {r.semester}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
-                          </td>
-                          <td style={{padding:"9px 12px"}}>
-                            {r.specialization ? <span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600}}>🎓 {r.specialization}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
-                          </td>
-                          <td style={{padding:"9px 12px"}}>
-                            {r.teacher ? <span style={{background:"#dcfce7",color:"#166534",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600}}>👤 {r.teacher}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
-                          </td>
                           <td style={{padding:"9px 12px",color:"#0a2a18",fontWeight:600}}>{r.name}</td>
                           <td style={{padding:"9px 12px"}}>
                             <span style={{background:"#eff6ff",color:"#1d4ed8",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700}}>🏫 {r.group||"–"}</span>
@@ -1674,18 +1625,16 @@ function TokenJoin({token, onValid, onInvalid}) {
 // ⑤ STUDENT LOGIN (after QR validation)
 // ════════════════════════════════════════════════════════════
 function StudentLogin({session, onLogin}) {
-  const [name, setName]           = useState("");
-  const [group, setGroup]         = useState("");
-  const [spec, setSpec]           = useState("");
-  const [err, setErr]             = useState("");
+  const [name, setName]   = useState("");
+  const [group, setGroup] = useState("");
+  const [err, setErr]     = useState("");
   const lab = LABS.find(l=>l.id===session.labId) || {};
 
   const go = () => {
     if (name.trim().length < 3) { setErr("Introduceți numele complet (min. 3 caractere)."); return; }
     if (!group) { setErr("Selectați grupa!"); return; }
-    if (!spec) { setErr("Selectați specializarea!"); return; }
     markSessionUsed(session.token, name.trim());
-    onLogin(name.trim(), group, spec);
+    onLogin(name.trim(), group);
   };
 
   return (
@@ -1704,17 +1653,10 @@ function StudentLogin({session, onLogin}) {
           onKeyDown={e=>e.key==="Enter"&&go()}/>
 
         <label style={S.label}>Grupă</label>
-        <select style={{...S.input,marginBottom:14,cursor:"pointer",color:group?"#1a3a28":"#6a9a80"}}
+        <select style={{...S.input,marginBottom:4,cursor:"pointer",color:group?"#1a3a28":"#6a9a80"}}
           value={group} onChange={e=>{setGroup(e.target.value);setErr("")}}>
           <option value="">— Selectează grupa —</option>
           {GROUPS.map(g=><option key={g} value={g}>{g}</option>)}
-        </select>
-
-        <label style={S.label}>Specializare</label>
-        <select style={{...S.input,marginBottom:4,cursor:"pointer",color:spec?"#1a3a28":"#6a9a80"}}
-          value={spec} onChange={e=>{setSpec(e.target.value);setErr("")}}>
-          <option value="">— Selectează specializarea —</option>
-          {SPECIALIZATIONS.map(s=><option key={s} value={s}>{s}</option>)}
         </select>
 
         {err && <p style={{color:"#dc2626",fontSize:13,margin:"8px 0 0",fontWeight:600}}>{err}</p>}
@@ -1861,7 +1803,7 @@ function LP4BModuleSelect({studentName, onSelect, onDemo}) {
 // ════════════════════════════════════════════════════════════
 // ⑦ QUIZ SCREEN
 // ════════════════════════════════════════════════════════════
-function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFinish, sessionTeacher, sessionSemester}) {
+function QuizScreen({studentName, studentGroup, labId, module, onFinish, sessionTeacher}) {
   const _labQMap = {
     lp1a:LP1A_QUESTIONS, lp1b:LP1B_QUESTIONS,
     lp2a:LP2A_QUESTIONS, lp2b:LP2B_QUESTIONS,
@@ -1906,8 +1848,6 @@ function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFi
       score, total:qs.length, pct,
       timestamp:Date.now(), timeUsed:module.time*60-timeLeft,
       teacher: sessionTeacher || "",
-      semester: sessionSemester || "",
-      specialization: studentSpec || "",
     };
     addResult(entry).catch(e => console.error("DB save error:", e));
     onFinish(entry, fa, finalQs);
@@ -2085,7 +2025,7 @@ function App() {
       onInvalid={msg=>{setErrMsg(msg);setScreen("error");}}/>
   );
   if (screen==="error")       return <ErrorScreen message={errMsg} onBack={()=>{setScreen("home");window.history.pushState({},"",window.location.pathname);}}/>;
-  if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g,sp)=>{setStudent({name:n,group:g,spec:sp||""});setScreen("labRouter");}}/>;
+  if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g)=>{setStudent({name:n,group:g});setScreen("labRouter");}}/>;
 
   // Lab router — route to correct lab based on session
   if (screen==="labRouter") {
@@ -2201,8 +2141,8 @@ function App() {
     <DemoScreen lab={LABS.find(l=>l.id===session?.labId)} onBack={()=>setShowDemo(false)}/>
   );
   if (screen==="quiz" && module) return (
-    <QuizScreen studentName={student?.name} studentGroup={student?.group} studentSpec={student?.spec||""}
-      labId={session?.labId} module={module} sessionTeacher={session?.teacher||""} sessionSemester={session?.semester||""}
+    <QuizScreen studentName={student?.name} studentGroup={student?.group}
+      labId={session?.labId} module={module} sessionTeacher={session?.teacher||""}
       onFinish={(e,a,q)=>{setResult(e);setAnswers(a);setQuizQs(q);setScreen("result");}}/>
   );
   if (screen==="result" && result) return (
