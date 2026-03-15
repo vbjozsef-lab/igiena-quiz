@@ -46,9 +46,7 @@ const TEACHERS = {
 // Animált bemutatók laboronként (beépítve iframe-ben)
 const LAB_DEMOS = {
   lp4b: [
-    { title: "📚 Curs LP4B",               url: "curs_lp4b.html" },
-    { title: "🧪 Teste Animate Pas cu Pas", url: "teste_animate_lp4b.html" },
-    { title: "🔬 Laborator Interactiv",     url: "laborator_animat_lp4b.html" },
+    { title: "🔬 Laborator Interactiv LP4B", url: "laborator_animat_lp4b.html" },
   ],
 };
 // ════════════════════════════════════════════════════════════
@@ -56,6 +54,8 @@ const LAB_DEMOS = {
 // ════════════════════════════════════════════════════════════
 const SUPABASE_URL = "https://hgknirjorjvlofhngvcp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_PnUOkG2Tpw3wKa9hTZc3Yw_T0bnhFAO";
+const SB_KEY     = SUPABASE_KEY;
+const SB_STORAGE = "https://hgknirjorjvlofhngvcp.supabase.co/storage/v1";
 const sb = (path, opts={}) => {
   const {prefer, headers:extraHeaders, ...rest} = opts;
   return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -843,6 +843,90 @@ const LP4B_QUESTIONS = {
 // ════════════════════════════════════════════════════════════
 // SUPABASE helpers
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// STORAGE helpers — upload/list/delete files per lab
+// ════════════════════════════════════════════════════════════
+async function uploadFile(teacher, labId, file) {
+  const safeName = teacher.replace(/[^a-zA-Z0-9]/g, "_");
+  const path = `${labId}/${safeName}/${Date.now()}_${file.name}`;
+  const res = await fetch(`${SB_STORAGE}/object/materiale/${encodeURIComponent(path)}`, {
+    method: "POST",
+    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": file.type || "application/octet-stream", "x-upsert": "false" },
+    body: file
+  });
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  return path;
+}
+async function listFiles(teacher, labId) {
+  // Own files only (for upload/delete)
+  const safeName = teacher.replace(/[^a-zA-Z0-9]/g, "_");
+  const prefix = `${labId}/${safeName}/`;
+  const res = await fetch(`${SB_STORAGE}/object/list/materiale`, {
+    method: "POST",
+    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix, limit: 100, sortBy: { column: "created_at", order: "desc" } })
+  });
+  const own = res.ok ? (await res.json() || []) : [];
+  return own.map(f => ({
+    name: f.name.replace(/^\d+_/, ""),
+    path: prefix + f.name,
+    url: `${SB_STORAGE}/object/public/materiale/${encodeURIComponent(prefix + f.name)}`,
+    size: f.metadata?.size || 0,
+    created: f.created_at,
+    isOwn: true,
+    uploaderDisplay: teacher
+  }));
+}
+async function listAllFiles(labId) {
+  // All teachers' files for a lab
+  const prefix = `${labId}/`;
+  const res = await fetch(`${SB_STORAGE}/object/list/materiale`, {
+    method: "POST",
+    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix, limit: 500 })
+  });
+  if (!res.ok) return [];
+  const folders = (await res.json() || []).filter(f => !f.name.includes("."));
+  const allFiles = [];
+  for (const folder of folders) {
+    const sub = `${labId}/${folder.name}/`;
+    const r2 = await fetch(`${SB_STORAGE}/object/list/materiale`, {
+      method: "POST",
+      headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ prefix: sub, limit: 100, sortBy: { column: "created_at", order: "desc" } })
+    });
+    if (!r2.ok) continue;
+    const files = await r2.json() || [];
+    const uploader = folder.name.replace(/_/g, " ");
+    files.forEach(f => allFiles.push({
+      name: f.name.replace(/^\d+_/, ""),
+      path: sub + f.name,
+      url: `${SB_STORAGE}/object/public/materiale/${encodeURIComponent(sub + f.name)}`,
+      size: f.metadata?.size || 0,
+      created: f.created_at,
+      isOwn: false,
+      uploaderDisplay: uploader
+    }));
+  }
+  return allFiles;
+}
+async function deleteFile(path) {
+  const res = await fetch(`${SB_STORAGE}/object/materiale/${encodeURIComponent(path)}`, {
+    method: "DELETE",
+    headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY }
+  });
+  return res.ok;
+}
+function getFileIcon(name) {
+  const ext = name.split(".").pop().toLowerCase();
+  if (["pdf"].includes(ext)) return "📄";
+  if (["ppt","pptx"].includes(ext)) return "📊";
+  if (["doc","docx"].includes(ext)) return "📝";
+  if (["mp4","mov","avi"].includes(ext)) return "🎬";
+  if (["png","jpg","jpeg","gif"].includes(ext)) return "🖼️";
+  return "📎";
+}
+
 async function addSession(session) {
   const res = await sb("sessions", {
     method: "POST",
@@ -851,7 +935,8 @@ async function addSession(session) {
       id: session.token,
       lab_id: session.labId,
       lab_code: session.labCode,
-      expires_at: session.expiresAt
+      expires_at: session.expiresAt,
+      teacher: session.teacher || ""
     })
   });
   if (!res.ok) {
@@ -876,7 +961,8 @@ async function addResult(result) {
       score: result.score,
       total: result.total,
       pct: result.pct,
-      time_used: result.timeUsed
+      time_used: result.timeUsed,
+      teacher: result.teacher || ""
     })
   });
 }
@@ -888,7 +974,7 @@ async function getSession(token) {
   console.log("getSession data:", data);
   if (!data.length) return null;
   const s = data[0];
-  return { token: s.id, labId: s.lab_id, labCode: s.lab_code, labTitle: s.lab_title, duration: s.duration, expiresAt: s.expires_at, createdAt: new Date(s.created_at).getTime() };
+  return { token: s.id, labId: s.lab_id, labCode: s.lab_code, labTitle: s.lab_title, duration: s.duration, expiresAt: s.expires_at, createdAt: new Date(s.created_at).getTime(), teacher: s.teacher || "" };
 }
 async function markSessionUsed(token, studentName) {
   // Just log — recorded via result entry
@@ -901,7 +987,8 @@ async function loadResults() {
     name: r.name, group: r.grp, labId: r.lab_id, labCode: r.lab_code,
     module: r.module, moduleTitle: r.module_title,
     score: r.score, total: r.total, pct: r.pct,
-    timestamp: new Date(r.created_at).getTime(), timeUsed: r.time_used
+    timestamp: new Date(r.created_at).getTime(), timeUsed: r.time_used,
+    teacher: r.teacher || ""
   }));
 }
 
@@ -1130,8 +1217,8 @@ function AdminPanel({onBack, teacherName}) {
       (grpFilter==="all"||r.group===grpFilter) &&
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
-    const header = "Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
-    const rows = toExport.map(r=>`"${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
+    const header = "Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
+    const rows = toExport.map(r=>`"${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
     a.download=`igiena_rezultate_${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -1161,7 +1248,7 @@ function AdminPanel({onBack, teacherName}) {
 
         {/* tabs */}
         <div style={{display:"flex",gap:4,marginBottom:20,background:"#fff",padding:4,borderRadius:12,border:"1.5px solid #b2ddc8",width:"fit-content"}}>
-          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"},{id:"prezentari",label:"📽️ Prezentări"}].map(t=>(
+          {[{id:"qr",label:"📱 Generează QR"},{id:"results",label:"📊 Rezultate"},{id:"prezentari",label:"📽️ Prezentări"},{id:"fisiere",label:"📁 Fișiere mele"}].map(t=>(
             <button key={t.id} onClick={()=>setTab(t.id)}
               style={{padding:"8px 20px",borderRadius:9,border:"none",cursor:"pointer",fontSize:14,fontWeight:tab===t.id?700:400,
                 background:tab===t.id?"linear-gradient(135deg,#10b981,#059669)":"transparent",
@@ -1357,40 +1444,151 @@ function AdminPanel({onBack, teacherName}) {
 
         {tab==="prezentari" && (
           <div>
-            <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 16px"}}>📽️ Prezentări interactive pentru ore</h3>
-            <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Deschide prezentarea în browser și folosește ← → pentru navigare. F11 = ecran complet.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
-              {Object.entries(LAB_DEMOS).map(([labId, demos])=>{
-                const lab = LABS.find(l=>l.id===labId);
-                if(!lab) return null;
-                return (
-                  <div key={labId} style={{background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:14,padding:18}}>
-                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
-                      <span style={{fontSize:24}}>{lab.icon}</span>
-                      <div>
-                        <div style={{fontWeight:700,color:"#0a2a18",fontSize:14}}>{lab.code}</div>
-                        <div style={{color:"#4a9a6a",fontSize:12}}>{lab.title}</div>
-                      </div>
-                    </div>
-                    <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                      {demos.map((d,i)=>(
-                        <a key={i} href={d.url} target="_blank" rel="noreferrer"
-                          style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",
-                            background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",
-                            border:"1px solid #86efac",borderRadius:9,
-                            textDecoration:"none",color:"#166534",fontSize:13,fontWeight:600}}>
-                          {d.title}
-                          <span style={{marginLeft:"auto",fontSize:11,opacity:0.6}}>↗</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 4px"}}>📽️ Prezentări — {selLab.code}</h3>
+            <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 16px"}}>Materiale pentru {selLab.title}. Deschide în browser, F11 = ecran complet.</p>
+            {(LAB_DEMOS[selLab.id]||[]).length === 0 ? (
+              <div style={{background:"#f0fdf4",border:"1.5px solid #b2ddc8",borderRadius:12,padding:24,textAlign:"center",color:"#4a9a6a"}}>
+                <div style={{fontSize:32,marginBottom:8}}>📂</div>
+                <p style={{fontWeight:600,marginBottom:4}}>Nicio prezentare disponibilă pentru {selLab.code}</p>
+                <p style={{fontSize:13}}>Încarcă un fișier PDF sau PPT mai jos.</p>
+              </div>
+            ) : (
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                {(LAB_DEMOS[selLab.id]||[]).map((d,i)=>(
+                  <a key={i} href={d.url} target="_blank" rel="noreferrer"
+                    style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",
+                      background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",
+                      border:"1.5px solid #86efac",borderRadius:12,
+                      textDecoration:"none",color:"#166534",fontSize:14,fontWeight:600}}>
+                    <span style={{fontSize:22}}>{d.icon||"📄"}</span>
+                    <span style={{flex:1}}>{d.title}</span>
+                    <span style={{fontSize:12,opacity:0.6,background:"#dcfce7",padding:"3px 10px",borderRadius:6}}>↗ Deschide</span>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        )
+
+        {tab==="fisiere" && (
+          <FileManager teacherName={teacherName} selLab={selLab} />
+        )}}
       </div>
+    </div>
+  );
+}
+
+
+// ════════════════════════════════════════════════════════════
+// FILE MANAGER — tanár saját fájljai LP-enként
+// ════════════════════════════════════════════════════════════
+function FileManager({teacherName, selLab}) {
+  const [files, setFiles]     = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [uploading, setUploading] = React.useState(false);
+  const [err, setErr]         = React.useState("");
+  const [ok, setOk]           = React.useState("");
+  const fileRef = React.useRef();
+
+  const load = () => {
+    setLoading(true);
+    // Load own files + all other teachers' files
+    Promise.all([
+      listFiles(teacherName, selLab.id),
+      listAllFiles(selLab.id)
+    ]).then(([own, all]) => {
+      // Merge: own files (isOwn=true) + others (deduplicated)
+      const ownPaths = new Set(own.map(f => f.path));
+      const others = all.filter(f => !ownPaths.has(f.path)).map(f => ({...f, isOwn: false}));
+      const ownMarked = own.map(f => ({...f, isOwn: true}));
+      setFiles([...ownMarked, ...others]);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  };
+
+  React.useEffect(() => { load(); }, [teacherName, selLab.id]);
+
+  const onUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) { setErr("Fișierul e prea mare (max 50MB)"); return; }
+    setUploading(true); setErr(""); setOk("");
+    try {
+      await uploadFile(teacherName, selLab.id, file);
+      setOk("✅ " + file.name + " — încărcat cu succes!");
+      load();
+    } catch(e) {
+      setErr("❌ Eroare: " + e.message);
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const onDelete = async (path, name) => {
+    if (!confirm("Ștergi " + name + "?")) return;
+    await deleteFile(path);
+    setOk("🗑️ " + name + " — șters.");
+    load();
+  };
+
+  const fmt = (n) => n > 1048576 ? (n/1048576).toFixed(1)+"MB" : n > 1024 ? (n/1024).toFixed(0)+"KB" : n+"B";
+
+  return (
+    <div>
+      <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 4px"}}>📁 Fișierele mele — {selLab.code}</h3>
+      <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 16px"}}>PPT, PDF, Word — vizibile doar pentru tine</p>
+
+      {/* Upload button */}
+      <div style={{background:"#f0fdf4",border:"2px dashed #86efac",borderRadius:12,padding:20,textAlign:"center",marginBottom:16,cursor:"pointer"}}
+           onClick={()=>fileRef.current?.click()}>
+        <input ref={fileRef} type="file" style={{display:"none"}}
+          accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.mp4"
+          onChange={onUpload} />
+        {uploading
+          ? <div><div className="spin" style={{fontSize:28,display:"inline-block"}}>⏳</div><p style={{color:"#16a34a",marginTop:8,fontWeight:600}}>Se încarcă...</p></div>
+          : <div><div style={{fontSize:32,marginBottom:6}}>📤</div><p style={{color:"#16a34a",fontWeight:700,marginBottom:2}}>Click pentru a încărca</p><p style={{color:"#4a9a6a",fontSize:12}}>PDF, PPT, PPTX, DOC, imagini (max 50MB)</p></div>
+        }
+      </div>
+
+      {err && <p style={{color:"#dc2626",fontSize:13,fontWeight:600,marginBottom:8}}>{err}</p>}
+      {ok  && <p style={{color:"#16a34a",fontSize:13,fontWeight:600,marginBottom:8}}>{ok}</p>}
+
+      {/* File list */}
+      {loading ? (
+        <div style={{textAlign:"center",padding:24,color:"#4a9a6a"}}>Se încarcă lista...</div>
+      ) : files.length === 0 ? (
+        <div style={{background:"#f8fafc",border:"1.5px solid #e2e8f0",borderRadius:10,padding:20,textAlign:"center",color:"#64748b"}}>
+          <p style={{fontSize:28,marginBottom:8}}>📂</p>
+          <p style={{fontWeight:600}}>Niciun fișier încărcat încă pentru {selLab.code}</p>
+        </div>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {files.map((f,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,background:"#fff",border:"1.5px solid #e2e8f0",borderLeft:`3px solid ${f.isOwn?"#16a34a":"#94a3b8"}`,borderRadius:10,padding:"12px 14px"}}>
+              <span style={{fontSize:22,flexShrink:0}}>{getFileIcon(f.name)}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:600,fontSize:14,color:"#1a3a28",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.name}</div>
+                <div style={{fontSize:11,color:"#64748b",marginTop:2}}>
+                  <span style={{background:f.isOwn?"#dcfce7":"#f1f5f9",color:f.isOwn?"#16a34a":"#475569",borderRadius:4,padding:"1px 6px",marginRight:6,fontWeight:600}}>
+                    {f.isOwn ? "👤 Eu" : "👤 "+f.uploaderDisplay}
+                  </span>
+                  {fmt(f.size)} · {new Date(f.created).toLocaleDateString("ro-RO")}
+                </div>
+              </div>
+              <a href={f.url} target="_blank" rel="noreferrer"
+                style={{padding:"6px 12px",background:"#f0fdf4",border:"1px solid #86efac",borderRadius:7,fontSize:12,fontWeight:600,color:"#16a34a",textDecoration:"none",flexShrink:0}}>
+                ↗ Deschide
+              </a>
+              {f.isOwn && (
+                <button onClick={()=>onDelete(f.path,f.name)}
+                  style={{padding:"6px 10px",background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:7,fontSize:12,color:"#dc2626",cursor:"pointer",flexShrink:0}}>
+                  🗑
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -1599,7 +1797,7 @@ function LP4BModuleSelect({studentName, onSelect, onDemo}) {
 // ════════════════════════════════════════════════════════════
 // ⑦ QUIZ SCREEN
 // ════════════════════════════════════════════════════════════
-function QuizScreen({studentName, studentGroup, labId, module, onFinish}) {
+function QuizScreen({studentName, studentGroup, labId, module, onFinish, sessionTeacher}) {
   const _labQMap = {
     lp1a:LP1A_QUESTIONS, lp1b:LP1B_QUESTIONS,
     lp2a:LP2A_QUESTIONS, lp2b:LP2B_QUESTIONS,
@@ -1643,6 +1841,7 @@ function QuizScreen({studentName, studentGroup, labId, module, onFinish}) {
       module:module.id, moduleTitle:module.title,
       score, total:qs.length, pct,
       timestamp:Date.now(), timeUsed:module.time*60-timeLeft,
+      teacher: sessionTeacher || "",
     };
     addResult(entry).catch(e => console.error("DB save error:", e));
     onFinish(entry, fa, finalQs);
@@ -1937,7 +2136,7 @@ function App() {
   );
   if (screen==="quiz" && module) return (
     <QuizScreen studentName={student?.name} studentGroup={student?.group}
-      labId={session?.labId} module={module}
+      labId={session?.labId} module={module} sessionTeacher={session?.teacher||""}
       onFinish={(e,a,q)=>{setResult(e);setAnswers(a);setQuizQs(q);setScreen("result");}}/>
   );
   if (screen==="result" && result) return (
