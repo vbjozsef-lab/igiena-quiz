@@ -1468,11 +1468,11 @@ function AdminPanel({onBack, teacherName}) {
               </div>
             )}
           </div>
-        )
+        )}
 
         {tab==="fisiere" && (
           <FileManager teacherName={teacherName} selLab={selLab} />
-        )}}
+        )}
       </div>
     </div>
   );
@@ -1480,28 +1480,25 @@ function AdminPanel({onBack, teacherName}) {
 
 
 // ════════════════════════════════════════════════════════════
-// FILE MANAGER — tanár saját fájljai LP-enként
+// FILE MANAGER — minden tanár fájljai LP-enként
 // ════════════════════════════════════════════════════════════
 function FileManager({teacherName, selLab}) {
-  const [files, setFiles]     = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const [files, setFiles]         = React.useState([]);
+  const [loading, setLoading]     = React.useState(true);
   const [uploading, setUploading] = React.useState(false);
-  const [err, setErr]         = React.useState("");
-  const [ok, setOk]           = React.useState("");
+  const [msg, setMsg]             = React.useState({type:"", text:""});
   const fileRef = React.useRef();
 
   const load = () => {
     setLoading(true);
-    // Load own files + all other teachers' files
     Promise.all([
       listFiles(teacherName, selLab.id),
       listAllFiles(selLab.id)
     ]).then(([own, all]) => {
-      // Merge: own files (isOwn=true) + others (deduplicated)
       const ownPaths = new Set(own.map(f => f.path));
-      const others = all.filter(f => !ownPaths.has(f.path)).map(f => ({...f, isOwn: false}));
-      const ownMarked = own.map(f => ({...f, isOwn: true}));
-      setFiles([...ownMarked, ...others]);
+      const others   = all.filter(f => !ownPaths.has(f.path));
+      const merged   = [...own, ...others].sort((a,b) => new Date(b.created) - new Date(a.created));
+      setFiles(merged);
       setLoading(false);
     }).catch(() => setLoading(false));
   };
@@ -1511,14 +1508,14 @@ function FileManager({teacherName, selLab}) {
   const onUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) { setErr("Fișierul e prea mare (max 50MB)"); return; }
-    setUploading(true); setErr(""); setOk("");
+    if (file.size > 50 * 1024 * 1024) { setMsg({type:"err", text:"Fișierul e prea mare (max 50MB)"}); return; }
+    setUploading(true); setMsg({type:"", text:""});
     try {
       await uploadFile(teacherName, selLab.id, file);
-      setOk("✅ " + file.name + " — încărcat cu succes!");
+      setMsg({type:"ok", text:"✅ " + file.name + " — încărcat cu succes!"});
       load();
     } catch(e) {
-      setErr("❌ Eroare: " + e.message);
+      setMsg({type:"err", text:"❌ Eroare: " + e.message});
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -1527,7 +1524,7 @@ function FileManager({teacherName, selLab}) {
   const onDelete = async (path, name) => {
     if (!confirm("Ștergi " + name + "?")) return;
     await deleteFile(path);
-    setOk("🗑️ " + name + " — șters.");
+    setMsg({type:"ok", text:"🗑️ " + name + " — șters."});
     load();
   };
 
@@ -1535,56 +1532,65 @@ function FileManager({teacherName, selLab}) {
 
   return (
     <div>
-      <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 4px"}}>📁 Fișierele mele — {selLab.code}</h3>
-      <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 16px"}}>PPT, PDF, Word — vizibile doar pentru tine</p>
+      <h3 style={{color:"#0a2a18",fontSize:16,margin:"0 0 4px"}}>{"📁 Fișiere — " + selLab.code}</h3>
+      <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 16px"}}>{"PDF, PPT, Word pentru " + selLab.title + " — vizibile tuturor profesorilor"}</p>
 
-      {/* Upload button */}
       <div style={{background:"#f0fdf4",border:"2px dashed #86efac",borderRadius:12,padding:20,textAlign:"center",marginBottom:16,cursor:"pointer"}}
-           onClick={()=>fileRef.current?.click()}>
+           onClick={() => fileRef.current && fileRef.current.click()}>
         <input ref={fileRef} type="file" style={{display:"none"}}
           accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.mp4"
           onChange={onUpload} />
-        {uploading
-          ? <div><div className="spin" style={{fontSize:28,display:"inline-block"}}>⏳</div><p style={{color:"#16a34a",marginTop:8,fontWeight:600}}>Se încarcă...</p></div>
-          : <div><div style={{fontSize:32,marginBottom:6}}>📤</div><p style={{color:"#16a34a",fontWeight:700,marginBottom:2}}>Click pentru a încărca</p><p style={{color:"#4a9a6a",fontSize:12}}>PDF, PPT, PPTX, DOC, imagini (max 50MB)</p></div>
-        }
+        {uploading ? (
+          <div>
+            <div className="spin" style={{fontSize:28,display:"inline-block"}}>⏳</div>
+            <p style={{color:"#16a34a",marginTop:8,fontWeight:600}}>Se încarcă...</p>
+          </div>
+        ) : (
+          <div>
+            <div style={{fontSize:32,marginBottom:6}}>📤</div>
+            <p style={{color:"#16a34a",fontWeight:700,marginBottom:2}}>Click pentru a încărca</p>
+            <p style={{color:"#4a9a6a",fontSize:12}}>PDF, PPT, PPTX, DOC, imagini (max 50MB)</p>
+          </div>
+        )}
       </div>
 
-      {err && <p style={{color:"#dc2626",fontSize:13,fontWeight:600,marginBottom:8}}>{err}</p>}
-      {ok  && <p style={{color:"#16a34a",fontSize:13,fontWeight:600,marginBottom:8}}>{ok}</p>}
+      {msg.text && (
+        <p style={{color: msg.type==="err" ? "#dc2626" : "#16a34a", fontSize:13, fontWeight:600, marginBottom:8}}>
+          {msg.text}
+        </p>
+      )}
 
-      {/* File list */}
       {loading ? (
         <div style={{textAlign:"center",padding:24,color:"#4a9a6a"}}>Se încarcă lista...</div>
       ) : files.length === 0 ? (
         <div style={{background:"#f8fafc",border:"1.5px solid #e2e8f0",borderRadius:10,padding:20,textAlign:"center",color:"#64748b"}}>
           <p style={{fontSize:28,marginBottom:8}}>📂</p>
-          <p style={{fontWeight:600}}>Niciun fișier încărcat încă pentru {selLab.code}</p>
+          <p style={{fontWeight:600}}>{"Niciun fișier pentru " + selLab.code}</p>
         </div>
       ) : (
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {files.map((f,i) => (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:12,background:"#fff",border:"1.5px solid #e2e8f0",borderLeft:`3px solid ${f.isOwn?"#16a34a":"#94a3b8"}`,borderRadius:10,padding:"12px 14px"}}>
+          {files.map((f, i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,background:"#fff",border:"1.5px solid #e2e8f0",borderLeft:"3px solid " + (f.isOwn ? "#16a34a" : "#94a3b8"),borderRadius:10,padding:"12px 14px"}}>
               <span style={{fontSize:22,flexShrink:0}}>{getFileIcon(f.name)}</span>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontWeight:600,fontSize:14,color:"#1a3a28",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.name}</div>
                 <div style={{fontSize:11,color:"#64748b",marginTop:2}}>
-                  <span style={{background:f.isOwn?"#dcfce7":"#f1f5f9",color:f.isOwn?"#16a34a":"#475569",borderRadius:4,padding:"1px 6px",marginRight:6,fontWeight:600}}>
-                    {f.isOwn ? "👤 Eu" : "👤 "+f.uploaderDisplay}
+                  <span style={{background: f.isOwn ? "#dcfce7" : "#f1f5f9", color: f.isOwn ? "#16a34a" : "#475569", borderRadius:4, padding:"1px 6px", marginRight:6, fontWeight:600}}>
+                    {"👤 " + (f.isOwn ? "Eu" : f.uploaderDisplay)}
                   </span>
-                  {fmt(f.size)} · {new Date(f.created).toLocaleDateString("ro-RO")}
+                  {fmt(f.size) + " · " + new Date(f.created).toLocaleDateString("ro-RO")}
                 </div>
               </div>
               <a href={f.url} target="_blank" rel="noreferrer"
                 style={{padding:"6px 12px",background:"#f0fdf4",border:"1px solid #86efac",borderRadius:7,fontSize:12,fontWeight:600,color:"#16a34a",textDecoration:"none",flexShrink:0}}>
                 ↗ Deschide
               </a>
-              {f.isOwn && (
-                <button onClick={()=>onDelete(f.path,f.name)}
+              {f.isOwn ? (
+                <button onClick={() => onDelete(f.path, f.name)}
                   style={{padding:"6px 10px",background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:7,fontSize:12,color:"#dc2626",cursor:"pointer",flexShrink:0}}>
                   🗑
                 </button>
-              )}
+              ) : null}
             </div>
           ))}
         </div>
