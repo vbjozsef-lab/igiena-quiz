@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HACCP – Diagrama Interactivă</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1821; --panel:#152030; --border:#1e3a4a;
+  --teal:#00c8d7; --amber:#f5a623; --red:#e8445a;
+  --green:#2ecc71; --blue:#2A9DBF; --purple:#a78bfa;
+  --text:#e2eaf0; --muted:#6b8a9e; --white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+
+header{
+  padding:1.8rem 3rem 1.4rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:1.2rem;
+  background:linear-gradient(135deg,#0d1821 60%,#152030);
+}
+.header-icon{font-size:2.2rem;}
+header h1{font-size:1.4rem;font-weight:800;color:var(--white);}
+header p{font-size:.82rem;color:var(--muted);margin-top:.15rem;}
+
+.container{max-width:1200px;margin:0 auto;padding:2rem 2.5rem;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:2rem;}
+.tab-btn{
+  padding:.7rem 1.6rem;background:transparent;
+  border:none;border-bottom:3px solid transparent;
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;
+}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--white);border-bottom-color:var(--teal);}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+
+/* ── CIRCUIT FLOW ── */
+.flow-title{font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:1.5rem;}
+.flow-subtitle{font-size:.85rem;color:var(--muted);margin-bottom:2rem;}
+
+.flow-chain{
+  display:flex;align-items:stretch;gap:0;
+  overflow-x:auto;padding-bottom:1rem;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.flow-node{
+  display:flex;flex-direction:column;align-items:center;
+  min-width:150px;flex:1;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.flow-node:hover{transform:translateY(-4px);}
+.flow-node.active .node-box{border-color:var(--teal)!important;box-shadow:0 0 20px rgba(0,200,215,.25);}
+
+.node-box{
+  width:100%;padding:1rem .8rem 1.2rem;
+  background:var(--panel);border:1.5px solid var(--border);
+  border-radius:14px;text-align:center;
+  transition:all .25s;
+  position:relative;
+}
+.node-icon{font-size:2rem;margin-bottom:.5rem;display:block;}
+.node-label{font-size:.8rem;font-weight:700;color:var(--white);line-height:1.3;}
+.node-risk{
+  display:inline-block;font-size:.65rem;font-weight:700;
+  padding:.15rem .5rem;border-radius:10px;margin-top:.4rem;
+}
+.node-pcc{
+  position:absolute;top:-10px;right:-10px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--red);border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:800;color:var(--white);
+  opacity:0;transition:opacity .3s;
+}
+.node-pcc.show{opacity:1;}
+
+.flow-arrow{
+  display:flex;align-items:center;padding:0 4px;
+  flex-shrink:0;margin-top:-20px;
+}
+.flow-arrow svg{width:28px;height:28px;}
+
+/* ── DETAIL PANEL ── */
+.detail-panel{
+  margin-top:2rem;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:16px;padding:1.8rem 2rem;
+  animation:fadeUp .3s ease;
+  display:none;
+}
+.detail-panel.show{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.detail-header{
+  display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;
+  padding-bottom:1rem;border-bottom:1px solid var(--border);
+}
+.detail-icon{font-size:2.4rem;}
+.detail-stage{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);}
+.detail-title{font-size:1.3rem;font-weight:800;color:var(--white);}
+
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+.detail-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:12px;
+  padding:1rem 1.2rem;
+}
+.detail-card h4{
+  font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:.6rem;
+}
+.detail-card ul{list-style:none;padding:0;}
+.detail-card ul li{
+  font-size:.82rem;color:var(--text);line-height:1.6;
+  padding:.15rem 0;display:flex;gap:.5rem;
+}
+.detail-card ul li::before{content:"▸";flex-shrink:0;}
+
+.pcc-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(232,68,90,.15);color:var(--red);
+  border:1px solid rgba(232,68,90,.3);
+  border-radius:20px;padding:.3rem .8rem;
+  font-size:.75rem;font-weight:700;margin-top:.8rem;
+}
+
+/* ── 7 PRINCIPII ── */
+.principles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;}
+.principle-card{
+  background:var(--panel);border:1.5px solid var(--border);
+  border-radius:14px;padding:1.2rem 1.4rem;
+  display:flex;gap:1rem;align-items:flex-start;
+  cursor:pointer;transition:all .2s;
+}
+.principle-card:hover,.principle-card.expanded{
+  border-color:var(--teal);
+  background:rgba(0,200,215,.05);
+}
+.principle-num{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:900;color:var(--white);
+  flex-shrink:0;font-family:'JetBrains Mono',monospace;
+}
+.principle-body h3{font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:.2rem;}
+.principle-body p{font-size:.82rem;color:var(--muted);line-height:1.5;}
+.principle-detail{
+  display:none;font-size:.82rem;color:var(--text);
+  line-height:1.65;margin-top:.6rem;padding-top:.6rem;
+  border-top:1px solid var(--border);
+}
+.principle-card.expanded .principle-detail{display:block;}
+
+/* ── ZONA PERICOL ── */
+.danger-zone{
+  background:rgba(232,68,90,.08);
+  border:1.5px solid rgba(232,68,90,.3);
+  border-radius:14px;padding:1.4rem 1.6rem;
+  margin-bottom:1.5rem;
+}
+.danger-zone h3{
+  font-size:1rem;font-weight:800;color:var(--red);
+  margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem;
+}
+.temp-scale{
+  display:flex;align-items:stretch;
+  border-radius:10px;overflow:hidden;
+  height:44px;margin-bottom:.8rem;
+}
+.temp-seg{
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;font-family:'JetBrains Mono',monospace;
+}
+.temp-label{font-size:.78rem;color:var(--muted);text-align:center;}
+
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:1.5rem;}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--muted);}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+/* ── FOOTER REF ── */
+.ref{font-size:.75rem;color:var(--muted);font-style:italic;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);}
+
+@media(max-width:700px){
+  .container{padding:1.2rem 1rem;}
+  header{padding:1.2rem 1rem;}
+  .flow-node{min-width:120px;}
+  .node-label{font-size:.72rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">📋</div>
+  <div>
+    <h1>HACCP – Diagrama Interactivă</h1>
+    <p>Hazard Analysis Critical Control Points · Reg. (CE) 852/2004 · ISO 22000:2018</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- TAB BUTTONS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('circuit')">🔄 Circuitul Alimentelor</button>
+    <button class="tab-btn" onclick="switchTab('principii')">7️⃣ Cele 7 Principii</button>
+    <button class="tab-btn" onclick="switchTab('temperatura')">🌡️ Zona de Pericol</button>
+  </div>
+
+  <!-- TAB 1: CIRCUIT -->
+  <div class="tab-panel active" id="tab-circuit">
+    <div class="flow-title">Circuitul Alimentelor & Punctele Critice de Control</div>
+    <div class="flow-subtitle">Click pe fiecare etapă pentru a vedea riscurile și măsurile de control</div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e8445a"></div>PCC (Punct Critic de Control)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f5a623"></div>Risc biologic</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2A9DBF"></div>Risc chimic</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Risc fizic</div>
+    </div>
+
+    <div class="flow-chain" id="flowChain"></div>
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-header">
+        <span class="detail-icon" id="d-icon"></span>
+        <div>
+          <div class="detail-stage" id="d-stage"></div>
+          <div class="detail-title" id="d-title"></div>
+        </div>
+      </div>
+      <div class="detail-grid" id="d-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: 7 PRINCIPII -->
+  <div class="tab-panel" id="tab-principii">
+    <div class="flow-title">Cele 7 Principii HACCP</div>
+    <div class="flow-subtitle">Click pe fiecare principiu pentru detalii</div>
+    <div class="principles-grid" id="principlesGrid"></div>
+    <p class="ref">Ref: Codex Alimentarius CAC/RCP 1-1969 (Rev. 2020) · Reg. (CE) 852/2004 · ISO 22000:2018</p>
+  </div>
+
+  <!-- TAB 3: TEMPERATURA -->
+  <div class="tab-panel" id="tab-temperatura">
+    <div class="flow-title">Zona de Pericol Termic & Controlul Temperaturii</div>
+    <div class="flow-subtitle">Temperatura este cel mai important factor în multiplicarea bacteriană</div>
+
+    <div class="danger-zone">
+      <h3>⚠️ ZONA DE PERICOL: 5°C – 60°C</h3>
+      <div class="temp-scale">
+        <div class="temp-seg" style="flex:1;background:#1A4A8A;color:white">-18°C<br><span style="font-size:.6rem">congelare</span></div>
+        <div class="temp-seg" style="flex:0.5;background:#1A6A5A;color:white">0-4°C<br><span style="font-size:.6rem">refrig.</span></div>
+        <div class="temp-seg" style="flex:3.5;background:#C83030;color:white;font-size:.8rem">⚠️ ZONA DE PERICOL: 5°C – 60°C<br><span style="font-size:.65rem">multiplicare bacteriană rapidă</span></div>
+        <div class="temp-seg" style="flex:1.5;background:#2ecc71;color:#0a1821">60°C+<br><span style="font-size:.6rem">inactivare</span></div>
+        <div class="temp-seg" style="flex:0.5;background:#f5a623;color:#0a1821">100°C<br><span style="font-size:.6rem">fierbere</span></div>
+      </div>
+      <p class="temp-label">Alimente în zona de pericol >2 ore = RISC MAJOR de multiplicare bacteriană</p>
+    </div>
+
+    <div id="tempCardsGrid"></div>
+    <p class="ref">Ref: WHO Five Keys to Safer Food 2020 · EFSA Food Safety Basics · Reg. (CE) 852/2004</p>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const STAGES = [
+  {
+    id:'productie', icon:'🌾', label:'Producere\nMaterii Prime', color:'#2ecc71',
+    isPCC:false,
+    risks:['Contaminare cu micotoxine (Aspergillus, Fusarium)','Poluanți din mediu (metale grele, pesticide)','Microorganisme patogene din sol/apă'],
+    chemical:['Pesticide, nitrați, metale grele (Pb, Cd, Hg)','Micotoxine — aflatoxine, OTA, DON'],
+    physical:['Corpuri străine: pietre, praf, insecte'],
+    control:['Bune Practici Agricole (GAP)','Monitorizare pesticide conform Reg. 396/2005','Depozitare uscată (<13% umiditate) anti-micotoxine','Testare apă de irigație'],
+    limit:'',pcc:''
+  },
+  {
+    id:'prelucrare', icon:'🏭', label:'Prelucrare\nAlimente', color:'#2A9DBF',
+    isPCC:true,
+    risks:['Supraviețuire patogeni dacă tratamentul termic e insuficient','Contaminare încrucișată carne crudă ↔ produse finite','Recontaminare post-procesare'],
+    chemical:['Produși secundari de reacție (acroleină, HMF)','Aditivi neautorizați sau în exces (nitrați, sulfați)'],
+    physical:['Fragmente de echipamente metalice','Corpuri străine introduse la procesare'],
+    control:['PCC1: Pasteurizare/sterilizare — T°C + timp MONITORIZAT','PCC2: Detecție metale — detector metal la final linie','HACCP plan documentat pentru fiecare linie','Separare fizică zone crude/finite'],
+    limit:'Pasteurizare: 72°C/15 sec (lapte) · 70°C/2 min (carne)',
+    pcc:'PCC 1 — Tratament termic'
+  },
+  {
+    id:'depozitare', icon:'📦', label:'Depozitare\n& Transport', color:'#f5a623',
+    isPCC:true,
+    risks:['Multiplicare bacteriană la temperaturi greșite','Contaminare încrucișată în depozit','Infestare cu rozătoare/insecte'],
+    chemical:['Poluare chimică din ambalaje neconforme','Migrarea substanțelor din ambalaj în produs'],
+    physical:['Deteriorare ambalaj — expunere la contaminanți'],
+    control:['PCC2: Monitorizare continuă temperatură frigorific','Înregistrare automată temperaturi (data logger)','Rotație stoc FIFO (First In First Out)','Deratizare periodică documentată'],
+    limit:'Refrigerare: 0–4°C · Congelare: -18°C sau mai puțin',
+    pcc:'PCC 2 — Lanț frigorific'
+  },
+  {
+    id:'preparare', icon:'👨‍🍳', label:'Preparare\nProduse', color:'#a78bfa',
+    isPCC:true,
+    risks:['Contaminare încrucișată carne crudă ↔ alimente gata','Multiplicare bacteriană la temperatura camerei (>2h!)','Contaminare de la mâinile personalului'],
+    chemical:['Reziduuri de detergenți/dezinfectanți pe suprafețe','Aditivi adăugați incorect'],
+    physical:['Corpuri străine de la personal (inele, bijuterii, unghii)'],
+    control:['Separare strictă zone salubre/insalubre','Spălare mâini obligatorie — protocol documentat','Alimente gata max. 2h la temperatura camerei','Gătire completă: 70°C în toată masa alimentului'],
+    limit:'Cald: >60°C · Rece: <5°C · Zona pericol: 5–60°C evitat',
+    pcc:'PCC 3 — Temperaturi preparare'
+  },
+  {
+    id:'desfacere', icon:'🏪', label:'Desfacere\n& Expunere', color:'#00c8d7',
+    isPCC:false,
+    risks:['Recontaminare la expunere neprotejată','Depășire termene de valabilitate','Temperaturi incorecte la vitrină frigorifică'],
+    chemical:['Migrarea substanțelor din ambalaje deteriorate'],
+    physical:['Contaminare de la clienți (tusit, atingere)'],
+    control:['Vitrine frigorifice la 0–4°C monitorizate','Etichete clare cu data expirării','Retragere imediată produse expirate sau suspecte','Personal instruit în igiena alimentelor'],
+    limit:'',pcc:''
+  },
+  {
+    id:'consum', icon:'🍽️', label:'Consum\nFinal', color:'#e8445a',
+    isPCC:false,
+    risks:['Toxiinfecții alimentare (TIA) — Salmonella, Listeria, E.coli','Intoxicații alimentare (toxine preformate)','Boli parazitare (trichineloză, teniaze)'],
+    chemical:['Intoxicație cu toxine bacteriene (Stafilococ, Botulinum)'],
+    physical:['Înghițire corpuri străine'],
+    control:['Educarea consumatorilor — 5 chei OMS pentru siguranța alimentelor','Gătire completă înainte de consum','Respectarea termenelor de valabilitate','Spălarea mâinilor înainte de masă'],
+    limit:'',pcc:''
+  }
+];
+
+const PRINCIPLES = [
+  {num:'01',color:'#2ecc71',title:'Analiza Pericolelor',
+   short:'Identificarea tuturor pericolelor biologice, chimice și fizice',
+   detail:'Se identifică TOATE pericolele potențiale asociate cu fiecare etapă din procesul alimentar. Categorii: (1) Biologice: bacterii, virusuri, paraziți, mucegaiuri. (2) Chimice: pesticide, metale grele, aditivi, alergeni. (3) Fizice: sticlă, metal, os, plastic. Se evaluează probabilitatea și severitatea fiecărui pericol.'},
+  {num:'02',color:'#2A9DBF',title:'Identificarea PCC-urilor',
+   short:'Stabilirea Punctelor Critice de Control unde riscul poate fi eliminat/redus',
+   detail:'Un PCC este o etapă din procesul alimentar unde un pericol semnificativ poate fi PREVENIT, ELIMINAT sau REDUS la un nivel acceptabil. Instrumentul Arborelui Decizional (Decision Tree — Codex Alimentarius) ajută la identificarea PCC-urilor. Exemple: pasteurizare, detectare metale, refrigerare.'},
+  {num:'03',color:'#f5a623',title:'Stabilirea Limitelor Critice',
+   short:'Valori maxime/minime care separă acceptabil de inacceptabil la fiecare PCC',
+   detail:'Limite critice = valori măsurabile specifice (T°C, pH, timp, concentrație). Exemple: pasteurizare lapte = 72°C/15 sec minimum; refrigerare = max. 4°C; pH conserve = max. 4.6. Limitele trebuie validate științific și documentate. Depășirea = acțiune corectivă imediată.'},
+  {num:'04',color:'#a78bfa',title:'Monitorizarea PCC-urilor',
+   short:'Sistem de monitorizare continuă sau programată a fiecărui PCC',
+   detail:'Monitorizarea include: CE se monitorizează (temperatură, timp, pH), CUM (termometru, pH-metru, vizual), CÂT DE DES (continuu, orar, per lot), CINE este responsabil. Înregistrările sunt obligatorii și trebuie păstrate. Echipamentele de monitorizare se calibrează periodic.'},
+  {num:'05',color:'#e8445a',title:'Acțiuni Corective',
+   short:'Proceduri predefinite când limitele critice sunt depășite',
+   detail:'Când o limită critică este depășită: (1) Izolarea și identificarea produsului afectat. (2) Corectarea cauzei (reglare echipament, reluare proces). (3) Evaluarea destinației produsului afectat (retragere, reprelucrare, distrugere). (4) Documentarea acțiunii corective. Toate acțiunile se înregistrează.'},
+  {num:'06',color:'#00c8d7',title:'Proceduri de Verificare',
+   short:'Confirmarea că sistemul HACCP funcționează eficient',
+   detail:'Verificarea confirmă că HACCP este implementat corect și eficient. Include: audituri interne periodice, recalibrare echipamente, analize microbiologice ale produselor finite, revizuirea înregistrărilor. Verificarea se face de persoane diferite față de cele care monitorizează zilnic. Frecvență minimă: anual sau la modificarea procesului.'},
+  {num:'07',color:'#f5a623',title:'Documentare & Înregistrare',
+   short:'Sistemul de documente și înregistrări care demonstrează funcționarea HACCP',
+   detail:'Documentele HACCP includ: Planul HACCP (pericole, PCC-uri, limite, monitorizare), proceduri scrise (SOP), înregistrări de monitorizare zilnică, înregistrări de acțiuni corective, rapoarte de verificare. Înregistrările demonstrează conformitatea în cazul unui audit sau incident. Păstrare minimum 2 ani (UE).'}
+];
+
+const TEMP_DATA = [
+  {t:'-18°C și mai puțin',color:'#1A4A8A',icon:'🧊',title:'Congelare — Bacterii inactive',
+   items:['Bacteriile NU se multiplică sub -10°C','Larvele de Trichinella sunt distruse la -15°C/20 zile sau -32°C/24h','Virusurile și sporii pot supraviețui congelării','Congelare rapidă = calitate mai bună (cristale mici)','Decongelarea: NUMAI la frigider sau la rece, NICIODATĂ la temperatura camerei']},
+  {t:'0°C – 4°C',color:'#1A7A6A',icon:'❄️',title:'Refrigerare — Multiplicare foarte lentă',
+   items:['Multiplicare extrem de lentă a majorității bacteriilor','ATENȚIE: Listeria monocytogenes crește la 4°C!','Carnea crudă: max. 3–5 zile | Lapte pasteurizat: max. 5–7 zile','Ouăle: max. 5 săptămâni | Pește proaspăt: max. 1–2 zile','Termometrul frigorific: verificare zilnică, înregistrare HACCP']},
+  {t:'5°C – 60°C',color:'#C83030',icon:'⚠️',title:'ZONA DE PERICOL — Multiplicare rapidă',
+   items:['Bacteriile se dublează la fiecare 20 minute în condiții optime!','Temperatura optimă pentru Salmonella/E.coli: 35–37°C','Alimente în această zonă >2 ore = RISC MAJOR','Regula de aur: NU lăsa alimente gătite >2h la temperatura camerei','Zona de pericol include temperatura camerei (20–25°C)!']},
+  {t:'60°C – 70°C',color:'#E07030',icon:'🔥',title:'Inactivare parțială — Pasteurizare',
+   items:['Pasteurizare lapte: 72°C / 15 secunde (HTST)','Pasteurizare lentă: 63°C / 30 minute (LTLT)','Distruge bacteriile vegetative dar NU sporii','Listeria inactivată la 72°C / 15 sec','Temperatura internă carne păsări: minim 74°C']},
+  {t:'70°C – 121°C',color:'#2ecc71',icon:'✅',title:'Inactivare completă — Siguranță',
+   items:['70°C: inactivare Salmonella, E.coli, Listeria (câteva minute)','77°C: inactivare Trichinella (temperatura internă carne)','100°C (fierbere): distruge bacterii vegetative în câteva secunde','121°C / 15 min (autoclavare): distruge și sporii (Clostridium botulinum)','Microundul: INEGAL — verifică temperatura internă!']}
+];
+
+// ── INIT ──────────────────────────────────────────────────────
+let activeNode = null;
+
+function buildFlow(){
+  const chain = document.getElementById('flowChain');
+  STAGES.forEach((s,i)=>{
+    const node = document.createElement('div');
+    node.className='flow-node';
+    node.id='node-'+i;
+    node.onclick=()=>selectNode(i);
+    const riskLabel = s.isPCC
+      ? `<span class="node-risk" style="background:rgba(232,68,90,.15);color:#e8445a;border:1px solid rgba(232,68,90,.3)">PCC</span>`
+      : `<span class="node-risk" style="background:rgba(255,255,255,.05);color:${s.color}">Etapă</span>`;
+    node.innerHTML=`
+      <div class="node-box" style="border-color:${s.color}44">
+        <div class="node-pcc${s.isPCC?' show':''}" id="pcc-${i}">PCC</div>
+        <span class="node-icon">${s.icon}</span>
+        <div class="node-label">${s.label}</div>
+        ${riskLabel}
+      </div>`;
+    chain.appendChild(node);
+    if(i<STAGES.length-1){
+      const arrow=document.createElement('div');
+      arrow.className='flow-arrow';
+      arrow.innerHTML=`<svg viewBox="0 0 28 28" fill="none"><path d="M4 14h16M16 9l5 5-5 5" stroke="#1e3a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      chain.appendChild(arrow);
+    }
+  });
+}
+
+function selectNode(i){
+  if(activeNode!==null) document.getElementById('node-'+activeNode).classList.remove('active');
+  activeNode=i;
+  document.getElementById('node-'+i).classList.add('active');
+  const s=STAGES[i];
+  const panel=document.getElementById('detailPanel');
+  document.getElementById('d-icon').textContent=s.icon;
+  document.getElementById('d-stage').textContent='ETAPA '+(i+1)+' — CIRCUIT ALIMENTAR';
+  document.getElementById('d-title').textContent=s.label.replace('\n',' ');
+  const grid=document.getElementById('d-grid');
+  let html='';
+  // Risks bio
+  html+=`<div class="detail-card"><h4 style="color:#f5a623">🦠 Riscuri Biologice</h4><ul>`;
+  s.risks.forEach(r=>{ html+=`<li style="color:#e2eaf0">${r}</li>`; });
+  html+=`</ul></div>`;
+  // Chemical
+  html+=`<div class="detail-card"><h4 style="color:#2A9DBF">⚗️ Riscuri Chimice</h4><ul>`;
+  s.chemical.forEach(r=>{ html+=`<li>${r}</li>`; });
+  html+=`</ul></div>`;
+  // Physical
+  html+=`<div class="detail-card"><h4 style="color:#a78bfa">🔩 Riscuri Fizice</h4><ul>`;
+  s.physical.forEach(r=>{ html+=`<li>${r}</li>`; });
+  html+=`</ul></div>`;
+  // Control
+  html+=`<div class="detail-card"><h4 style="color:#2ecc71">✅ Măsuri de Control</h4><ul>`;
+  s.control.forEach(r=>{ html+=`<li>${r}</li>`; });
+  html+=`</ul>`;
+  if(s.isPCC) html+=`<div class="pcc-badge">🔴 ${s.pcc}<br><span style="font-size:.68rem;opacity:.8">Limită critică: ${s.limit}</span></div>`;
+  html+=`</div>`;
+  grid.innerHTML=html;
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function buildPrinciples(){
+  const g=document.getElementById('principlesGrid');
+  PRINCIPLES.forEach((p,i)=>{
+    const c=document.createElement('div');
+    c.className='principle-card';
+    c.onclick=()=>c.classList.toggle('expanded');
+    c.innerHTML=`
+      <div class="principle-num" style="background:${p.color}22;color:${p.color};border:1.5px solid ${p.color}44">${p.num}</div>
+      <div class="principle-body">
+        <h3>${p.title}</h3>
+        <p>${p.short}</p>
+        <div class="principle-detail">${p.detail}</div>
+      </div>`;
+    g.appendChild(c);
+  });
+}
+
+function buildTempCards(){
+  const g=document.getElementById('tempCardsGrid');
+  g.style.cssText='display:flex;flex-direction:column;gap:1rem;';
+  TEMP_DATA.forEach(td=>{
+    const c=document.createElement('div');
+    c.style.cssText=`background:var(--panel);border:1.5px solid ${td.color}44;border-left:4px solid ${td.color};border-radius:12px;padding:1rem 1.2rem;`;
+    const items=td.items.map(it=>`<li style="font-size:.82rem;color:var(--text);line-height:1.6;padding:.1rem 0;display:flex;gap:.5rem"><span style="color:${td.color};flex-shrink:0">▸</span>${it}</li>`).join('');
+    c.innerHTML=`
+      <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem">
+        <span style="font-size:1.5rem">${td.icon}</span>
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;color:${td.color}">${td.t}</div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--white)">${td.title}</div>
+        </div>
+      </div>
+      <ul style="list-style:none;padding:0">${items}</ul>`;
+    g.appendChild(c);
+  });
+}
+
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+buildFlow();
+buildPrinciples();
+buildTempCards();
+// Auto-select first node
+selectNode(1);
+</script>
+</body>
+</html>
