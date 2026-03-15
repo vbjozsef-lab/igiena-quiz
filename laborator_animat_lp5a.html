@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP5A – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#0d1821;--panel:#152030;--border:#1e3a4a;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--purple:#a78bfa;--text:#e2eaf0;--muted:#6b8a9e;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#0d1821 60%,#152030);}
+  .header-icon{font-size:2.4rem;}
+  header h1{font-size:1.5rem;font-weight:800;color:var(--white);}
+  header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:160px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);background:rgba(255,255,255,.03);}
+  nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}
+  .test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:var(--bg);}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .liquid-fill{transition:height .8s cubic-bezier(.4,0,.2,1),y .8s cubic-bezier(.4,0,.2,1),fill 1.2s ease;}
+  .color-change{transition:fill 1.5s ease;}
+  .drop{opacity:0;}.drop.falling{animation:dropFall .6s ease-in forwards;}
+  @keyframes dropFall{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(28px);}}
+  .pulse{animation:pulseG 1.5s ease-in-out infinite;}
+  @keyframes pulseG{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 6px currentColor);}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--teal);opacity:.04;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🌾</div>
+  <div>
+    <h1>LP5A – Teste Animate Interactive</h1>
+    <p>Gluten · Aciditate Pâine · Pierderi · Vitamina C · Caroten · Aciditate Fructe</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">🌾 Gluten</button>
+  <button onclick="showTest(1)">🍞 Aciditate Pâine</button>
+  <button onclick="showTest(2)">⚖️ Pierderi</button>
+  <button onclick="showTest(3)">🍋 Vitamina C</button>
+  <button onclick="showTest(4)">🥕 Caroten</button>
+  <button onclick="showTest(5)">🍎 Aciditate Fructe</button>
+</nav>
+
+<!-- ══ PANELS ══════════════════════════════════════════════ -->
+<div id="panels"></div>
+
+<script>
+function g(id){return document.getElementById(id);}
+
+// ── SVG BUILDERS ──────────────────────────────────────────────
+function svgGluten(step){
+  // Bowl with dough, water wash, gluten ball
+  const states = [
+    // 0: flour + water mixing
+    `<rect x="60" y="140" width="140" height="80" rx="70" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+     <ellipse cx="130" cy="145" rx="64" ry="12" fill="#2A9DBF" opacity=".3"/>
+     <ellipse id="g-dough" cx="130" cy="175" rx="55" ry="22" fill="#E8DCC0" opacity=".9"/>
+     <text x="130" y="178" text-anchor="middle" font-size="10" fill="#8B6A2A" font-family="JetBrains Mono,monospace">aluat</text>`,
+    // 1: NaCl wash — water running
+    `<rect x="60" y="140" width="140" height="80" rx="70" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+     <ellipse cx="130" cy="160" rx="60" ry="25" fill="#a0c8e8" opacity=".7"/>
+     <ellipse id="g-dough2" cx="130" cy="178" rx="40" ry="16" fill="#D4C498"/>
+     <text x="130" y="148" text-anchor="middle" font-size="9" fill="#2A9DBF" font-family="JetBrains Mono,monospace">sol. NaCl</text>
+     <!-- drops -->
+     <ellipse cx="105" cy="130" rx="4" ry="6" fill="#a0c8e8" opacity=".8"/>
+     <ellipse cx="130" cy="125" rx="4" ry="6" fill="#a0c8e8" opacity=".8"/>
+     <ellipse cx="155" cy="130" rx="4" ry="6" fill="#a0c8e8" opacity=".8"/>`,
+    // 2: gluten washed out — wet ball
+    `<rect x="60" y="140" width="140" height="80" rx="70" fill="#1e3a4a" stroke="#2ecc71" stroke-width="1.5"/>
+     <ellipse cx="130" cy="165" rx="28" ry="20" fill="#C8B878" opacity=".9" stroke="#A89858" stroke-width="1"/>
+     <text x="130" y="168" text-anchor="middle" font-size="10" fill="#6A4A10" font-family="JetBrains Mono,monospace">gluten umed</text>`,
+    // 3: quality test — elastic vs soft
+    `<g>
+       <rect x="35" y="100" width="80" height="110" rx="8" fill="#152030" stroke="#2ecc71" stroke-width="1.5"/>
+       <text x="75" y="92" text-anchor="middle" font-size="9" fill="#2ecc71" font-family="Syne,sans-serif" font-weight="700">Cat. I — Elastic</text>
+       <ellipse cx="75" cy="145" rx="24" ry="18" fill="#D4C070" stroke="#A09040" stroke-width="1.5"/>
+       <path d="M60,145 Q75,130 90,145" fill="none" stroke="#8B7030" stroke-width="2"/>
+       <text x="75" y="165" text-anchor="middle" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">tare, elastic</text>
+       <rect x="145" y="100" width="80" height="110" rx="8" fill="#152030" stroke="#e8445a" stroke-width="1.5"/>
+       <text x="185" y="92" text-anchor="middle" font-size="9" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700">Cat. II — Slab</text>
+       <ellipse cx="185" cy="150" rx="30" ry="12" fill="#B8A858" stroke="#887838" stroke-width="1.5"/>
+       <path d="M163,150 Q185,155 207,150" fill="none" stroke="#887838" stroke-width="1.5" stroke-dasharray="4,2"/>
+       <text x="185" y="170" text-anchor="middle" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">moale, filant</text>
+     </g>`,
+    // 4: weighing result
+    `<rect x="70" y="100" width="120" height="140" rx="8" fill="#152030" stroke="#f5a623" stroke-width="1.5"/>
+     <text x="130" y="92" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">CANTARIRE</text>
+     <rect x="85" y="118" width="90" height="20" rx="4" fill="#1e3a4a" stroke="#f5a623" stroke-width="1"/>
+     <text x="130" y="132" text-anchor="middle" font-size="11" fill="#f5a623" font-family="JetBrains Mono,monospace" font-weight="bold" id="g-weight">28 g</text>
+     <text x="130" y="155" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">din 100 g faina</text>
+     <text x="130" y="170" text-anchor="middle" font-size="13" fill="#2ecc71" font-family="JetBrains Mono,monospace" font-weight="bold">28%</text>
+     <text x="130" y="186" text-anchor="middle" font-size="9" fill="#2ecc71" font-family="JetBrains Mono,monospace">≥ 26% min (alba) ✓</text>`
+  ];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">${states[Math.min(step,states.length-1)]}</svg>`;
+}
+
+function svgAciditate(step){
+  // Burette + beaker + color change
+  const liqH = [60, 50, 38, 28, 22];
+  const liqY = [80, 90, 102, 112, 118];
+  const colors = ['#4A8ACA','#6AB0CA','#D880A8','#E040A8','#FF10C8'];
+  const h = liqH[Math.min(step,4)];
+  const y = liqY[Math.min(step,4)];
+  const col = colors[Math.min(step,4)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Beaker -->
+    <path d="M60,90 L60,220 Q60,235 75,235 L185,235 Q200,235 200,220 L200,90 Z" fill="#0d1821" stroke="#2A9DBF" stroke-width="1.5"/>
+    <path d="M60,90 L200,90" stroke="#2A9DBF" stroke-width="1"/>
+    <!-- Liquid in beaker -->
+    <path id="bk-liq" d="M62,${200-step*15} L62,230 Q62,233 66,233 L194,233 Q198,233 198,230 L198,${200-step*15} Z" fill="${step>=4?'#F080C0':'#E8F4D0'}" opacity=".85"/>
+    ${step>=3?'<text x="130" y="215" text-anchor="middle" font-size="10" fill="#E040A8" font-family="Syne,sans-serif" font-weight="700">ROZ PERSISTENT ✓</text>':''}
+    <!-- Burette -->
+    <rect x="112" y="15" width="16" height="${h}" rx="3" fill="#1e3a4a" stroke="#f5a623" stroke-width="1.5"/>
+    <rect x="113" y="16" width="14" height="${h-2}" rx="2" fill="${col}" opacity=".8"/>
+    <rect x="116" y="${y}" width="8" height="12" rx="4" fill="#4a6a7a"/>
+    <!-- Drops falling -->
+    ${step>=1?`<ellipse cx="120" cy="${y+18}" rx="3" ry="4" fill="${col}" opacity=".9" class="drop falling"/>`:'' }
+    <!-- Graduation marks on burette -->
+    <line x1="112" y1="30" x2="119" y2="30" stroke="#f5a623" stroke-width=".8"/>
+    <line x1="112" y1="45" x2="117" y2="45" stroke="#f5a623" stroke-width=".8"/>
+    <line x1="112" y1="60" x2="119" y2="60" stroke="#f5a623" stroke-width=".8"/>
+    <text x="108" y="33" text-anchor="end" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">0</text>
+    <text x="108" y="63" text-anchor="end" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">10</text>
+    <!-- Labels -->
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">NaOH 0,1N + fenolftaleina</text>
+    ${step>=4?`<text x="130" y="80" text-anchor="middle" font-size="10" fill="#f5a623" font-family="JetBrains Mono,monospace" font-weight="bold">V = ${(3.2).toFixed(1)} ml NaOH</text>`:''}
+  </svg>`;
+}
+
+function svgPierderi(step){
+  const weights = [['200g','—'],['200g','42g'],['158g','—'],['158g','21%']];
+  const w = weights[Math.min(step,3)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Scale platform -->
+    <ellipse cx="130" cy="210" rx="80" ry="12" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+    <rect x="124" y="160" width="12" height="52" fill="#1e3a4a"/>
+    <ellipse cx="130" cy="160" rx="65" ry="9" fill="#152030" stroke="#2A9DBF" stroke-width="1"/>
+    <!-- Whole fruit -->
+    ${step<2?`<ellipse cx="115" cy="138" rx="30" ry="28" fill="#E86040"/>
+    <path d="M115,112 Q120,105 125,110" fill="none" stroke="#2A7A18" stroke-width="2"/>
+    <text x="115" y="175" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">intreg</text>`:''}
+    <!-- Waste (peel) -->
+    ${step>=1?`<ellipse cx="185" cy="148" rx="18" ry="14" fill="#C84028" opacity=".7"/>
+    <text x="185" y="165" text-anchor="middle" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">coaja</text>`:''}
+    <!-- Net fruit -->
+    ${step>=2?`<ellipse cx="115" cy="138" rx="22" ry="20" fill="#F09070"/>
+    <text x="115" y="175" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">net</text>`:''}
+    <!-- Display -->
+    <rect x="50" y="18" width="160" height="55" rx="8" fill="#152030" stroke="#2A9DBF" stroke-width="1"/>
+    <text x="130" y="38" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Masa initiala: ${w[0]}</text>
+    <text x="130" y="54" text-anchor="middle" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">${w[1]!=='—'?'Pierderi: '+w[1]:''}</text>
+    ${step>=3?`<text x="130" y="70" text-anchor="middle" font-size="13" fill="#2ecc71" font-family="JetBrains Mono,monospace" font-weight="bold">P = ${w[1]}</text>`:''}
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">P(%) = (pierderi/masa initiala) × 100</text>
+  </svg>`;
+}
+
+function svgVitC(step){
+  // Burette with blue dye → colorless endpoint
+  const cols = ['#2060C0','#2878C8','#40A0D0','#80C8E0','#E8F4E8'];
+  const col = cols[Math.min(step,4)];
+  const beakerCol = step>=4 ? '#E8F8E8' : step>=3 ? '#C0E8D0' : '#D8F0D8';
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Beaker with vit C solution -->
+    <path d="M55,85 L55,225 Q55,238 68,238 L192,238 Q205,238 205,225 L205,85 Z" fill="#0d1821" stroke="#2A9DBF" stroke-width="1.5"/>
+    <path d="M57,${160-step*10} L57,233 Q57,236 61,236 L199,236 Q203,236 203,233 L203,${160-step*10} Z" fill="${beakerCol}" opacity=".9"/>
+    <!-- Acid vit C label -->
+    <text x="130" y="${155-step*10}" text-anchor="middle" font-size="9" fill="#1A6A3A" font-family="JetBrains Mono,monospace">sol. Vit C acidulata</text>
+    <!-- Endpoint indicator -->
+    ${step>=4?`<text x="130" y="210" text-anchor="middle" font-size="10" fill="#2ecc71" font-family="Syne,sans-serif" font-weight="700">INCOLOR = punct final ✓</text>`:''}
+    <!-- Burette with 2,6-DCPIP (blue dye) -->
+    <rect x="114" y="12" width="16" height="65" rx="3" fill="#1e3a4a" stroke="${col}" stroke-width="1.5"/>
+    <rect x="115" y="13" width="14" height="${Math.max(5,63-step*13)}" rx="2" fill="${col}" opacity=".85"/>
+    <rect x="118" y="${12+Math.max(5,63-step*13)}" width="8" height="10" rx="4" fill="#4a5a6a"/>
+    ${step>=1?`<ellipse cx="122" cy="${88}" rx="3" ry="5" fill="${col}" opacity=".9"/>`:'' }
+    <!-- Labels -->
+    <text x="105" y="9" text-anchor="end" font-size="8" fill="${col}" font-family="JetBrains Mono,monospace">2,6-DCPIP</text>
+    <text x="130" y="252" text-anchor="middle" font-size="8.5" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Titrare pana la INCOLOR persistent</text>
+    ${step>=4?`<text x="130" y="75" text-anchor="middle" font-size="10" fill="#f5a623" font-family="JetBrains Mono,monospace" font-weight="bold">V = 2.4 ml DCPIP</text>`:''}
+  </svg>`;
+}
+
+function svgCaroten(step){
+  // Spectrophotometer cuvette - orange color
+  const intensity = [0, 0.3, 0.6, 0.9, 1.0];
+  const alpha = intensity[Math.min(step,4)];
+  const orange = `rgba(220,120,20,${alpha})`;
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Spectrophotometer body -->
+    <rect x="20" y="60" width="220" height="130" rx="10" fill="#152030" stroke="#2A9DBF" stroke-width="1.5"/>
+    <text x="130" y="52" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Spectrofotometru — 450 nm</text>
+    <!-- Light source -->
+    <circle cx="45" cy="125" r="12" fill="#f5a623" opacity="${0.3+step*0.14}"/>
+    <text x="45" y="155" text-anchor="middle" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">λ=450nm</text>
+    <!-- Light beam -->
+    ${step>=1?`<line x1="57" y1="125" x2="98" y2="125" stroke="#f5a623" stroke-width="2" opacity="${0.3+step*0.12}" stroke-dasharray="${step>=2?'0':'4,2'}"/>`:''}
+    <!-- Cuvette -->
+    <rect x="98" y="100" width="30" height="50" rx="3" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+    <rect x="100" y="102" width="26" height="46" rx="2" fill="${orange}"/>
+    <text x="113" y="90" text-anchor="middle" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">cuva</text>
+    <!-- Transmitted beam -->
+    ${step>=2?`<line x1="128" y1="125" x2="175" y2="125" stroke="#E85010" stroke-width="2" opacity="${alpha*0.8}"/>`:''}
+    <!-- Detector -->
+    <rect x="175" y="108" width="40" height="34" rx="4" fill="#1e3a4a" stroke="#2ecc71" stroke-width="1"/>
+    <text x="195" y="128" text-anchor="middle" font-size="10" fill="#2ecc71" font-family="JetBrains Mono,monospace" font-weight="bold">${step>=3?(alpha*100).toFixed(0)+'%':step>=2?'...':''}</text>
+    <text x="195" y="152" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">detector</text>
+    <!-- Result -->
+    ${step>=4?`<rect x="40" y="205" width="180" height="35" rx="6" fill="#1e3a4a" stroke="#f5a623" stroke-width="1"/>
+    <text x="130" y="219" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">β-caroten: 7.2 mg/100g</text>
+    <text x="130" y="232" text-anchor="middle" font-size="9" fill="#2ecc71" font-family="JetBrains Mono,monospace">Morcov = sursa excelenta ✓</text>`:''}
+    <text x="130" y="255" text-anchor="middle" font-size="8.5" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Spectrofotometrie la 450 nm</text>
+  </svg>`;
+}
+
+function svgAciditFructe(step){
+  // Same as aciditate paine but with fruit colors
+  const beakerCols = ['#D8F0A8','#C8E898','#E0A8C8','#F040B0','#FF20A0'];
+  const col = beakerCols[Math.min(step,4)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Erlenmeyer flask -->
+    <path d="M95,60 L95,100 L45,210 Q40,230 60,235 L200,235 Q220,230 215,210 L165,100 L165,60 Z" fill="#0d1821" stroke="#2A9DBF" stroke-width="1.5"/>
+    <!-- Liquid fill -->
+    <path d="M${60+step*5},${195-step*5} L${55+step*3},225 Q${57+step*2},233 ${63+step},233 L${197-step},233 Q${203-step*2},233 ${205-step*3},225 L${200-step*5},${195-step*5} Z" fill="${col}" opacity=".85"/>
+    ${step>=3?`<text x="130" y="210" text-anchor="middle" font-size="10" fill="#CC10A0" font-family="Syne,sans-serif" font-weight="700">ROZ PERSISTENT ✓</text>`:''}
+    <!-- Fruit pieces in solution -->
+    ${step<=1?`<ellipse cx="110" cy="185" rx="12" ry="10" fill="#D84020" opacity=".7"/>
+    <ellipse cx="150" cy="192" rx="10" ry="8" fill="#E05030" opacity=".6"/>`:'' }
+    <!-- Burette -->
+    <rect x="112" y="12" width="16" height="42" rx="3" fill="#1e3a4a" stroke="#a78bfa" stroke-width="1.5"/>
+    <rect x="113" y="13" width="14" height="${Math.max(4,40-step*8)}" rx="2" fill="#a078d8" opacity=".85"/>
+    <rect x="118" y="${12+Math.max(4,40-step*8)}" width="8" height="10" rx="4" fill="#4a5a6a"/>
+    ${step>=1?`<ellipse cx="122" cy="62" rx="3" ry="5" fill="#a078d8" opacity=".9"/>`:'' }
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">NaOH 0,1N + fenolftaleina</text>
+    ${step>=4?`<text x="130" y="70" text-anchor="middle" font-size="10" fill="#a78bfa" font-family="JetBrains Mono,monospace" font-weight="bold">V = 5.8 ml NaOH</text>
+    <text x="130" y="85" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">Aciditate = 5.8 meq/100g</text>`:''}
+  </svg>`;
+}
+
+const SVG_FNS = [svgGluten, svgAciditate, svgPierderi, svgVitC, svgCaroten, svgAciditFructe];
+
+// ── TESTS DATA ────────────────────────────────────────────────
+const TESTS = [
+  // 0: GLUTEN
+  {title:"Determinarea Glutenului",color:"#f5a623",steps:[
+    {label:"Principiu",icon:"🌾",title:"Ce este glutenul și de ce contează?",badge:"Pas 1 din 5",
+     text:"<strong>Glutenul</strong> = complex proteic (gliadina + glutenina) specific grâului, care conferă pâinii elasticitate și porozitate. Cantitatea și calitatea glutenului condiționează direct <em>calitatea panificabilă</em> a făinii.",
+     note:"Gluten absent: orz, orez, porumb, ovăz. Diagnosticul celiac: detectare gluten prin ELISA (sensibilitate >20 ppm).",},
+    {label:"Pregătire aluat",icon:"🫙",title:"Prepararea aluatului",badge:"Pas 2 din 5",
+     text:"Se cântăresc <strong>25 g de făină</strong> și se frământă cu <em>12-13 ml soluție NaCl 2%</em> (nu apă pură — NaCl solubilizează proteinele non-glutenice mai bine). Se frământă 5 minute până la omogenizare completă.",
+     note:"NaCl 2% = solventul optimal pentru separarea maximă a fracțiunilor solubile. Apa pură dă gluten mai slab.",},
+    {label:"Spălare gluten",icon:"🚿",title:"Spălarea glutenului cu NaCl",badge:"Pas 3 din 5",
+     text:"Aluatul se <strong>spală repetat</strong> sub jet de soluție NaCl 2%, ținând în palmă. Amidonul, zaharurile și substanțele solubile se îndepărtează. Operația durează 10-15 minute până apa de spălare este limpede.",
+     note:"Testul apei de spălare: câteva picături pe hârtie iod — fără colorație albastră = tot amidonul a fost îndepărtat.",},
+    {label:"Apreciere calitativă",icon:"👐",title:"Aprecierea calitativă a glutenului",badge:"Pas 4 din 5",
+     text:"Glutenul umed se apreciază prin <strong>întindere și elasticitate</strong>:<br>• <span style='color:#2ecc71'>Cat. I:</span> tare, elastic, lipicios, nu se rupe ușor = <em>făină de bună calitate</em><br>• <span style='color:#e8445a'>Cat. II:</span> moale, se filează, se rupe ușor = <em>făină slabă</em>",
+     note:"Categoria se dă indiferent de cantitate! O făină cu 30% gluten de Cat. II este inferioară celei cu 26% Cat. I.",
+     result:[{cls:'good',text:'✅ Cat. I: elastic, tare = făină BUNĂ'},{cls:'positive',text:'🔴 Cat. II: moale, filant = făină SLABĂ'}],},
+    {label:"Cantitate + norme",icon:"⚖️",title:"Determinarea cantitativă & Norme SR",badge:"Pas 5 din 5",
+     text:"Glutenul umed se <strong>zvântă și cântărește</strong>. Se calculează % din masa probei:<br><code style='background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px'>Gluten(%) = masă gluten / masă probă × 100</code>",
+     note:"SR EN ISO 21415-2. Norme min.: albă ≥26% · semialb ≥25% · neagră ≥24% · integrală ≥22%.",
+     result:[{cls:'good',text:'✅ 28% gluten umed Cat. I = Făină albă CONFORMĂ'}],},
+  ]},
+
+  // 1: ACIDITATE PAINE
+  {title:"Determinarea Acidității Pâinii",color:"#a78bfa",steps:[
+    {label:"Principiu",icon:"🍞",title:"De ce se determină aciditatea pâinii?",badge:"Pas 1 din 5",
+     text:"<strong>Aciditatea pâinii</strong> indică gradul de fermentare al aluatului. Acizii organici (lactic, acetic) produc gustul caracteristic, dar excesul = pâine acră. Se exprimă în <em>grade de aciditate</em> (ml NaOH 0,1N / 100g).",
+     note:"Aciditate crescută = aluat suprafermentat sau depozitare incorectă. Norma max: albă 3,5° · semialb 4,5° · neagră 6,5°.",},
+    {label:"Extract apos",icon:"🧫",title:"Prepararea extractului apos",badge:"Pas 2 din 5",
+     text:"Se cântăresc <strong>25 g pâine</strong> (miez fără coajă), se sfărâmă și se agită cu <em>250 ml apă distilată</em> la temperatura camerei 30 minute. Se filtrează printr-o hârtie de filtru.",
+     note:"Coaja se exclude — are aciditate diferită față de miez. Se lucrează la temperatura camerei pentru reproducibilitate.",},
+    {label:"Indicatorul",icon:"🎨",title:"Adăugarea fenolftaleinei",badge:"Pas 3 din 5",
+     text:"Din filtratul obținut se pipetează <strong>50 ml extract</strong> în erlenmeyer. Se adaugă <em>3-5 picături de fenolftaleină</em> (indicator acid-bază): incolor în mediu acid, roz în mediu bazic.",
+     note:"Fenolftaleina vira la pH 8.2-10. La virage persistent = tot acidul a reacționat cu NaOH.",},
+    {label:"Titrare NaOH",icon:"💧",title:"Titrarea cu NaOH 0,1N",badge:"Pas 4 din 5",
+     text:"Se titrează din biuretă cu <strong>NaOH 0,1N</strong> sub agitare continuă, până la <em>viraj roz persistent minim 1 minut</em>. Se notează volumul V (ml) consumat.",
+     note:"Titrarea rapidă poate da rezultate false — se picură lent, cu agitare constantă, mai ales aproape de punct.",
+     result:[{cls:'warning',text:'⚠️ Viraj roz persistent = PUNCT FINAL atins'}],},
+    {label:"Calcul + norme",icon:"📊",title:"Calculul acidității & Interpretare",badge:"Pas 5 din 5",
+     text:"<strong>Formula:</strong> Aciditate = V × 2 (grade aciditate/100g pâine)<br>Unde V = ml NaOH 0,1N consumați la titrarea a 50 ml extract (din 250 ml / 25g pâine).",
+     note:"Standard: SR 91:2007. V=3,2 ml → Aciditate = 3,2 × 2 = <b>6,4 grade</b> la 100g. Pâine albă max 3,5 → NECONFORMĂ.",
+     result:[{cls:'good',text:'✅ Pâine albă: aciditate ≤3,5° = CONFORMĂ'},{cls:'positive',text:'🔴 Pâine albă: aciditate >3,5° = NECONFORMĂ'}],},
+  ]},
+
+  // 2: PIERDERI
+  {title:"Determinarea Pierderilor la Curățire",color:"#2ecc71",steps:[
+    {label:"Principiu",icon:"⚖️",title:"Ce sunt pierderile la curățire?",badge:"Pas 1 din 4",
+     text:"Legumele și fructele nu se consumă integral — coaja, sâmburii, cozile sunt părți necomestibile. <strong>Pierderile</strong> = procentul din masa totală care se elimină la pregătire. Esențiale pentru calculul valorii nutritive reale.",
+     note:"FAO Food Composition Tables includ factori de pierdere pe tipuri de produse. Cartofi ~20%, mere ~12%, portocale ~35%.",},
+    {label:"Cântărire inițială",icon:"🍅",title:"Cântărirea produsului integral",badge:"Pas 2 din 4",
+     text:"Se cântărește produsul <strong>întreg, neprelucreat</strong> (cu coajă, sâmburi etc.). Se notează masa inițială <em>m₀</em>. Exemplu: 200 g mere întregi.",
+     note:"Balanța trebuie calibrată. Masa se notează cu precizie de 0,1 g pentru calcule exacte.",},
+    {label:"Îndepărtare deșeuri",icon:"🔪",title:"Îndepărtarea părților necomestibile",badge:"Pas 3 din 4",
+     text:"Se îndepărtează <strong>coaja, sâmburii, cozile</strong> sau alte părți necomestibile. Se colectează deșeurile și se cântăresc separat <em>m_d</em>. Sau: se cântărește produsul net după curățire.",
+     note:"Se păstrează deșeurile pentru cântărire! Formula poate fi aplicată ambele moduri: direct sau prin diferență.",},
+    {label:"Calcul pierderi",icon:"📐",title:"Calculul și interpretarea pierderilor",badge:"Pas 4 din 4",
+     text:"<strong>P(%) = (m_pierderi / m₀) × 100</strong><br>Exemplu: 200g mere → după curățire 158g net → pierderi = 42g<br>P = (42/200) × 100 = <b>21%</b>",
+     note:"Valori orientative: cartofi 20%, morcovi 15%, mere 12-15%, portocale 30-35%, pepeni 40-50%.",
+     result:[{cls:'good',text:'✅ P = 21% pierderi — valoare normală pentru mere'}],},
+  ]},
+
+  // 3: VITAMINA C
+  {title:"Determinarea Vitaminei C",color:"#00c8d7",steps:[
+    {label:"Principiu",icon:"🍋",title:"Vitamina C — Proprietăți și importanță",badge:"Pas 1 din 5",
+     text:"<strong>Vitamina C (acid ascorbic)</strong> se găsește exclusiv în alimente de origine vegetală. Este <em>termosensibilă</em> — pierderi 25-50% la fierbere. DZR: 80 mg/zi adulți (Reg. UE 1169/2011). Concentrație maximă: în coajă și periferia miezului.",
+     note:"Metodă: oxidare cu 2,6-diclorfenol-indofenol (DCPIP albastru). Vitamina C reduce DCPIP → devine incolor = punct final.",},
+    {label:"Preparare soluție",icon:"🧪",title:"Prepararea soluției de Vitamina C",badge:"Pas 2 din 5",
+     text:"Se stoarce sau se extrage produsul și se acidifică cu <strong>acid metafosforic 3%</strong> (sau acid oxalic) pentru a preveni oxidarea vitaminei C. Se pipetează <em>10 ml extract acidulat</em> în erlenmeyer.",
+     note:"Acidificarea este esențială — vitamina C se oxidează rapid în mediu neutru sau bazic. Lucrați rapid!",},
+    {label:"Titrare DCPIP",icon:"💧",title:"Titrarea cu 2,6-diclorfenol-indofenol",badge:"Pas 3 din 5",
+     text:"Din biuretă se picură soluție de <strong>DCPIP 0,05%</strong> (albastru intens) peste soluția de vitamina C (galbenă-verzuie), sub agitare continuă. DCPIP este decolorat imediat de vitamina C.",
+     note:"Viteza de titrare: lentă, cu agitare. Aproape de punct: culoarea albastru dispare tot mai lent.",},
+    {label:"Punct final",icon:"👁️",title:"Detectarea punctului final",badge:"Pas 4 din 5",
+     text:"Punctul final = momentul când soluția devine <strong>incoloră persistent 30 secunde</strong> (sau roz pal persistent). Se notează V = ml DCPIP consumați.",
+     note:"Erori frecvente: agitare insuficientă, titrare prea rapidă, soluție de DCPIP degradată (se prepară proaspătă zilnic).",
+     result:[{cls:'warning',text:'⚠️ INCOLOR persistent = PUNCT FINAL atins'}],},
+    {label:"Calcul + norme",icon:"📊",title:"Calculul conținutului de Vitamina C",badge:"Pas 5 din 5",
+     text:"<strong>Vit C (mg/100g) = V × T × 100/m</strong><br>Unde T = titrul DCPIP în mg Vit C/ml, m = masa produsului.<br>Exemplu: V=2,4 ml, T=0,5, m=5g → <b>Vit C = 24 mg/100g</b>",
+     note:"Conținut orientativ: ardei roșu 150 mg/100g, kiwi 93 mg/100g, portocale 53 mg/100g, mere 6 mg/100g.",
+     result:[{cls:'good',text:'✅ Vit C = 24 mg/100g (mere) — valoare normală'}],},
+  ]},
+
+  // 4: CAROTEN
+  {title:"Determinarea β-Carotenului",color:"#f5a623",steps:[
+    {label:"Principiu",icon:"🥕",title:"Caroten — Provitamina A",badge:"Pas 1 din 5",
+     text:"<strong>β-caroten</strong> = provitamina A, prezent în legume și fructe colorate (galben, portocaliu, roșu). Se convertește în vitamina A în organism. Rezistent la căldură, solubil în grăsimi. DZR Vit A: 800 µg echivalent retinol.",
+     note:"Conținut: morcov 8-12 mg/100g · ardei roșu 2 mg/100g · spanac 4 mg/100g · caisă 1,6 mg/100g.",},
+    {label:"Extracție",icon:"🧪",title:"Extracția cu solvenți organici",badge:"Pas 2 din 5",
+     text:"Se omogenizează proba și se extrage β-carotenul cu <strong>acetonă sau petrol de eter</strong> (carotenul este solubil în grăsimi și solvenți organici, NU în apă!). Extractul capătă culoare <em>galben-portocaliu</em> caracteristică.",
+     note:"Extracția în 3 reprize, centrifugare. Extractul se completează la volum cu solvent în balon cotat.",},
+    {label:"Filtrare-clarificare",icon:"🔬",title:"Clarificarea extractului",badge:"Pas 3 din 5",
+     text:"Extractul se <strong>filtrează</strong> prin hârtie de filtru sau centrifugă pentru îndepărtarea resturilor celulare. Se obține un extract <em>clar, transparent, galben-portocaliu</em> intens proporțional cu conținutul de caroten.",
+     note:"Extractul trebuie protejat de lumină directă — carotenul se degradează fotolitic. Se lucrează în vas întunecat.",},
+    {label:"Spectrofotometrie",icon:"📡",title:"Măsurarea spectrofotometrică la 450 nm",badge:"Pas 4 din 5",
+     text:"Se măsoară <strong>absorbanta la 450 nm</strong> — lungimea de undă de absorbție maximă a β-carotenului. Se citește față de un martor (solvent pur). Absorbanta este proporțională cu concentrația (Legea Beer-Lambert).",
+     note:"Curba de etalonare: soluții standard de β-caroten pur (0,1-2 µg/ml) → grafic A = f(C).",
+     result:[{cls:'warning',text:'⚠️ Absorbanta citită → concentrație din curba de etalonare'}],},
+    {label:"Calcul + norme",icon:"📊",title:"Calculul și interpretarea rezultatelor",badge:"Pas 5 din 5",
+     text:"Din curba de etalonare se determină concentrația și se calculează:<br><strong>β-caroten (mg/100g) = C(µg/ml) × V_total / m × 100/1000</strong>",
+     note:"Valori orientative morcov: 8-12 mg β-caroten/100g = sursă EXCELENTĂ. Sub 0,1 mg/100g = conținut nesemnificativ.",
+     result:[{cls:'good',text:'✅ β-caroten = 7,2 mg/100g (morcov) — sursă excelentă'}],},
+  ]},
+
+  // 5: ACIDITATE FRUCTE
+  {title:"Determinarea Acidității Totale (Fructe & Legume)",color:"#2A9DBF",steps:[
+    {label:"Semnificație",icon:"🍎",title:"Aciditatea și maturarea fructelor",badge:"Pas 1 din 5",
+     text:"<strong>Aciditatea totală</strong> a fructelor scade pe măsură ce se coc — zaharurile cresc, acizii scad, dând gustul dulce-acrișor. Acizi specifici: <em>malic</em> (mere, pere) · <em>tartric</em> (struguri) · <em>citric</em> (citrice, căpșuni).",
+     note:"Raportul zahăr/aciditate = indicele de maturare. Fructe mature: aciditate 0,3-0,8% · imature: >1% · supracoapte: <0,3%.",},
+    {label:"Preparare extract",icon:"🧃",title:"Prepararea extractului",badge:"Pas 2 din 5",
+     text:"Se stoarce/omogenizează <strong>20 g produs</strong> cu 100 ml apă distilată. Se agită 15-20 minute și se filtrează. Alternativ: suc de fructe direct.<br>Se pipetează <em>25 ml filtrat</em> în erlenmeyer.",
+     note:"Filtrarea îndepărtează pulpa și resturile celulare care ar putea interfera cu virajul indicatorului.",},
+    {label:"Indicator",icon:"🎨",title:"Adăugarea fenolftaleinei",badge:"Pas 3 din 5",
+     text:"Se adaugă <strong>3-5 picături de fenolftaleină</strong> în erlenmeyer. Soluția rămâne incoloră (pH acid din acizii organici). La titrare, NaOH neutralizează acizii și pH crește.",
+     note:"La fructele roșii (căpșuni, vișine): colorația naturală poate masca virajul — se folosesc 10 picături indicator.",},
+    {label:"Titrare",icon:"💧",title:"Titrarea cu NaOH 0,1N",badge:"Pas 4 din 5",
+     text:"Se titrează din biuretă cu <strong>NaOH 0,1N</strong> sub agitare continuă, până la <em>viraj roz persistent 1 minut</em>. Se notează V ml NaOH consumați.",
+     note:"Titrare lentă, mai ales la final! Aproximativ 5-10 ml NaOH pentru fructe normale, >15 ml = aciditate ridicată.",
+     result:[{cls:'warning',text:'⚠️ Roz persistent 1 minut = PUNCT FINAL'}],},
+    {label:"Calcul + norme",icon:"📊",title:"Calculul și interpretarea rezultatelor",badge:"Pas 5 din 5",
+     text:"<strong>Aciditate (meq/100g) = V × 0,1 × 100/m</strong> (sau în % acid malic: × 0,0067)<br>Exemplu: V=5,8 ml, m=20g → Aciditate = 5,8 × 0,1 × 100/20 = <b>2,9 meq/100g</b>",
+     note:"Mere mature: 0,4-0,8% acid malic. Struguri maturi: 0,4-0,7% acid tartric. Lămâi: 5-8% acid citric.",
+     result:[{cls:'good',text:'✅ Aciditate = 2,9 meq/100g (mere mature) — NORMALĂ'}],},
+  ]},
+];
+
+// ── RENDER ────────────────────────────────────────────────────
+const curStep=[0,0,0,0,0,0];
+const VIS_LABELS=[
+  'Determinare gluten umed — faina grau',
+  'Titrare cu NaOH 0,1N + fenolftaleina',
+  'Cantarire produse alimentare',
+  'Titrare cu 2,6-DCPIP — Vitamina C',
+  'Spectrofotometrie la 450 nm',
+  'Titrare aciditate — fructe si legume'
+];
+
+// Build all panels HTML
+const panelsDiv = document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div = document.createElement('div');
+  div.className = 'test-panel' + (ti===0?' active':'');
+  div.id = 'panel-'+ti;
+  div.innerHTML = `
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}">${VIS_LABELS[ti]}</div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Înapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Următorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+
+function renderStep(ti){
+  const t=TESTS[ti], si=curStep[ti], step=t.steps[si], total=t.steps.length;
+  const pl=document.getElementById('pipeline-'+ti); pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  document.getElementById('card-'+ti).classList.toggle('highlight',si>0);
+  // SVG
+  document.getElementById('svg-'+ti).innerHTML = SVG_FNS[ti](si);
+  // Info
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result) step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  document.getElementById('info-'+ti).innerHTML=html;
+  document.getElementById('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  document.getElementById('prev-'+ti).disabled=si===0;
+  const nb=document.getElementById('next-'+ti);
+  nb.disabled=si===total-1;
+  nb.textContent=si===total-1?'✓ Finalizat':'Următorul pas →';
+  nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+
+const bgD=document.getElementById('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>
