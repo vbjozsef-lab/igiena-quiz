@@ -2024,19 +2024,15 @@ function FisaGrupScreen({session, student, onBack}) {
 async function submitFisaGrup(f, answers, concluzii, student, session, setPhase, setEvalResults) {
   setPhase("evaluating");
 
-  const prompt = `Ești profesor de igienă. Evaluează răspunsurile unui student la fișa de lucru "${f.title}".
-
-Context caz: ${f.caz.map(i=>`${i.l}: ${i.v}`).join(", ")}
-
-${f.qs.map((q,i)=>`Întrebarea ${i+1}: ${q.q}
-Răspuns: ${answers[i]||"(fără răspuns)"}`).join("
-
-")}
-
-Acordă scor (0, 1 sau 2 puncte) și feedback scurt (1-2 prop.) în română pentru fiecare din cele ${f.qs.length} întrebări.
-Criterii: 2p=corect complet cu termeni specifici, 1p=parțial/direcție bună, 0p=incorect/absent.
-Răspunde NUMAI cu JSON valid, fără markdown: {"evaluations":[{"score":2,"feedback":"..."},...]}
-Array-ul trebuie să conțină EXACT ${f.qs.length} obiecte.`;
+  const cazStr = f.caz.map(i=>i.l+": "+i.v).join(", ");
+  const qStr = f.qs.map((q,i)=>"Intrebarea "+(i+1)+": "+q.q+"\nRaspuns: "+(answers[i]||"(fara raspuns)")).join("\n\n");
+  const prompt = "Esti profesor de igiena. Evalueaza raspunsurile unui student la fisa de lucru \""+f.title+"\"."
+    +"\nContext caz: "+cazStr
+    +"\n\n"+qStr
+    +"\n\nAcorda scor (0, 1 sau 2 puncte) si feedback scurt (1-2 prop.) in romana pentru fiecare din cele "+f.qs.length+" intrebari."
+    +"\nCriterii: 2p=corect complet cu termeni specifici, 1p=partial/directie buna, 0p=incorect/absent."
+    +'\nRaspunde NUMAI cu JSON valid, fara markdown: {"evaluations":[{"score":2,"feedback":"..."}]}'
+    +"\nArray-ul trebuie sa contina EXACT "+f.qs.length+" obiecte.";
 
   let evaluations = [];
   try {
