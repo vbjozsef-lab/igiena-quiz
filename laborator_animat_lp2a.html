@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP2A – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#100808;--panel:#1a1010;--border:#3a1818;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--blue:#2A9DBF;--purple:#a78bfa;--wine:#C0392B;--text:#e2d8d8;--muted:#8a6a6a;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#100808 60%,#1a1010);}
+  .header-icon{font-size:2.4rem;}
+  header h1{font-size:1.5rem;font-weight:800;color:var(--white);}
+  header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:160px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);}nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:#100808;}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .smoke-puff{animation:puffF 2.5s ease-in-out infinite;}
+  @keyframes puffF{0%{transform:translateY(0) scale(1);opacity:.6;}50%{transform:translateY(-10px) scale(1.2);opacity:.8;}100%{transform:translateY(-20px) scale(1.4);opacity:0;}}
+  .germ-swim{animation:germS 3s ease-in-out infinite;}
+  @keyframes germS{0%,100%{transform:translate(0,0) rotate(0);}25%{transform:translate(3px,-2px) rotate(20deg);}75%{transform:translate(-2px,3px) rotate(-15deg);}}
+  .petri-grow{transition:opacity .8s,transform .8s;}
+  .pulse{animation:pulseG 1.5s ease-in-out infinite;}
+  @keyframes pulseG{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 5px currentColor);}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--wine);opacity:.03;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🚬</div>
+  <div>
+    <h1>LP2A – Teste Animate Interactive</h1>
+    <p>CO Expirat · Fagerstrom · Metoda Koch · Tampon Steril · Dezinfecție</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">💨 CO Expirat</button>
+  <button onclick="showTest(1)">🧠 Fagerstrom</button>
+  <button onclick="showTest(2)">🦠 Metoda Koch</button>
+  <button onclick="showTest(3)">🔬 Tampon Steril</button>
+  <button onclick="showTest(4)">🧴 Dezinfecție</button>
+</nav>
+<div id="panels"></div>
+
+<script>
+function g(id){return document.getElementById(id);}
+
+function svgCO(si){
+  const ppmVals=[0,8,18,32,55];
+  const ppm=ppmVals[Math.min(si,4)];
+  const ledCols=['#2ecc71','#f5a623','#e8445a','#e8445a','#e8445a'];
+  const ledN=[1,1,1,2,3];
+  const col=ledCols[Math.min(si,4)];
+  const labels=['Nefumator','Zona alarma','Fumator','Fumator !!','Fumator !!!'];
+  const label=labels[Math.min(si,4)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Device body Picollo+ -->
+    <rect x="55" y="30" width="150" height="170" rx="14" fill="#1a1010" stroke="${col}" stroke-width="2"/>
+    <rect x="60" y="35" width="140" height="160" rx="11" fill="#0d0808"/>
+    <!-- Screen -->
+    <rect x="68" y="42" width="124" height="75" rx="6" fill="#060408" stroke="${col}" stroke-width="1"/>
+    <!-- CO label -->
+    <text x="130" y="63" text-anchor="middle" font-size="11" fill="${col}" font-family="JetBrains Mono,monospace">COHb</text>
+    <!-- PPM value -->
+    <text x="130" y="95" text-anchor="middle" font-size="26" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${ppm}</text>
+    <text x="130" y="110" text-anchor="middle" font-size="10" fill="${col}" font-family="JetBrains Mono,monospace">ppm</text>
+    <!-- LED indicators -->
+    ${[0,1,2,3].map(i=>`<circle cx="${88+i*18}" cy="135" r="7" fill="${i<ledN[Math.min(si,4)]?col:'#2a1818'}" stroke="${col}" stroke-width="1"/>`).join('')}
+    <!-- Mouthpiece -->
+    <rect x="205" y="100" width="30" height="20" rx="8" fill="#2a1818" stroke="${col}" stroke-width="1"/>
+    <!-- Breath arrow -->
+    ${si>=1?`<path d="M235,110 Q248,110 250,110" stroke="${col}" stroke-width="2" fill="none"/>
+    <text x="255" y="113" font-size="10" fill="${col}">→</text>`:''}
+    <!-- Status box -->
+    <rect x="60" y="158" width="140" height="26" rx="5" fill="${col}22" stroke="${col}" stroke-width="1"/>
+    <text x="130" y="175" text-anchor="middle" font-size="10" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${label}</text>
+    <!-- Cigarette smoke effect -->
+    ${si>=3?`
+    <ellipse cx="50" cy="220" rx="8" ry="4" fill="#888" class="smoke-puff" style="animation-delay:0s"/>
+    <ellipse cx="50" cy="205" rx="6" ry="3" fill="#777" class="smoke-puff" style="animation-delay:.5s"/>
+    <ellipse cx="50" cy="192" rx="5" ry="3" fill="#666" class="smoke-puff" style="animation-delay:1s"/>
+    <text x="50" y="235" text-anchor="middle" font-size="16">🚬</text>`:''}
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">Picollo+ Smokerlyzer — ${ppm} ppm</text>
+  </svg>`;
+}
+
+function svgFagerstrom(si){
+  const scores=[0,3,5,7,9];
+  const sc=scores[Math.min(si,4)];
+  const cats=[['Foarte scazuta','#2ecc71'],['Scazuta','#2A9DBF'],['Medie','#f5a623'],['Puternica','#e8445a'],['Foarte puternica','#8B0000']];
+  const catIdx=sc<=2?0:sc<=4?1:sc===5?2:sc<=7?3:4;
+  const [catLabel,catCol]=cats[catIdx];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Score display -->
+    <rect x="70" y="15" width="120" height="70" rx="10" fill="#1a1010" stroke="${catCol}" stroke-width="2"/>
+    <text x="130" y="42" text-anchor="middle" font-size="11" fill="#8a6a6a" font-family="JetBrains Mono,monospace">SCOR FAGERSTROM</text>
+    <text x="130" y="72" text-anchor="middle" font-size="32" fill="${catCol}" font-family="JetBrains Mono,monospace" font-weight="bold">${sc}/10</text>
+    <!-- Scale bar -->
+    <rect x="20" y="100" width="220" height="18" rx="9" fill="#1a1010" stroke="#3a1818" stroke-width="1"/>
+    <rect x="20" y="100" width="${sc/10*220}" height="18" rx="9" fill="${catCol}" opacity=".85"/>
+    <text x="20" y="132" font-size="9" fill="#2ecc71" font-family="JetBrains Mono,monospace">0</text>
+    <text x="118" y="132" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">5</text>
+    <text x="240" y="132" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">10</text>
+    <!-- Category label -->
+    <rect x="40" y="140" width="180" height="30" rx="7" fill="${catCol}22" stroke="${catCol}" stroke-width="1.5"/>
+    <text x="130" y="160" text-anchor="middle" font-size="13" fill="${catCol}" font-family="Syne,sans-serif" font-weight="700">Dependenta ${catLabel}</text>
+    <!-- Treatment recommendation -->
+    <rect x="20" y="182" width="220" height="55" rx="8" fill="#1a1010" stroke="#3a1818" stroke-width="1"/>
+    <text x="130" y="200" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">RECOMANDARE TERAPEUTICA:</text>
+    <text x="130" y="218" text-anchor="middle" font-size="10" fill="${catCol}" font-family="Syne,sans-serif" font-weight="700">${
+      sc<=2?'Sfat minimal (VBA 30 sec) suficient':
+      sc<=4?'Consiliere individuala + TSN':
+      sc===5?'TSN + consiliere specializata':
+      sc<=7?'Vareniclina sau bupropion recomandat':
+      'Vareniclina + TSN combinata — dependenta maxima'
+    }</text>
+    <text x="130" y="233" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">${
+      sc<=2?'Rata succes: 25-30% cu interventie':
+      sc<=5?'NNT vareniclina: 6-7 (Cochrane 2022)':
+      'Rata succes <8% fara medicatie la scor >7'
+    }</text>
+    <text x="130" y="252" text-anchor="middle" font-size="8.5" fill="#8a6a6a" font-family="JetBrains Mono,monospace">www.stopfumat.eu · 0800 STOP 200</text>
+  </svg>`;
+}
+
+function svgKoch(si){
+  const colonies=[0,0,12,28,45];
+  const nc=colonies[Math.min(si,4)];
+  const ntg=nc>0?Math.round(nc*1000/10):0;
+  const ntgCol=ntg===0?'#8a6a6a':ntg<600?'#2ecc71':ntg<1500?'#f5a623':'#e8445a';
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Incubator -->
+    ${si>=2?`<rect x="160" y="20" width="90" height="70" rx="7" fill="#1a1010" stroke="#f5a623" stroke-width="1.5"/>
+    <text x="205" y="45" text-anchor="middle" font-size="14" fill="#f5a623" font-family="JetBrains Mono,monospace" font-weight="bold">37°C</text>
+    <text x="205" y="62" text-anchor="middle" font-size="10" fill="#8a6a6a" font-family="JetBrains Mono,monospace">48 ore</text>
+    <text x="205" y="78" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">TERMOSTAT</text>`:''}
+    <!-- Petri dish top view (large) -->
+    <ellipse cx="110" cy="170" rx="90" ry="20" fill="#0a1808" stroke="#2ecc71" stroke-width="1.5"/>
+    <ellipse cx="110" cy="163" rx="84" ry="18" fill="#1A2A18"/>
+    <!-- Agar medium -->
+    <ellipse cx="110" cy="161" rx="78" ry="15" fill="${si>=1?'#1E3818':'#1A2A18'}"/>
+    <!-- Colonies growing -->
+    ${nc>0?[...Array(nc)].map((_,i)=>{
+      const angle=i/nc*Math.PI*2;
+      const r=30+Math.random()*35|0;
+      const cx=110+r*Math.cos(angle)|0;
+      const cy=161+r*0.2*Math.sin(angle)|0;
+      const cr=2+Math.random()*2|0;
+      return `<circle cx="${cx}" cy="${cy}" r="${cr}" fill="#2ecc71" opacity="${.7+i%.3}" class="petri-grow"/>`;
+    }).join(''):''}
+    ${si>=3?`<text x="110" y="185" text-anchor="middle" font-size="9" fill="${ntgCol}" font-family="JetBrains Mono,monospace">${nc} colonii numarate</text>`:''}
+    <!-- Dish label -->
+    <text x="110" y="200" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">Geloze 100cm² · expusa 5 min</text>
+    <!-- NTG calculation display -->
+    <rect x="20" y="20" width="130" height="55" rx="8" fill="#1a1010" stroke="${ntgCol}" stroke-width="${ntg>0?1.5:1}"/>
+    <text x="85" y="40" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">NTG (Omelianski)</text>
+    <text x="85" y="62" text-anchor="middle" font-size="18" fill="${ntgCol}" font-family="JetBrains Mono,monospace" font-weight="bold">${ntg>0?ntg+' UFC/m³':'---'}</text>
+    <!-- Air particles above dish -->
+    ${si>=1?[...Array(8)].map((_,i)=>`
+      <circle cx="${40+i*20}" cy="${80+Math.sin(i)*10|0}" r="${1+i%2}" fill="#2ecc71" opacity="${.3+i*.05}" class="germ-swim" style="animation-delay:${i*.3}s"/>`).join(''):''}
+    <!-- Norm indicator -->
+    ${ntg>0?`<rect x="20" y="210" width="220" height="30" rx="6" fill="${ntgCol}18" stroke="${ntgCol}" stroke-width="1"/>
+    <text x="130" y="230" text-anchor="middle" font-size="10" fill="${ntgCol}" font-family="Syne,sans-serif" font-weight="700">${
+      ntg<600?'CONFORM — salon spital (<600 UFC/m³)':
+      ntg<1500?'ATENTIE — depasire norma salon':
+      'NECONFORM — actiune necesara!'
+    }</text>`:''}
+    <text x="130" y="253" text-anchor="middle" font-size="8.5" fill="#8a6a6a" font-family="JetBrains Mono,monospace">Formula: N=n×1000/10 [UFC/m³]</text>
+  </svg>`;
+}
+
+function svgTampon(si){
+  const germs=[0,0,5,18,0];
+  const nc=germs[Math.min(si,4)];
+  const col=nc===0&&si>=4?'#2ecc71':nc>5?'#e8445a':nc>0?'#f5a623':'#2A9DBF';
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Surface being swabbed -->
+    <rect x="20" y="180" width="220" height="35" rx="5" fill="#2a1810" stroke="#C0392B" stroke-width="1.5"/>
+    <text x="130" y="202" text-anchor="middle" font-size="9" fill="#C0392B" font-family="JetBrains Mono,monospace">Suprafata controlata (25 cm²)</text>
+    <!-- Swab stick -->
+    <rect x="118" y="60" width="6" height="90" rx="3" fill="#5a4a3a"/>
+    <!-- Cotton tip -->
+    <ellipse cx="121" cy="155" rx="10" ry="8" fill="${si>=1?'#E8D8C8':'#5a4a3a'}"/>
+    ${si>=1?`<ellipse cx="121" cy="155" rx="8" ry="6" fill="#F0E8D8" opacity=".8"/>`:'' }
+    <!-- Swabbing motion -->
+    ${si===1?`<path d="M80,175 Q121,160 162,175" fill="none" stroke="#C0392B" stroke-width="1.5" stroke-dasharray="5,3" opacity=".7"/>
+    <text x="130" y="170" text-anchor="middle" font-size="8" fill="#C0392B" font-family="JetBrains Mono,monospace">stergere 25 cm²</text>`:''}
+    <!-- Tube with saline -->
+    ${si>=2?`
+    <rect x="50" y="60" width="28" height="90" rx="14" fill="#1a1010" stroke="#2A9DBF" stroke-width="1.5"/>
+    <rect x="52" y="80" width="24" height="68" rx="12" fill="#C8D8E8" opacity=".7"/>
+    <text x="64" y="56" text-anchor="middle" font-size="8" fill="#2A9DBF" font-family="JetBrains Mono,monospace">10ml SF</text>
+    <text x="64" y="158" text-anchor="middle" font-size="8" fill="#2A9DBF" font-family="JetBrains Mono,monospace">agitare</text>`:''}
+    <!-- Petri plate result -->
+    ${si>=3?`
+    <ellipse cx="185" cy="120" rx="60" ry="14" fill="#0a1808" stroke="${col}" stroke-width="1.5"/>
+    <ellipse cx="185" cy="115" rx="56" ry="12" fill="#1A2A18"/>
+    ${[...Array(nc)].map((_,i)=>{
+      const a=i/Math.max(nc,1)*Math.PI*2;
+      const r=20+Math.random()*25|0;
+      return `<circle cx="${185+r*Math.cos(a)|0}" cy="${115+r*.2*Math.sin(a)|0}" r="${1.5+i%2}" fill="${col}" opacity=".85"/>`;
+    }).join('')}
+    <text x="185" y="133" text-anchor="middle" font-size="8" fill="${col}" font-family="JetBrains Mono,monospace">${nc} colonii</text>`:''}
+    <!-- Result display -->
+    <rect x="20" y="220" width="220" height="32" rx="7" fill="${col}18" stroke="${col}" stroke-width="1.5"/>
+    <text x="130" y="240" text-anchor="middle" font-size="11" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${
+      si<3?'Asteptare incubare 37°C / 24-48h...':
+      nc>5?`${nc} UFC/cm² — NECONFORM (max 5/cm²)`:
+      nc>0?`${nc} UFC/cm² — limita (max 5/cm²)`:
+      si>=4?'0 UFC/cm² — CONFORM dupa dezinfectie':'Numara colonii...'
+    }</text>
+    <text x="130" y="255" text-anchor="middle" font-size="8.5" fill="#8a6a6a" font-family="JetBrains Mono,monospace">N = colonii × dilutie / suprafata (UFC/cm²)</text>
+  </svg>`;
+}
+
+function svgDezinfectie(si){
+  const reductions=['0%','95%','99%','99.9%','99.999%'];
+  const methods=['-','Curatenie (spalare)','Dezinfectie chimica','UV-C 254nm','Sterilizare'];
+  const cols=['#8a6a6a','#2A9DBF','#2ecc71','#f5a623','#e8445a'];
+  const red=reductions[Math.min(si,4)];
+  const meth=methods[Math.min(si,4)];
+  const col=cols[Math.min(si,4)];
+  // Bacteria count visual
+  const germCount=[100,5,1,0,0];
+  const nc=germCount[Math.min(si,4)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Surface -->
+    <rect x="20" y="160" width="220" height="30" rx="5" fill="#2a1810" stroke="${col}" stroke-width="1.5"/>
+    <text x="130" y="180" text-anchor="middle" font-size="9" fill="${col}" font-family="JetBrains Mono,monospace">Suprafata tratata</text>
+    <!-- Bacteria on surface - before -->
+    ${si<2?[...Array(20)].map((_,i)=>`<circle cx="${30+i*10}" cy="${148+Math.sin(i)*5|0}" r="${2+i%2}" fill="#e8445a" class="germ-swim" style="animation-delay:${i*.15}s" opacity=".8"/>`).join(''):''}
+    ${si>=1&&si<3?[...Array(5)].map((_,i)=>`<circle cx="${50+i*30}" cy="150" r="2" fill="#f5a623" opacity=".7"/>`).join(''):''}
+    ${si>=3?`<text x="130" y="150" text-anchor="middle" font-size="10" fill="#2ecc71" font-family="Syne,sans-serif">✓ suprafata decontaminata</text>`:''}
+    <!-- Method icon -->
+    <text x="130" y="80" text-anchor="middle" font-size="44">${['🦠','🧹','🧴','💡','🏥'][Math.min(si,4)]}</text>
+    <!-- Reduction display -->
+    <rect x="40" y="100" width="180" height="45" rx="8" fill="#1a1010" stroke="${col}" stroke-width="2"/>
+    <text x="130" y="120" text-anchor="middle" font-size="11" fill="${col}" font-family="JetBrains Mono,monospace">${meth}</text>
+    <text x="130" y="138" text-anchor="middle" font-size="18" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">-${red} germeni</text>
+    <!-- Log reduction bar -->
+    <rect x="20" y="195" width="220" height="12" rx="6" fill="#1a1010" stroke="#3a1818" stroke-width="1"/>
+    <rect x="20" y="195" width="${[0,44,88,132,220][Math.min(si,4)]}" height="12" rx="6" fill="${col}"/>
+    <text x="130" y="222" text-anchor="middle" font-size="9" fill="${col}" font-family="JetBrains Mono,monospace">${['0 log reducere','1 log (10×)','2 log (100×)','3 log (1000×)','5 log (100.000×)'][Math.min(si,4)]}</text>
+    <!-- WHO hand hygiene label -->
+    ${si>=1?`<text x="130" y="240" text-anchor="middle" font-size="9" fill="#8a6a6a" font-family="JetBrains Mono,monospace">${['','Curatenie = 95-98% reducere','Dezinfectie chimica = 99-99.9%','UV-C 254nm: 99.9% SARS-CoV-2 in 6 sec','Sterilizare = 5 log = "sterile"'][Math.min(si,4)]}</text>`:''}
+    <text x="130" y="255" text-anchor="middle" font-size="8.5" fill="#8a6a6a" font-family="JetBrains Mono,monospace">WHO 5 Momente Igiena Mainilor 2023</text>
+  </svg>`;
+}
+
+const SVG_FNS=[svgCO,svgFagerstrom,svgKoch,svgTampon,svgDezinfectie];
+const VL=['Picollo+ Smokerlyzer — CO expirat ppm','Testul Fagerstrom — scor dependenta','Metoda Koch — placi Petri sedimentare','Tampon steril — UFC/cm² suprafata','Reducere log10 — metode dezinfectie'];
+
+const TESTS=[
+  {title:"Determinarea CO din Aerul Expirat",color:"#C0392B",steps:[
+    {label:"Principiu",icon:"💨",title:"Monitorul CO expirat — utilitate clinica",badge:"Pas 1 din 5",
+     text:"Monitorul de CO (Picollo+/Smokerlyzer) masoara <strong>carboxihemoglobina (COHb%)</strong> non-invaziv din aerul expirat. CO absorbit din fumul de tigara se leaga de hemoglobina (afinitate ×250 vs O₂) → COHb% reflecta expunerea recenta la CO.",
+     note:"COHb% in sange (laborator) = referinta. COHb expirat coreleaza: ppm expirat × 0.16 ≈ %COHb sangvin. Util clinic pentru feedback imediat la fumatori."},
+    {label:"Tehnica",icon:"🔬",title:"Tehnica de lucru — pasii",badge:"Pas 2 din 5",
+     text:"1. Pornire: buton 3 sec → ataseaza prelungitor D + piesa bucala steril. 2. Inhalare profunda → 2× buton → <strong>retine respiratia 15 sec</strong> (bip-uri la ultimele 3 sec). 3. Sufla lent si complet in piesa bucala (exhale fully). 4. Citeste: ppm + %COHb + LED color.",
+     note:"Retinerea respiratiei 15 sec = esentiala pentru echilibrarea CO alveolar cu cel sangvin. Fara retinere → valori fals scazute."},
+    {label:"Nefumator",icon:"🟢",title:"Rezultat VERDE — Nefumator (0-6 ppm)",badge:"Pas 3 din 5",
+     text:"LED Verde: <strong>0-6 ppm / 0-1.74% COHb</strong> = nefumator sau abstinent confirmat. Expunere la fum pasiv intens poate ridica valorile la 3-5 ppm. Gravidele fumizoare: chiar si 3-5 ppm = risc fetal!",
+     note:"Dupa renuntarea la fumat: COHb scade la normal in 24-48h (timp de injumatatire CO: 5-6h la aerul atmosferic). Feedback pozitiv pentru pacient.",
+     result:[{cls:'good',text:'✅ 0-6 ppm = nefumator confirmat'}]},
+    {label:"Fumator activ",icon:"🔴",title:"Rezultat ROSU — Fumator activ (>10 ppm)",badge:"Pas 4 din 5",
+     text:"LED Rosu: <strong>>10 ppm</strong> = fumator activ. 11-15 ppm = fumator (Rosu x1). 16-25 ppm = fumator !! 26-50 ppm = fumator !!!. Fumatorii grei: 30-80 ppm. Intoxicatie CO acuta: >100 ppm (cefalee) → >800 ppm (deces).",
+     note:"Folosit ca 'teaching moment': pacientul vede valoarea proprie pe display → motivatie crescuta pentru renuntare. Studiu Shahab 2020: CO feedback → +23% tentative de renuntare.",
+     result:[{cls:'positive',text:'🔴 >10 ppm = fumator activ — teaching moment'}]},
+    {label:"Concluzie",icon:"📋",title:"Aplicatii clinice & Valori de referinta",badge:"Pas 5 din 5",
+     text:"Aplicatii: <strong>screening prenatal</strong> (fumatorele gravide), <strong>confirmare abstinenta</strong> in studii clinice, <strong>monitorizare terapie</strong> anti-fumat, <strong>evaluare expunere pasiva</strong>. Standard SRFT: masuratoare la fiecare vizita de consiliere.",
+     note:"COHb screening neonatal: nou-nascutii mamelor fumizoare au COHb de baza mai mare. Campanii anti-fumat: masuratoare publica = instrument de sensibilizare.",
+     result:[{cls:'good',text:'✅ 0-6 ppm = nefumator'},{cls:'warning',text:'⚠️ 7-10 ppm = zona alarma'},{cls:'positive',text:'🔴 >10 ppm = fumator activ'}]}
+  ]},
+  {title:"Testul Fagerstrom — Evaluarea Dependentei",color:"#6B1A3A",steps:[
+    {label:"Principiu",icon:"🧠",title:"Testul Fagerstrom pentru Dependenta Nicotinica",badge:"Pas 1 din 5",
+     text:"<strong>FTND (Fagerstrom Test for Nicotine Dependence)</strong> = 6 intrebari, scor 0-10. Evalueaza dependenta <em>fizica</em> de nicotina (nu psihologica/comportamentala). Standard international pentru indicarea terapiei farmacologice.",
+     note:"Creat de Fagerstrom 1978, revizuit 1991 (Heatherton et al.). Versiunea originala: 8 intrebari. FTND-6 curent: scala validata in >100 studii."},
+    {label:"Dependenta scazuta",icon:"🟢",title:"Scor 0-4 — Dependenta mica",badge:"Pas 2 din 5",
+     text:"<strong>0-2 puncte</strong>: dependenta foarte scazuta — sfat minimal (30 sec) suficient in multe cazuri. <strong>3-4 puncte</strong>: dependenta scazuta — consiliere individuala + TSN (plasture/guma nicotinica) recomandate.",
+     note:"Prima tigara dupa >30 min de la trezire = indicator dependenta scazuta. Fumatorii ocazionali (<5 cig/zi) au de obicei scor <3.",
+     result:[{cls:'good',text:'✅ Scor 0-4: TSN + consiliere individuala'}]},
+    {label:"Dependenta medie",icon:"🟡",title:"Scor 5 — Dependenta medie",badge:"Pas 3 din 5",
+     text:"<strong>5 puncte</strong>: dependenta medie — prag de decizie terapeutica. Se recomanda <em>TSN combinata</em> (plasture + guma/spray) sau bupropion. Importanta motivatiei: terapia comportamentala esentiala la acest nivel.",
+     note:"NNT (Number Needed to Treat) bupropion: ~9. Vareniclina: ~6-7. Terapia combinata TSN: NNT ~5 (Cochrane 2022, Stead et al.).",
+     result:[{cls:'warning',text:'⚠️ Scor 5: TSN combinata sau bupropion recomandat'}]},
+    {label:"Dependenta puternica",icon:"🔴",title:"Scor 6-10 — Dependenta puternica/f.puternica",badge:"Pas 4 din 5",
+     text:"<strong>6-7 puncte</strong>: dependenta puternica — <em>vareniclina</em> (Champix) recomandata (agonist partial nicotinic). Eficacitate 44% abstinenta la 1 an. <strong>8-10 puncte</strong>: dependenta f.puternica — vareniclina + TSN combinata, consiliere intensiva.",
+     note:"Vareniclina: contraindicata la gravide, adolescenti. Monitorizare: simptome neuropsihiatrice (rar). Prima tigara <5 min de la trezire = cel mai puternic predictor dependenta severa.",
+     result:[{cls:'positive',text:'🔴 Scor 6-10: Vareniclina + consiliere specializata'}]},
+    {label:"Concluzie",icon:"📋",title:"Integrarea Fagerstrom in practica",badge:"Pas 5 din 5",
+     text:"FTND se completeaza <strong>la prima vizita</strong> + inainte de alegerea terapiei. Se repeta la 3 si 6 luni pentru evaluarea progresului. Asociat obligatoriu cu evaluarea motivatiei (test Richmond 1-10) si a tentativelor anterioare.",
+     note:"Aplicatii mobile: 'Kwit', 'NHS Smokefree' calculeaza Fagerstrom electronic. Centru Stop Fumat Tg-Mures: dr. Marginean Corina 0771.679.493.",
+     result:[{cls:'good',text:'✅ Fagerstrom + Richmond + CO monitor = evaluare completa'}]}
+  ]},
+  {title:"Metoda Sedimentarii Koch — NTG Aer",color:"#0D7A6B",steps:[
+    {label:"Principiu",icon:"🦠",title:"Metoda Koch — principiu si baza stiintifica",badge:"Pas 1 din 5",
+     text:"Principiu: <strong>1 microorganism viu sedimentat pe mediu solid → 1 colonie vizibila</strong> dupa incubare. Germenii din aer se depun pe suprafata geloazei prin gravitatie (picaturi Flugge + praf bacterian).",
+     note:"Particule >10 µm = sedimentare rapida (Koch). Particule <5 µm (nuclei Wells) = NU sedimenteaza → nu detectate prin Koch! Metoda aspirare = mai sensibila pentru nuclei Wells (COVID-19!)."},
+    {label:"Expunere placi",icon:"🧫",title:"Expunerea placilor Petri",badge:"Pas 2 din 5",
+     text:"<strong>Cutii Petri 100 cm²</strong> cu geloza nutritiva. Expunere <em>simultana in multiple puncte</em>: centru + 4 colturi la h=1m. Durata: 5-60 min (uzual 5-10 min in spatii curate, 15 min in spitale). Inchidere imediata.",
+     note:"Expunere prea lunga → suprasaturare → colonii suprapuse (TNTC). Curent de aer poate deplasa particulele → artefact. Se inchid ferestrele in timpul determinarii."},
+    {label:"Incubare",icon:"🌡️",title:"Incubarea si numarararea coloniilor",badge:"Pas 3 din 5",
+     text:"Cutiile inchise → incubare <strong>48 ore la 37°C</strong>. Se numara toate coloniile vizibile (inclusiv mici). Se noteaza morfologia (translucide, pigmentate, mucoase).",
+     note:"Colonii transparente = bacterii Gram-negative sau streptococi. Colonii galbene-aurii = stafilococi (potential MRSA!). Colonii verzi = Pseudomonas aeruginosa = alarma in spital."},
+    {label:"Calcul NTG",icon:"🧮",title:"Formula Omelianski si interpretare",badge:"Pas 4 din 5",
+     text:"Formula Omelianski: in <strong>5 min se depun germenii din 10 L aer</strong> pe 100 cm². Calcul: N = n × 1000 / (A × t/5 × 0.01) UFC/m³. Exemplu: 28 colonii / 5 min / 100 cm² → NTG = 2800 UFC/m³.",
+     note:"Norma salon spital: <600 UFC/m³. ATI: <500. Sala operatii: <300. Locuinta (aer impurificat): >2500 vara, >7000 iarna.",
+     result:[{cls:'positive',text:'🔴 28 colonii → 2800 UFC/m³ = NECONFORM salon (max 600)'}]},
+    {label:"Concluzie",icon:"📋",title:"Koch vs Aspirare — alegerea metodei",badge:"Pas 5 din 5",
+     text:"<strong>Koch</strong>: simplu, ieftin, multe placi simultan. Limita: detecteaza doar particule >5 µm care sedimenteaza. <strong>Aspirare (RCS, Andersen)</strong>: detecteaza si nuclei Wells <5 µm, densitate reala, standard ISO 14698-1 pentru camere curate.",
+     note:"COVID-19 lectie: SARS-CoV-2 transmis prin nuclei Wells (aerogen, <5 µm) → Koch NU detecteaza! Metoda aspirare = obligatorie in evaluarea riscului de transmitere aerogena.",
+     result:[{cls:'good',text:'✅ Koch = screening rapid | Aspirare = masurare precisa standard ISO'}]}
+  ]},
+  {title:"Controlul Bacteriologic al Suprafetelor",color:"#5A2A8A",steps:[
+    {label:"Principiu",icon:"🔬",title:"Tamponul steril — indicatii si principiu",badge:"Pas 1 din 5",
+     text:"<strong>Tamponul steril</strong> (swab) = metoda standard de recoltare de pe suprafete, instrumentar, mainile personalului medical. Standard: EN ISO 18593:2018. Detecteaza: NTG, stafilococi, streptococi, coliformi (flora fecala).",
+     note:"Suprafete controlate in spital: masa de operatie, pat pacient, manere usi, tastatura calculator medical, mainile chirurgilor inainte de operatie."},
+    {label:"Tehnica",icon:"✋",title:"Tehnica de lucru — 5 pasi",badge:"Pas 2 din 5",
+     text:"1. Tampon steril umezit cu SF steril. 2. <strong>Stergere suprafata 25 cm²</strong> (zona delimitata cu sablon steril). 3. Tampon in 10 ml SF → agitare 60 sec (vortex). 4. Dilutii seriale (5 dilutii). 5. Insamantare 1 ml pe geloza → 24-48h la 37°C. Calcul: UFC/cm².",
+     note:"Suprafata 25 cm² standard EN ISO 18593. Mainile personalului: stergere palme + degete dupa spalare chirurgicala 5 min / decontaminare alcoolica."},
+    {label:"Norma depasita",icon:"⚠️",title:"Rezultat NECONFORM — actiune obligatorie",badge:"Pas 3 din 5",
+     text:"<strong>Suprafata sala operatii: max 2 UFC/cm²</strong>. Daca >2 UFC/cm² → resursa de contaminare! Stafilococi pe instrumentar: 0 UFC/cm² (toleranta zero). Coliformi pe mainile personalului: 0 UFC (contaminare fecala!)",
+     note:"Stafilococi coagulazo-pozitivi pe suprafete = risc MRSA (meticilino-rezistent). Pseudomonas aeruginosa pe suprafete ATI = risc infectii oportuniste. Raportare obligatorie DSP.",
+     result:[{cls:'positive',text:'🔴 >2 UFC/cm² sala OP sau >0 stafilococi = NECONFORM'}]},
+    {label:"Post dezinfectie",icon:"✅",title:"Control post-dezinfectie — confirmare eficacitate",badge:"Pas 4 din 5",
+     text:"Dupa protocolul de dezinfectie (detergent + dezinfectant cloraminic 0.5%), se repeta controlul bacteriologic. Confirmare: <strong>0 UFC/cm²</strong> pe instrumentar, <2 UFC/cm² pe suprafete sala OP.",
+     note:"Dezinfectia in 2 etape: 1. Curatare (indeparteaza materia organica) + 2. Dezinfectie (inactiveaza germenii). Fara curatare prealabila = dezinfectia ineficienta!",
+     result:[{cls:'good',text:'✅ Post-dezinfectie: 0 UFC/cm² = CONFORM'}]},
+    {label:"Concluzie",icon:"📋",title:"Norme & Importanta monitorizarii",badge:"Pas 5 din 5",
+     text:"Frecventa recoltarilor: <strong>lunar in ATI</strong>, trimestrial in saloane, inainte si dupa interventii de risc, dupa focare de infectii. MRSA nasal screening la angajare = obligatoriu pentru chirurgi (CDC 2023).",
+     note:"HAI (Healthcare-Associated Infections): 3.8 mil. episoade/an UE, 37.000 decese (ECDC 2022). 80% PREVENIBILE prin igiena corecta a mainilor + suprafetelor.",
+     result:[{cls:'good',text:'✅ Monitorizare lunara + igiena maini = prevenire 80% HAI'}]}
+  ]},
+  {title:"Metode de Dezinfectie — Eficacitate Comparata",color:"#2ecc71",steps:[
+    {label:"Curatenie",icon:"🧹",title:"Curatenia — prima linie de decontaminare",badge:"Pas 1 din 5",
+     text:"<strong>Curatenia</strong> (spalare + stergere umeda + aspirare) indeparteaza <em>95-98% din microorganisme</em> prin actiune mecanica — nu chimica! Indeparteaza materia organica care protejeaza microbii de dezinfectante.",
+     note:"FARA curatenie prealabila → dezinfectia este ineficienta! Materia organica (sange, secretii) neutralizeaza dezinfectantele clorate si aldehidice."},
+    {label:"Dezinfectie chimica",icon:"🧴",title:"Dezinfectia chimica — 99-99.9% reducere",badge:"Pas 2 din 5",
+     text:"<strong>Dezinfectantele chimice</strong> indeparteaza 99-99.9% din germeni (2-3 log). Tipuri: Hipoclorit 0.1-0.5% (suprafete largi, virusuri), Alcool 70% (maini, suprafete mici), Cloramina 0.5%, Glutaraldehida 2% (instrumentar termosensbil), Peroxid H₂O₂ 6%.",
+     note:"Timp de contact = esential! Alcool 70%: 30 sec. Hipoclorit: 10 min. Glutaraldehida: 20 min (dezinfectie inalta) sau 10h (sterilizare chimica)."},
+    {label:"UV-C",icon:"💡",title:"Radiatia UV-C 254nm — dezinfectie aer si suprafete",badge:"Pas 3 din 5",
+     text:"<strong>UV-C 254 nm</strong>: inactivare 99.9% SARS-CoV-2 in 6 secunde (CDC 2021), 99.99% E. coli in 30 sec. Mecanism: lezarea ADN bacterian/viral (formarea dimerilor de timina). Utilizare: camera goala 30 min sau sisteme UVGI in duct.",
+     note:"Lampi UV-C cu mercur: risc iritatii oculare si cutanate la expunere directa! Far-UVC 222 nm = sigur pentru persoane prezente (studii 2022). Filtre HEPA H14 + UV-C = standard ISO sali operatii.",
+     result:[{cls:'good',text:'✅ UV-C: 99.9% SARS-CoV-2 in 6 sec (CDC 2021)'}]},
+    {label:"Vapori H2O2",icon:"⚗️",title:"VHP (Vapori H₂O₂) — dezinfectie camera",badge:"Pas 4 din 5",
+     text:"<strong>VHP (Vaporized Hydrogen Peroxide)</strong>: sterilizare camera hermetica cu vapori H₂O₂ 30% → reducere 6 log (99.9999%). Standard pentru ATI transplant, oncologie, camere ISO. Ciclul: 1-4 ore. H₂O₂ se descompune in apa + O₂.",
+     note:"Avantaje vs formaldehida: non-toxic dupa decontaminare, nu lasa reziduri. Utilizat si pentru decontaminarea EPI (masti FFP2) in pandemie COVID-19.",
+     result:[{cls:'good',text:'✅ VHP: 6 log reducere = sterilizare camera ATI'}]},
+    {label:"Concluzie",icon:"📋",title:"Igiena mainilor — WHO 5 Momente",badge:"Pas 5 din 5",
+     text:"<strong>WHO 5 Momente</strong>: 1.Inainte atingere pacient · 2.Inainte proceduri aseptice · 3.Dupa expunere la fluide · 4.Dupa atingere pacient · 5.Dupa atingere mediu pacient. Frecare solutie alcoolica 20-30 sec = gold standard.",
+     note:"Compliance igiena maini >80% → reducere HAI cu 50% (WHO 2023). In Romania: compliance estimat 40-60% in spitale (sub media UE). Audit vizual + feedback = metoda dovedita de crestere compliance.",
+     result:[{cls:'good',text:'✅ >80% compliance igiena maini = -50% HAI (WHO 2023)'}]}
+  ]}
+];
+
+const curStep=[0,0,0,0,0];
+const panelsDiv=document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div=document.createElement('div');
+  div.className='test-panel'+(ti===0?' active':'');
+  div.id='panel-'+ti;
+  div.innerHTML=`
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}">${VL[ti]}</div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Inapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Urmatorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  g('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=g('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  g('card-'+ti).classList.toggle('highlight',si>0);
+  g('svg-'+ti).innerHTML=SVG_FNS[ti](si);
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result)step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  g('info-'+ti).innerHTML=html;
+  g('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  g('prev-'+ti).disabled=si===0;
+  const nb=g('next-'+ti);nb.disabled=si===total-1;nb.textContent=si===total-1?'✓ Finalizat':'Urmatorul pas →';nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=g('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP6A – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#080e08;--panel:#101a10;--border:#203020;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--blue:#2A9DBF;--yellow:#D4A800;--text:#d8e8d8;--muted:#6a8a6a;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#080e08 60%,#101a10);}
+  .header-icon{font-size:2.4rem;}
+  header h1{font-size:1.5rem;font-weight:800;color:var(--white);}
+  header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:160px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);}nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:#080e08;}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .spin-slow{animation:spinSlow 8s linear infinite;}@keyframes spinSlow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .pulse-rad{animation:pulseRad 2s ease-in-out infinite;}@keyframes pulseRad{0%,100%{opacity:.5;r:20;}50%{opacity:.9;r:28;}}
+  .needle-anim{transition:transform .8s cubic-bezier(.4,0,.2,1);}
+  .glow{animation:glowA 1.5s ease-in-out infinite;}@keyframes glowA{0%,100%{filter:drop-shadow(0 0 4px currentColor);opacity:.8;}50%{filter:drop-shadow(0 0 12px currentColor);opacity:1;}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--yellow);opacity:.03;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">☢️</div>
+  <div>
+    <h1>LP6A – Teste Animate Interactive</h1>
+    <p>Geiger-Müller · Fotodozimetru · Doze CT · Spectru EM · Echipamente Protecție</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">📡 Geiger-Müller</button>
+  <button onclick="showTest(1)">🏷️ Fotodozimetru</button>
+  <button onclick="showTest(2)">🔬 Doze Medicale CT</button>
+  <button onclick="showTest(3)">🌈 Spectru EM</button>
+  <button onclick="showTest(4)">🛡️ Echipamente</button>
+</nav>
+<div id="panels"></div>
+
+<script>
+function g(id){return document.getElementById(id);}
+
+function svgGeiger(si){
+  const cpms=[0,15,120,850,4200];
+  const cpm=cpms[Math.min(si,4)];
+  const usvh=[0,0.12,1.0,7.0,35.0];
+  const usv=usvh[Math.min(si,4)];
+  const col=usv<0.5?'#2ecc71':usv<3?'#f5a623':usv<10?'#D4A800':'#e8445a';
+  const alarm=usv>=3;
+  // Animated radiation circles
+  const radCircles=si>=1?`
+    <circle cx="130" cy="110" r="20" fill="none" stroke="${col}" stroke-width="1" opacity="${.6-si*.05}" class="pulse-rad"/>
+    <circle cx="130" cy="110" r="35" fill="none" stroke="${col}" stroke-width="0.8" opacity="${.4-si*.04}"/>
+    <circle cx="130" cy="110" r="52" fill="none" stroke="${col}" stroke-width="0.5" opacity="${.25-si*.02}"/>
+  `:'';
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    ${radCircles}
+    <!-- GM tube symbol -->
+    <rect x="95" y="90" width="70" height="40" rx="20" fill="#1a2a1a" stroke="${col}" stroke-width="2"/>
+    <text x="130" y="115" text-anchor="middle" font-size="10" fill="${col}" font-family="JetBrains Mono,monospace">GM TUBE</text>
+    <!-- Display -->
+    <rect x="40" y="155" width="180" height="60" rx="10" fill="#101a10" stroke="${col}" stroke-width="1.5"/>
+    <text x="130" y="177" text-anchor="middle" font-size="10" fill="${col}" font-family="JetBrains Mono,monospace">${cpm} CPM</text>
+    <text x="130" y="197" text-anchor="middle" font-size="18" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${usv} µSv/h</text>
+    <!-- Alarm -->
+    ${alarm?`<rect x="40" y="218" width="180" height="22" rx="5" fill="rgba(232,68,90,.3)" stroke="#e8445a" stroke-width="1"/>
+    <text x="130" y="233" text-anchor="middle" font-size="10" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700">⚠ ALARMA — EVACUARE ZONA!</text>`:
+    `<rect x="40" y="218" width="180" height="22" rx="5" fill="rgba(46,204,113,.1)" stroke="#2ecc71" stroke-width="1"/>
+    <text x="130" y="233" text-anchor="middle" font-size="10" fill="#2ecc71" font-family="JetBrains Mono,monospace">Fond normal: &lt;0.3 µSv/h</text>`}
+    <!-- Nuclear symbol (animated) -->
+    <g transform="translate(130,110)" class="${si>=2?'spin-slow':''}">
+      <circle r="8" fill="${col}" opacity=".9"/>
+      <path d="M0,-18 A18,18,0,0,1,15.6,9 L8,4.5 A9,9,0,0,0,0,-9 Z" fill="${col}" opacity=".7"/>
+      <path d="M15.6,9 A18,18,0,0,1,-15.6,9 L-8,4.5 A9,9,0,0,0,8,4.5 Z" fill="${col}" opacity=".7"/>
+      <path d="M-15.6,9 A18,18,0,0,1,0,-18 L0,-9 A9,9,0,0,0,-8,4.5 Z" fill="${col}" opacity=".7"/>
+    </g>
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6a8a6a" font-family="JetBrains Mono,monospace">Detector Geiger-Muller — ${cpm} CPM = ${usv} µSv/h</text>
+  </svg>`;
+}
+
+function svgDozimetru(si){
+  // Film badge / TLD dosimeter
+  const doses=[0,0,2.5,8.5,18.5];
+  const dose=doses[Math.min(si,4)];
+  const limit=20;
+  const pct=dose/limit*100;
+  const col=pct<50?'#2ecc71':pct<80?'#f5a623':'#e8445a';
+  const filled=pct>0;
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Badge body -->
+    <rect x="65" y="20" width="130" height="155" rx="10" fill="#1a2a1a" stroke="${filled?col:'#2a4a2a'}" stroke-width="2"/>
+    <!-- Clip -->
+    <rect x="105" y="12" width="50" height="14" rx="4" fill="#2a4a2a" stroke="#3a6a3a" stroke-width="1"/>
+    <!-- Film area -->
+    <rect x="75" y="35" width="110" height="60" rx="5" fill="${si>=2?'#0a1808':'#101a10'}" stroke="#2a4a2a" stroke-width="1"/>
+    ${si>=2?`<!-- Film darkening = radiation -->
+    <rect x="77" y="37" width="${Math.min(108,dose/20*108)}" height="56" rx="4" fill="#3a5030" opacity=".8"/>
+    <text x="130" y="72" text-anchor="middle" font-size="11" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${dose} mSv</text>`:''}
+    <text x="130" y="55" text-anchor="middle" font-size="9" fill="#4a6a4a" font-family="JetBrains Mono,monospace">${si>=2?'acumulat':'film neexpus'}</text>
+    <!-- Badge info -->
+    <text x="130" y="115" text-anchor="middle" font-size="9" fill="#4a8a4a" font-family="JetBrains Mono,monospace">FOTODOZIMETRU</text>
+    <text x="130" y="130" text-anchor="middle" font-size="8" fill="#3a6a3a" font-family="JetBrains Mono,monospace">Dr. Ionescu · Radiologie</text>
+    <text x="130" y="144" text-anchor="middle" font-size="8" fill="#3a6a3a" font-family="JetBrains Mono,monospace">Ian 2024 · CNCAN</text>
+    <text x="130" y="158" text-anchor="middle" font-size="8" fill="#3a6a3a" font-family="JetBrains Mono,monospace">Serie: TLD-20240115</text>
+    <!-- Progress bar for annual limit -->
+    <rect x="40" y="190" width="180" height="20" rx="10" fill="#101a10" stroke="#2a4a2a" stroke-width="1"/>
+    <rect x="40" y="190" width="${pct/100*180}" height="20" rx="10" fill="${col}" opacity=".85"/>
+    <text x="130" y="204" text-anchor="middle" font-size="9" fill="white" font-family="JetBrains Mono,monospace" font-weight="bold">${dose} / ${limit} mSv/an (${pct.toFixed(0)}%)</text>
+    <!-- Status -->
+    <rect x="40" y="220" width="180" height="25" rx="7" fill="${col}18" stroke="${col}" stroke-width="1"/>
+    <text x="130" y="236" text-anchor="middle" font-size="10" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${
+      pct===0?'Dozimetru neexpus':
+      pct<50?'OPTIM — sub 50% din limita anuala':
+      pct<80?'ATENTIE — aproape de limita':
+      '⚠ APROAPE DE LIMITA — verificare CNCAN'
+    }</text>
+    <text x="130" y="252" text-anchor="middle" font-size="8.5" fill="#6a8a6a" font-family="JetBrains Mono,monospace">Limita anuala: 20 mSv/an (100 mSv/5 ani)</text>
+  </svg>`;
+}
+
+function svgDozeCT(si){
+  // Bar chart of doses
+  const exams=[
+    {name:'Rx dentar',dose:0.003,col:'#2ecc71'},
+    {name:'Rx torace',dose:0.02,col:'#2ecc71'},
+    {name:'Mamografie',dose:0.4,col:'#2A9DBF'},
+    {name:'CT craniu',dose:1.5,col:'#f5a623'},
+    {name:'CT abd-pelv',dose:8,col:'#D4A800'},
+    {name:'Coronaro.',dose:12,col:'#e8445a'},
+  ];
+  const maxD=12;
+  const visible=Math.min(si+1,exams.length);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a8a6a" font-family="JetBrains Mono,monospace">Doze efective tipice (mSv)</text>
+    ${exams.slice(0,visible).map(({name,dose,col},i)=>{
+      const barW=Math.max(4,dose/maxD*180);
+      const y=22+i*36;
+      return `
+      <rect x="20" y="${y}" width="240" height="28" rx="4" fill="#101a10" stroke="#203020" stroke-width="0.5"/>
+      <rect x="20" y="${y}" width="${barW}" height="28" rx="4" fill="${col}" opacity=".85"/>
+      <text x="26" y="${y+12}" font-size="8" fill="white" font-family="Syne,sans-serif" font-weight="700">${name}</text>
+      <text x="26" y="${y+22}" font-size="8" fill="white" font-family="JetBrains Mono,monospace">${dose<1?dose.toFixed(3):dose} mSv</text>
+      ${barW>60?`<text x="${20+barW+3}" y="${y+17}" font-size="8" fill="${col}" font-family="JetBrains Mono,monospace">${dose<1?'neglijabil':dose>=5?'MODERAT':dose>=1?'mic':''}</text>`:''}`;
+    }).join('')}
+    ${si>=5?`<text x="130" y="242" text-anchor="middle" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">CT abd-pelv = 400× doza Rx torace!</text>
+    <text x="130" y="254" text-anchor="middle" font-size="8.5" fill="#6a8a6a" font-family="JetBrains Mono,monospace">ALARA: CT numai cu indicatie justificata</text>`:''}
+  </svg>`;
+}
+
+function svgSpectru(si){
+  const regions=[
+    {name:'Unde radio',range:'km-m',col:'#8B4513',energy:'fJ',io:false},
+    {name:'Microunde',range:'30cm-1mm',col:'#D4A800',energy:'µJ',io:false},
+    {name:'Infrarosu',range:'100-1 µm',col:'#e8445a',energy:'mJ',io:false},
+    {name:'Vizibil',range:'700-400 nm',col:'#8B00FF',energy:'eV',io:false},
+    {name:'UV',range:'400-10 nm',col:'#2A9DBF',energy:'eV',io:false},
+    {name:'Raze X',range:'10-0.01 nm',col:'#00c8d7',energy:'keV',io:true},
+    {name:'Raze gamma',range:'<0.01 nm',col:'#2ecc71',energy:'MeV',io:true},
+  ];
+  const visible=Math.min(si+2,regions.length);
+  const ioStart=5;
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Wavelength arrow -->
+    <line x1="20" y1="18" x2="240" y2="18" stroke="#3a5a3a" stroke-width="1.5"/>
+    <text x="20" y="14" font-size="8" fill="#3a5a3a" font-family="JetBrains Mono,monospace">λ mare →</text>
+    <text x="200" y="14" font-size="8" fill="#3a5a3a" font-family="JetBrains Mono,monospace">← λ mica</text>
+    <!-- Energy arrow (opposite) -->
+    <line x1="20" y1="248" x2="240" y2="248" stroke="#3a5a3a" stroke-width="1.5"/>
+    <text x="20" y="258" font-size="8" fill="#3a5a3a" font-family="JetBrains Mono,monospace">E mica</text>
+    <text x="190" y="258" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">← E MARE</text>
+    <!-- Region blocks -->
+    ${regions.slice(0,visible).map(({name,range,col,io},i)=>{
+      const x=18+i*34;
+      const isHighlighted=io&&si>=ioStart;
+      return `
+      <rect x="${x}" y="24" width="32" height="${isHighlighted?180:140}" rx="4"
+        fill="${col}" opacity="${isHighlighted?'.9':'.5'}"
+        stroke="${isHighlighted?col:'none'}" stroke-width="${isHighlighted?2:0}"/>
+      <text x="${x+16}" y="${isHighlighted?180:140}" text-anchor="middle" font-size="8" fill="white"
+        font-family="Syne,sans-serif" font-weight="700" transform="rotate(-90,${x+16},${isHighlighted?150:120})"
+        style="writing-mode:unset">${name}</text>
+      ${isHighlighted?`<text x="${x+16}" y="213" text-anchor="middle" font-size="7.5" fill="${col}" font-family="JetBrains Mono,monospace">${range}</text>`:''}`;
+    }).join('')}
+    <!-- Ionizing boundary label -->
+    ${si>=ioStart?`
+    <rect x="184" y="24" width="4" height="180" fill="#2ecc71" opacity=".5"/>
+    <text x="190" y="60" font-size="8" fill="#2ecc71" font-family="Syne,sans-serif" font-weight="700">IONIZANTE</text>
+    <text x="190" y="72" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">≥10 eV</text>`:''}
+  </svg>`;
+}
+
+function svgEchipamente(si){
+  const items=[
+    {icon:'🦺',name:'Sort plumbat',desc:'0.25-0.5 mm Pb · trunchi/gonade',col:'#2ecc71'},
+    {icon:'🥽',name:'Ochelari Pb',desc:'sticla plumbata · cristalin',col:'#2A9DBF'},
+    {icon:'🧤',name:'Manusi Pb',desc:'maini interventionale',col:'#f5a623'},
+    {icon:'🧣',name:'Guler tiroidian',desc:'0.5 mm Pb · tiroida',col:'#a78bfa'},
+    {icon:'🪟',name:'Ecran mobil Pb',desc:'geam plumbat 2mm · ochi',col:'#D4A800'},
+    {icon:'📏',name:'Distanta',desc:'Legea 1/r² — 2× dist = 4× mai putin',col:'#e8445a'},
+  ];
+  const visible=Math.min(si+1,items.length);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a8a6a" font-family="JetBrains Mono,monospace">Echipamente radioprotectie</text>
+    ${items.slice(0,visible).map(({icon,name,desc,col},i)=>{
+      const row=Math.floor(i/2), col2=i%2;
+      const x=col2===0?15:138;
+      const y=20+row*76;
+      return `
+      <rect x="${x}" y="${y}" width="113" height="66" rx="8" fill="#101a10" stroke="${col}" stroke-width="1.5"/>
+      <text x="${x+16}" y="${y+24}" font-size="22">${icon}</text>
+      <text x="${x+46}" y="${y+20}" font-size="11" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${name}</text>
+      <text x="${x+46}" y="${y+35}" font-size="8.5" fill="#6a8a6a" font-family="JetBrains Mono,monospace">${desc}</text>
+      <rect x="${x+8}" y="${y+46}" width="96" height="12" rx="6" fill="${col}" opacity=".2"/>
+      <text x="${x+56}" y="${y+55}" text-anchor="middle" font-size="8" fill="${col}" font-family="JetBrains Mono,monospace">OBLIGATORIU</text>`;
+    }).join('')}
+    ${si>=5?`<text x="130" y="254" text-anchor="middle" font-size="9" fill="#2ecc71" font-family="JetBrains Mono,monospace">Set complet protectie = reducere doza >90%</text>`:''}
+  </svg>`;
+}
+
+const SVG_FNS=[svgGeiger,svgDozimetru,svgDozeCT,svgSpectru,svgEchipamente];
+const VL=['Detector Geiger-Muller — CPM / µSv/h','Fotodozimetru personal — doze cumulate','Doze efective tipice — explorari medicale','Spectrul electromagnetic — radiatii ionizante','Echipamente radioprotectie individuale'];
+
+const TESTS=[
+  {title:"Detectorul Geiger-Müller",color:"#D4A800",steps:[
+    {label:"Principiu",icon:"📡",title:"Detectorul Geiger-Müller — cum functioneaza",badge:"Pas 1 din 5",
+     text:"Principiu: <strong>ionizarea gazului</strong> din tub. Radiația ionizantă pătrunde în tubul GM (umplut cu gaz noble + halogen) → ionizează gazul → avalansă de electroni → impuls electric → contorizare.",
+     note:"GM detectează: raze X, γ, particule β. NU detectează eficient particule α (penetranță prea mică) și neutroni (necesită detector specializat)."},
+    {label:"Fond natural",icon:"🟢",title:"Fondul natural de radiații — valori normale",badge:"Pas 2 din 5",
+     text:"Fondul natural global: <strong>0.1-0.3 µSv/h</strong> (în aer liber). Surse: radiație cosmică, Radon-222 din sol, K-40 din alimente, materiale de construcție. Total fond natural: ~2.4 mSv/an global (Romania: ~3.2 mSv/an).",
+     note:"Radon-222 = principala sursă naturală (1.2 mSv/an). Ridică riscul de cancer pulmonar la concentrații mari în case (>300 Bq/m³ = acțiune necesară).",
+     result:[{cls:'good',text:'✅ <0.3 µSv/h = fond natural normal'}]},
+    {label:"Zona controlata",icon:"⚠️",title:"Zona controlată — expunere profesională",badge:"Pas 3 din 5",
+     text:"Valori 1-7 µSv/h detectate în zona de lucru radiologic. <strong>Zona controlată</strong> = >6 mSv/an posibil → monitorizare obligatorie, acces restricționat, dozimetru personal obligatoriu.",
+     note:"Clasificare CNCAN: Categoria A (>6 mSv/an) și Categoria B (1-6 mSv/an). Salile de radiologie: tipic 1-5 µSv/h lângă aparatură în funcțiune.",
+     result:[{cls:'warning',text:'⚠️ 1-7 µSv/h = zona controlata — dozimetru obligatoriu'}]},
+    {label:"Alarma",icon:"🚨",title:"Depășire praguri — situație de urgență",badge:"Pas 4 din 5",
+     text:"Valori >7 µSv/h → <strong>alarmă</strong>. Evacuare imediată a personalului neesențial. Surse posibile: sursă radioactivă neprotejată, accident instalație, material radioactiv neautorizat.",
+     note:"Sindromul de iradiere acută (ARS): doze >1 Sv în timp scurt. Doze >6 Sv = letale fără tratament (măduvă osoasă). Doze 1-6 Sv = ARS tratabil (transplant de măduvă).",
+     result:[{cls:'positive',text:'🔴 >7 µSv/h = ALARMA — evacuare + notificare CNCAN'}]},
+    {label:"Concluzie",icon:"📋",title:"Interpretare & Utilizare practică",badge:"Pas 5 din 5",
+     text:"GM-ul digital modern afișează CPM și µSv/h simultan, cu alarme setabile. Utilizat pentru: verificarea containerelor radioactive, monitorizarea zonelor de lucru, detectarea contaminării suprafețelor, screening la frontieră.",
+     note:"Conversie orientativă: 1 µSv/h ≈ 120 CPM (variabil cu tipul detector și energia radiației). Calibrare: la Cs-137 standard (661 keV).",
+     result:[{cls:'good',text:'✅ <0.3 µSv/h = normal | 0.3-1 µSv/h = zona supravegheata | >1 µSv/h = zona controlata'}]}
+  ]},
+  {title:"Fotodozimetrul Personal",color:"#0F8A5A",steps:[
+    {label:"Principiu",icon:"🏷️",title:"Fotodozimetrul — impresionare fotografica",badge:"Pas 1 din 5",
+     text:"Principiu: <strong>impresionarea filmului fotografic</strong> de radiațiile ionizante incidente. Cu cât doza absorbită e mai mare, cu atât filmul e mai negrit (densitate optică). Citire prin <em>densitometrie</em> la laboratorul CNCAN.",
+     note:"TLD (Thermoluminescent Dosimeter) = alternativa modernă: LiF sau Al₂O₃ stocat energia → luminescentă la incălzire → citire. Sensibilitate: 0.1 mSv. TLD este mai precis, mai durabil."},
+    {label:"Purtare corectă",icon:"📍",title:"Poziția corectă a dozimetrului",badge:"Pas 2 din 5",
+     text:"Purtat pe <strong>torace sau abdomen</strong> (zona reprezentativă pentru dozele organe). <em>SUB șorțul de plumb</em> pentru monitorizarea dozei reale a organelor interne. Gravide: pe abdomen → monitorizarea dozei fetus.",
+     note:"NU purtat pe mâini în cursul procedurilor intervenționale (artefact doza mare). Mâinile: dozimetru inel dedicat. Cristalin: DOSIRIS la nivelul tâmplei."},
+    {label:"Doza lunara",icon:"📊",title:"Citirea dozei cumulate — lunar",badge:"Pas 3 din 5",
+     text:"Dozimetrul se predă lunar la laboratorul dozimetric CNCAN. Raport: doza lunară + cumulat anual + alertă la depășire. <strong>Registru dozimetric individual</strong>: arhivare 50 ani conform Legii 111/1996.",
+     note:"Valori normale radiodiagnostic: <0.5 mSv/lună (sub 6 mSv/an). Cardiologie intervențională: 1-3 mSv/lună (supra-șort).",
+     result:[{cls:'good',text:'✅ Doze normale: <0.5 mSv/luna (radiodiagnostic)'}]},
+    {label:"Depasire limita",icon:"⚠️",title:"Aproape de limita anuală — acțiuni",badge:"Pas 4 din 5",
+     text:"La >80% din limita anuală (16 mSv): <strong>notificare CNCAN, evaluare cauze</strong>. La depășirea limitei (20 mSv): oprirea temporară din lucrul în zone controlate, investigație de accident dozimetric.",
+     note:"Nu există 'doze sigure' — orice doză contribuie la risc. ALARA = obiectivul permanent. Tehnica corectă + echipamente adecvate = singura cale de reducere a dozei.",
+     result:[{cls:'positive',text:'🔴 >16 mSv/an (80% din limita) = notificare + investigatie CNCAN'}]},
+    {label:"Concluzie",icon:"📋",title:"Sistemul dozimetric CNCAN",badge:"Pas 5 din 5",
+     text:"Sistemul dozimetric personal = obligatoriu pentru toți lucrătorii din categoria A și B. CNCAN: baza de date centralizată, verificare limite, statistici naționale anuale. Doze medii Romania 2022: radiologie 1.2 mSv/an.",
+     note:"Dozimetrie timp real (DoseAware, Philips): wireless, display imediat, modifică comportamentul! Studiu Pena RSNA 2011: reducere doze 30% cu feedback în timp real.",
+     result:[{cls:'good',text:'✅ Sistem complet: fotodozimetru + TLD + dozimetrie timp real'}]}
+  ]},
+  {title:"Doze Efective — Explorări Medicale",color:"#2A9DBF",steps:[
+    {label:"Rx dentar",icon:"🦷",title:"Radiografia dentară digitală (RDD)",badge:"Pas 1 din 6",
+     text:"Doza RDD digital: <strong>0.001-0.005 mSv</strong> = echivalentul a 1-2 zile de fond natural! RDD cu senzor CCD/CMOS = doze 50-80% mai mici față de filmul convențional.",
+     note:"Conform ICRP 135: radiografia dentară digitală = risc practic neglijabil. Nu necesită protecție tiroidiană specială la adulți (recomandată totuși la copii și gravide)."},
+    {label:"Rx torace",icon:"🫁",title:"Radiografia toracelui PA",badge:"Pas 2 din 6",
+     text:"Doza Rx torace PA: <strong>0.02 mSv</strong> ≈ 3 zile fond natural. Una din cele mai comune investigații radiologice. Riscul absolut: extrem de mic (1:1.000.000 risc cancer suplimentar pe viață).",
+     note:"Rx torace lateral = 0.04 mSv (2×). Fluoroscopia tradițională (radioscopie): 0.5-10 mSv per procedură! → înlocuită de radiografia digitală.",
+     result:[{cls:'good',text:'✅ Rx torace = 0.02 mSv — risc neglijabil'}]},
+    {label:"Mamografie",icon:"🎀",title:"Mamografia de screening",badge:"Pas 3 din 6",
+     text:"Mamografie 4 incidențe: <strong>0.3-0.6 mSv</strong> ≈ 6-8 săptămâni fond natural. Beneficiul screening-ului (detectare timpurie cancer san) depășeste cu mult riscul dozei de radiație.",
+     note:"Raport beneficiu/risc mamografie screening: 100:1 (IARC Working Group 2015). Screening la femei >40-50 ani: reducere mortalitate cancer sân cu 25-30%.",
+     result:[{cls:'good',text:'✅ Mamografie = beneficiu >>> risc radiatie'}]},
+    {label:"CT craniu",icon:"🧠",title:"CT craniu — doza medie",badge:"Pas 4 din 6",
+     text:"CT craniu: <strong>1-2 mSv</strong> ≈ 5-10 luni fond natural. CT multi-detector modern: protocoale optimizate reduc doza cu 30-50% față de CT clasic.",
+     note:"CT pediatric craniu: 0.5-1 mSv (protocoale Image Gently® — doze adaptate vârstei). IMPORTANT: la copii doza se adaptează greutate/vârstă — NU protocol adult!",
+     result:[{cls:'warning',text:'⚠️ CT craniu = 1-2 mSv — justificare obligatorie'}]},
+    {label:"CT abd-pelvis",icon:"🫄",title:"CT abdomen-pelvis — cel mai frecvent",badge:"Pas 5 din 6",
+     text:"CT abdomen-pelvis: <strong>5-10 mSv</strong> ≈ 2-3 ani fond natural. Una din sursele principale de expunere medicală. Nu se repetă inutil! Double-phase CT = dublu doze.",
+     note:"Low-dose CT screening pulmonar (NLST): 1.5 mSv/examinare — recomandat la fumători >55 ani, 30 pack-years. Reducere mortalitate cancer pulmonar 20% (NEJM 2011).",
+     result:[{cls:'warning',text:'⚠️ CT abd-pelvis = 5-10 mSv — numai cu indicatie justificata'}]},
+    {label:"Coronarografie",icon:"❤️",title:"Coronarografia — doze mari prin fluoroscopie",badge:"Pas 6 din 6",
+     text:"Coronarografie: <strong>5-15 mSv</strong> ≈ 1-4 ani fond natural. Proceduri intervenționale complexe (PCI, TAVI): 15-50 mSv. Doza operatorului (FARA protecție): 1-5 mSv/procedură!",
+     note:"ALARA în cardiologie intervențională: colimator restrâns, ecran plumbat, ochelari Pb, gantry lateral (operatorul cât mai departe de fascicul), fluoroscopie pulsată.",
+     result:[{cls:'positive',text:'🔴 CT abd-pelvis = 400× doza Rx torace! ALARA obligatoriu'}]}
+  ]},
+  {title:"Spectrul Electromagnetic — Radiatii Ionizante",color:"#0F8A5A",steps:[
+    {label:"Spectru intro",icon:"🌈",title:"Spectrul electromagnetic — prezentare generala",badge:"Pas 1 din 6",
+     text:"Spectrul electromagnetic include toate formele de radiație electromagnetică, de la unde radio cu λ kilometre, la raze gamma cu λ mai mic decât un atom. Energia fotonilor creste pe masura ce scade lungimea de unda.",
+     note:"Relatia fundamentala: E = h×f = h×c/λ (Planck). Cu cat λ mai mica → f mai mare → E mai mare. Energia pragului de ionizare: ~10 eV."},
+    {label:"Microunde & IR",icon:"📡",title:"Microunde & Infrarosu — radiatii neionizante",badge:"Pas 2 din 6",
+     text:"<strong>Microunde</strong> (30cm-1mm): cuptoare cu microunde, radar, telefoane mobile. <strong>Infrarosu</strong> (100-1 µm): caldura radianta, telecomanda, termografie medicala. Ambele = <em>neionizante</em> (nu pot ioniza atomii).",
+     note:"Efectele biologice ale microundelor = termice (incalzire tesut). SAR (Specific Absorption Rate) = unitate de masura pentru expunerea la unde radio/microunde."},
+    {label:"Vizibil & UV",icon:"☀️",title:"Lumina vizibila & UV — granita ionizarii",badge:"Pas 3 din 6",
+     text:"<strong>Lumina vizibila</strong> (700-400 nm): 1.8-3.1 eV — sub pragul ionizarii. <strong>UV</strong> (<400 nm): UVA (315-400nm), UVB (280-315nm), UVC (100-280nm). UVC este ionizant si germicid.",
+     note:"UVB cauzeaza arsuri solare, cancer piele (melanom). Indicele UV >6 = risc mare. SPF (Sun Protection Factor) indica protectia crema solara la UVB.",
+     result:[{cls:'warning',text:'⚠️ UV-C (<280 nm) = ionizant, germicid, periculos pentru piele/ochi'}]},
+    {label:"Raze X",icon:"☢️",title:"Razele X — caracteristici si utilizari",badge:"Pas 4 din 6",
+     text:"<strong>Raze X</strong> (0.01-10 nm, 100 eV-100 keV): generate artificial in tubul Roentgen prin bombardarea anodului de wolfram cu electroni. Penetranta mare → imagistica medicala (os vs tesut moale).",
+     note:"Razele X diagnostice: 50-150 kVp. Razele X terapeutice: 100-250 kVp (superficiale) sau megavoltaj (Linac). Factor ponderare wR = 1 (acelasi ca fotonii gamma).",
+     result:[{cls:'warning',text:'⚠️ Raze X = IONIZANTE — protectie obligatorie (sort Pb, dozimetru)'}]},
+    {label:"Raze gamma",icon:"⚡",title:"Razele gamma — surse si proprietati",badge:"Pas 5 din 6",
+     text:"<strong>Raze gamma</strong> (<0.01 nm, >100 keV): emise de nuclee radioactive (Co-60, Cs-137, Ir-192, I-131). Penetranta maxima → radioterapie, sterilizare. Atenuare: straturi groase de plumb sau beton.",
+     note:"Activitate: Bq (Becquerel) = 1 dezintegrare/secunda. Co-60 (1.25 MeV): utilizat in gamma-knife, sterilizare instrumente. Tc-99m (140 keV): cel mai utilizat in medicina nucleara.",
+     result:[{cls:'positive',text:'🔴 Raze gamma = penetranta maxima — ecranare Pb/beton obligatorie'}]},
+    {label:"Concluzie",icon:"📋",title:"Rezumat spectru EM — limita ionizare",badge:"Pas 6 din 6",
+     text:"Pragul de ionizare: <strong>~10 eV</strong> (lungime de unda ~120 nm). Sub acest prag: radiatie neionizanta. Deasupra: radiatie ionizanta (UV-C, raze X, gamma, alfa, beta, neutroni).",
+     note:"Clasificare IARC: raze X = carcinogen Gr. 1 (cancer confirmat la doze mari). Radiatiile neionizante (micro,IR): nu ionizeaza, dar pot produce efecte termice.",
+     result:[{cls:'good',text:'✅ Raze X + gamma = ionizante | Microunde/IR/UV-A-B = neionizante (termic)'}]}
+  ]},
+  {title:"Echipamente de Radioprotectie",color:"#0F8A5A",steps:[
+    {label:"Sort plumbat",icon:"🦺",title:"Sortul de cauciuc plumbat — protectia principala",badge:"Pas 1 din 6",
+     text:"<strong>Sort plumbat</strong>: cauciuc + plumb (0.25-0.5 mm Pb echivalent). Protejeaza: trunchi, gonade, maduvă osoasa, organe abdominale. Atenuare: >95% din razele X la 100 kVp.",
+     note:"Greutate sort 0.25 mm Pb: ~3-5 kg. Sort 0.5 mm Pb: ~7-10 kg. Solutie: sort wrap-around sau sortul cu guler. Inspectie radiologica anuala obligatorie (depistare fisuri Pb)."},
+    {label:"Ochelari & guler",icon:"🥽",title:"Ochelari plumbati & Guler tiroidian",badge:"Pas 2 din 6",
+     text:"<strong>Ochelari din sticla plumbata</strong> (1.5-2 mm Pb echivalent): protectia cristalinului — OBLIGATORIU in cardiologie interventionala! 50% cardiologi fara ochelari = cataracta (studiu IAEA 2021).<br><strong>Guler tiroidian</strong> (0.5 mm Pb): protejeaza tiroida radiosensibila.",
+     note:"Doza cristalin limita revizuita ICRP 2012: 20 mSv/an (fata de 150 mSv/an anterior). DOSIRIS = dozimetru electronic specific cristalin.",
+     result:[{cls:'positive',text:'🔴 Fara ochelari Pb in cath lab = risc cataracta documentat'}]},
+    {label:"Ecran mobil",icon:"🪟",title:"Ecranul mobil plumbat — protectie colectiva",badge:"Pas 3 din 6",
+     text:"<strong>Ecranul mobil plumbat</strong> din sticla plumbata (2 mm Pb): operatorul se pozitioneaza in spatele ecranului in timpul fluoroscopiei. Reduce doza operatorului cu >90% la cap/ochi.",
+     note:"Regula distantei (legea inversa a patratelor): doza ∝ 1/r². La 2× distanta de sursa → doza se reduce de 4×. La 3× distanta → doza se reduce de 9×.",
+     result:[{cls:'good',text:'✅ Ecran mobil Pb + pozitionare laterala = -90% doza operator'}]},
+    {label:"Manusi",icon:"🧤",title:"Manusile plumbate — proceduri interventionale",badge:"Pas 4 din 6",
+     text:"<strong>Manusi de cauciuc plumbat</strong>: protectia mainilor in proceduri interventionale (mana in camp Rx). Atenuare: 0.5 mm Pb echivalent. Dezavantaj: grosime/greutate → sensibilitate tactila redusa.",
+     note:"Alternative moderne: manusi sterile cu compozit bismut/bariu (mai subtiri, mai flexibile). Utilizare: coronarografii, proceduri ERCP ghidate fluoroscopic.",
+     result:[{cls:'good',text:'✅ Manusi Pb = obligatorii cand mana este in campul de iradiere'}]},
+    {label:"Ecranare fixa",icon:"🧱",title:"Echipamente de protectie colectiva — fixe",badge:"Pas 5 din 6",
+     text:"<strong>Pereti plumbati</strong>: sala Rx = minim 2 mm Pb echivalent (100 kVp). <strong>Fereastra radiologului</strong>: geam plumbat 2 mm. <strong>Usa plumbata</strong>: interzicerea accesului in timpul examinarii. Semnalizare obligatorie.",
+     note:"Normele de proiectare: calculul grosimii ecranarii functie de debitul dozei, tipul echipamentului, incarcatura de lucru, factorul de ocupare (NCRP 151)."},
+    {label:"Concluzie",icon:"📋",title:"Set complet radioprotectie = >90% reducere doza",badge:"Pas 6 din 6",
+     text:"Echipamentele complete (sort + guler + ochelari + ecran) reduc doza operatorului cu >90%. FARA protectie la 500 coronarografii/an: doza cristalin ~3-5 Gy/an → cataracta garantata in 3-5 ani.",
+     note:"Control periodic echipamente: inspectie vizuala saptamanala + radiografie anuala (detectie fisuri ascunse in Pb). Sort fisurat = inutil!",
+     result:[{cls:'good',text:'✅ Sort + guler + ochelari + ecran + dozimetru = protectie completa'}]}
+  ]}
+];
+
+const curStep=[0,0,0,0,0];
+const panelsDiv=document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div=document.createElement('div');
+  div.className='test-panel'+(ti===0?' active':'');
+  div.id='panel-'+ti;
+  div.innerHTML=`
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}">${VL[ti]}</div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Inapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Urmatorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  g('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=g('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  g('card-'+ti).classList.toggle('highlight',si>0);
+  g('svg-'+ti).innerHTML=SVG_FNS[ti](si);
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result)step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  g('info-'+ti).innerHTML=html;
+  g('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  g('prev-'+ti).disabled=si===0;
+  const nb=g('next-'+ti);nb.disabled=si===total-1;nb.textContent=si===total-1?'✓ Finalizat':'Urmatorul pas →';nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=g('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>

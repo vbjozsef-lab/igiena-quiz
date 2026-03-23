@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP1B – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#0d1821;--panel:#152030;--border:#1e3a4a;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--blue:#5C6BC0;--purple:#a78bfa;--text:#e2eaf0;--muted:#6b8a9e;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#0d1821 60%,#152030);}
+  .header-icon{font-size:2.4rem;}header h1{font-size:1.5rem;font-weight:800;color:var(--white);}header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:160px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);background:rgba(255,255,255,.03);}nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:var(--bg);}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .particle{animation:floatPart linear infinite;}
+  @keyframes floatPart{0%{transform:translate(0,0);}25%{transform:translate(3px,-4px);}50%{transform:translate(-2px,-8px);}75%{transform:translate(4px,-12px);}100%{transform:translate(0,-18px);opacity:0;}}
+  .pulse{animation:pulseG 1.5s ease-in-out infinite;}
+  @keyframes pulseG{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 6px currentColor);}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--teal);opacity:.04;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🌫️</div>
+  <div>
+    <h1>LP1B – Teste Animate Interactive</h1>
+    <p>PM2.5 · Sedimentare · SidePak · Gazometru · AQI · Coniometrie</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">🌫️ Dimensiuni PM</button>
+  <button onclick="showTest(1)">⚗️ Coniometrie</button>
+  <button onclick="showTest(2)">📱 SidePak AM510</button>
+  <button onclick="showTest(3)">☁️ Gaze Toxice</button>
+  <button onclick="showTest(4)">📊 Indice AQI</button>
+</nav>
+<div id="panels"></div>
+
+<script>
+// ── SVG BUILDERS ──────────────────────────────────────────────
+
+function svgPM(si){
+  // Cross-section of respiratory tract with particle penetration
+  const penetrate=[false,false,false,false,false];
+  for(let i=0;i<=si;i++) penetrate[i]=true;
+
+  const zones=[
+    {y:45,  h:38, label:"Cavitate nazală",   color:"#5C6BC0", norm:">10µm"},
+    {y:90,  h:32, label:"Faringe/trahee",    color:"#7986CB", norm:"10-5µm"},
+    {y:128, h:32, label:"Bronhii",           color:"#9575CD", norm:"5-2.5µm"},
+    {y:166, h:32, label:"Bronhiole",         color:"#CE93D8", norm:"2.5-1µm"},
+    {y:204, h:38, label:"Alveole",           color:"#EF9A9A", norm:"<1µm"},
+  ];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Lung outline -->
+    <path d="M80,40 Q60,60 55,120 Q50,180 70,220 Q90,240 130,238 Q170,240 190,220 Q210,180 205,120 Q200,60 180,40 Q165,30 130,28 Q95,30 80,40 Z" fill="#1A0A10" stroke="#5C6BC0" stroke-width="1.5" opacity=".6"/>
+    <!-- Respiratory zones -->
+    ${zones.map((z,i)=>`
+      <rect x="55" y="${z.y}" width="150" height="${z.h}" rx="${z.h/4}"
+        fill="${penetrate[i]?z.color:'#1e3a4a'}" opacity="${penetrate[i]?0.85:0.3}"
+        stroke="${z.color}" stroke-width="${penetrate[i]?1.5:0.5}"/>
+      <text x="130" y="${z.y+z.h/2+4}" text-anchor="middle" font-size="9"
+        fill="${penetrate[i]?'white':'#6b8a9e'}" font-family="Syne,sans-serif" font-weight="${penetrate[i]?'700':'400'}">${z.label}</text>
+      <text x="208" y="${z.y+z.h/2+4}" font-size="8"
+        fill="${penetrate[i]?z.color:'#3a5a6a'}" font-family="JetBrains Mono,monospace">${z.norm}</text>
+    `).join('')}
+    <!-- Particles -->
+    ${si>=1?`<circle cx="120" cy="68" r="5" fill="#CE93D8" opacity=".9" class="pulse"/>
+    <circle cx="140" cy="72" r="4" fill="#CE93D8" opacity=".8" class="pulse"/>`:'' }
+    ${si>=3?`<circle cx="115" cy="148" r="3.5" fill="#EF9A9A" opacity=".9" class="pulse"/>
+    <circle cx="145" cy="152" r="3" fill="#EF9A9A" opacity=".8" class="pulse"/>`:'' }
+    ${si>=4?`<circle cx="125" cy="215" r="3" fill="#FFCDD2" opacity=".9" class="pulse"/>
+    <circle cx="138" cy="220" r="2.5" fill="#FFCDD2" opacity=".8" class="pulse"/>`:'' }
+    <!-- Size indicator -->
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Penetrare in aparatul respirator</text>
+  </svg>`;
+}
+
+function svgConio(si){
+  // Microscope view with particles of different sizes
+  const showGrid = si>=1;
+  const showCount = si>=2;
+  const showDispersion = si>=3;
+  const bigCount=12, smallCount=28;
+
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <defs>
+      <clipPath id="scope-conio"><circle cx="130" cy="130" r="95"/></clipPath>
+      <radialGradient id="conio-vig" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="transparent"/>
+        <stop offset="100%" stop-color="#000" stop-opacity=".7"/>
+      </radialGradient>
+    </defs>
+    <!-- Scope bezel -->
+    <circle cx="130" cy="130" r="105" fill="#1a2030" stroke="#5C6BC0" stroke-width="3"/>
+    <circle cx="130" cy="130" r="100" fill="#080c18" stroke="#2a2a4a" stroke-width="1"/>
+    <circle cx="130" cy="130" r="95" fill="#0e0e18"/>
+    <!-- Grid micrometric -->
+    ${showGrid?`
+    <g clip-path="url(#scope-conio)" stroke="#5C6BC020" stroke-width="0.5">
+      ${[0,1,2,3,4,5,6].map(i=>`<line x1="${45+i*30}" y1="35" x2="${45+i*30}" y2="225"/>`).join('')}
+      ${[0,1,2,3,4,5,6].map(i=>`<line x1="35" y1="${45+i*30}" x2="225" y2="${45+i*30}"/>`).join('')}
+    </g>
+    <!-- 5µm reference lines -->
+    <line x1="55" y1="220" x2="85" y2="220" stroke="#5C6BC0" stroke-width="2"/>
+    <text x="70" y="235" text-anchor="middle" font-size="8" fill="#5C6BC0" font-family="JetBrains Mono,monospace">5 µm</text>`:''}
+    <!-- Particles: big (>5µm) and small (<5µm) -->
+    <g clip-path="url(#scope-conio)">
+      <!-- Big particles >5µm (dangerous) -->
+      ${showCount?`
+      <circle cx="75" cy="85" r="7" fill="#e8445a" opacity=".8"/>
+      <circle cx="100" cy="70" r="6" fill="#e8445a" opacity=".75"/>
+      <circle cx="155" cy="90" r="7.5" fill="#e8445a" opacity=".8"/>
+      <circle cx="178" cy="75" r="6.5" fill="#e8445a" opacity=".75"/>
+      <circle cx="90" cy="155" r="7" fill="#e8445a" opacity=".8"/>
+      <circle cx="165" cy="160" r="6" fill="#e8445a" opacity=".75"/>
+      <circle cx="130" cy="80" r="6.5" fill="#e8445a" opacity=".8"/>
+      <circle cx="200" cy="140" r="7" fill="#e8445a" opacity=".75"/>
+      <!-- Small particles <5µm -->
+      <circle cx="88" cy="105" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="120" cy="95" r="2.5" fill="#f5a623" opacity=".85"/>
+      <circle cx="145" cy="108" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="170" cy="115" r="2.5" fill="#f5a623" opacity=".85"/>
+      <circle cx="105" cy="130" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="148" cy="135" r="2.5" fill="#f5a623" opacity=".85"/>
+      <circle cx="72" cy="120" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="185" cy="100" r="2.5" fill="#f5a623" opacity=".85"/>
+      <circle cx="118" cy="152" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="162" cy="178" r="2.5" fill="#f5a623" opacity=".85"/>
+      <circle cx="80" cy="170" r="3" fill="#f5a623" opacity=".9"/>
+      <circle cx="200" cy="160" r="2.5" fill="#f5a623" opacity=".85"/>`:''}
+    </g>
+    <!-- Legend -->
+    ${showCount?`
+    <circle cx="110" cy="245" r="5" fill="#e8445a"/>
+    <text x="118" y="249" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">&gt;5µm: ${bigCount} (${Math.round(bigCount/(bigCount+smallCount)*100)}%)</text>
+    <circle cx="38" cy="245" r="3.5" fill="#f5a623"/>
+    <text x="44" y="249" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">&lt;5µm: ${smallCount}</text>`:''}
+    <!-- Dispersion formula -->
+    ${showDispersion?`
+    <rect x="95" y="18" width="70" height="22" rx="4" fill="#1a1030" opacity=".9"/>
+    <text x="130" y="33" text-anchor="middle" font-size="9" fill="#a78bfa" font-family="JetBrains Mono,monospace">NF=30% &gt;5µm</text>`:''}
+    <circle cx="130" cy="130" r="95" fill="url(#conio-vig)"/>
+    <circle cx="130" cy="130" r="108" fill="none" stroke="#2a2a4a" stroke-width="2"/>
+    <text x="130" y="260" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Coniometru Zeiss — ob. x40</text>
+  </svg>`;
+}
+
+function svgSidepak(si){
+  // SidePak AM510 device with display
+  const values=[0,35,85,150,260];
+  const val=values[Math.min(si,4)];
+  const col=val<=25?'#2ecc71':val<=75?'#f5a623':val<=150?'#E65100':'#e8445a';
+  const who=5; // WHO 2021 annual limit
+  const barH=Math.min(140,val/2);
+
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Device body -->
+    <rect x="55" y="20" width="150" height="200" rx="12" fill="#1e3a4a" stroke="#5C6BC0" stroke-width="2"/>
+    <rect x="60" y="25" width="140" height="195" rx="10" fill="#152030"/>
+    <!-- Screen -->
+    <rect x="68" y="35" width="124" height="75" rx="6" fill="#080c18" stroke="#5C6BC020" stroke-width="1"/>
+    <!-- PM2.5 value -->
+    <text x="130" y="57" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">PM2.5 (µg/m³)</text>
+    <text x="130" y="90" text-anchor="middle" font-size="30" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${val}</text>
+    <text x="130" y="103" text-anchor="middle" font-size="9" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${val<=25?'BUN':val<=75?'MODERAT':val<=150?'NESANATOS':'PERICULOS'}</text>
+    <!-- Bar chart on device -->
+    <rect x="75" y="125" width="110" height="60" rx="4" fill="#0a0e18"/>
+    <!-- WHO limit line -->
+    <line x1="78" y1="${185-who*0.3}" x2="182" y2="${185-who*0.3}" stroke="#2ecc71" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="184" y="${185-who*0.3+4}" font-size="7" fill="#2ecc71" font-family="JetBrains Mono,monospace">OMS</text>
+    <!-- Bar -->
+    <rect x="110" y="${185-barH}" width="40" height="${barH}" rx="3" fill="${col}" opacity=".85"/>
+    <!-- Sensor indicator -->
+    <circle cx="130" cy="210" r="8" fill="${si>=1?col:'#1e3a4a'}" stroke="${col}" stroke-width="1.5"/>
+    <text x="130" y="214" text-anchor="middle" font-size="7" fill="white" font-family="JetBrains Mono,monospace">LASER</text>
+    <!-- Clip indicator -->
+    <rect x="55" y="100" width="8" height="40" rx="4" fill="#3a5a6a" stroke="#5C6BC0" stroke-width="1"/>
+    <!-- WHO annotation -->
+    ${si>=3?`<rect x="30" y="225" width="200" height="22" rx="5" fill="#152030" stroke="${col}" stroke-width="1"/>
+    <text x="130" y="240" text-anchor="middle" font-size="9" fill="${col}" font-family="JetBrains Mono,monospace">${val} µg/m³ vs OMS 5 µg/m³ (de ${Math.round(val/5)}x)</text>`:''}
+    <text x="130" y="256" text-anchor="middle" font-size="8.5" fill="#6b8a9e" font-family="JetBrains Mono,monospace">SidePak AM510 — monitorizare personala</text>
+  </svg>`;
+}
+
+function svgGaze(si){
+  // Gas detector + color tubes
+  const gasStates=[
+    {gas:'CO',   ppm:0,   col:'#6b8a9e', danger:false},
+    {gas:'CO',   ppm:25,  col:'#f5a623', danger:false},
+    {gas:'NO₂',  ppm:0.5, col:'#E65100', danger:true},
+    {gas:'SO₂',  ppm:2,   col:'#e8445a', danger:true},
+    {gas:'ALL',  ppm:null,col:'#2ecc71', danger:false},
+  ];
+  const gs=gasStates[Math.min(si,4)];
+
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Gas detector body -->
+    <rect x="70" y="30" width="120" height="180" rx="14" fill="#1e3a4a" stroke="${gs.col}" stroke-width="2"/>
+    <rect x="75" y="35" width="110" height="175" rx="12" fill="#152030"/>
+    <!-- Screen -->
+    <rect x="82" y="45" width="96" height="65" rx="5" fill="#080c18" stroke="${gs.col}22" stroke-width="1"/>
+    <!-- Gas name -->
+    <text x="130" y="63" text-anchor="middle" font-size="11" fill="${gs.col}" font-family="JetBrains Mono,monospace" font-weight="bold">${gs.gas}</text>
+    ${gs.ppm!==null?`<text x="130" y="88" text-anchor="middle" font-size="20" fill="${gs.col}" font-family="JetBrains Mono,monospace" font-weight="bold">${gs.ppm}</text>
+    <text x="130" y="101" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">ppm</text>`
+    :`<text x="130" y="82" text-anchor="middle" font-size="13" fill="#2ecc71" font-family="Syne,sans-serif" font-weight="700">4 gaze OK</text>`}
+    <!-- Sensors grid -->
+    <g>
+      ${['CO','H₂S','NO₂','O₂'].map((g,i)=>{
+        const x=88+i*26, active=(si>=1&&i===0)||(si>=2&&i===2)||(si>=3&&i===1)||(si>=4);
+        return `<rect x="${x}" y="120" width="20" height="14" rx="3" fill="${active?gs.col:'#1e3a4a'}" stroke="${gs.col}44" stroke-width="1"/>
+                <text x="${x+10}" y="131" text-anchor="middle" font-size="6.5" fill="${active?'white':'#6b8a9e'}" font-family="JetBrains Mono,monospace">${g}</text>`;
+      }).join('')}
+    </g>
+    <!-- Alarm indicator -->
+    ${gs.danger?`<circle cx="130" cy="155" r="14" fill="rgba(232,68,90,.2)" stroke="#e8445a" stroke-width="2" class="pulse"/>
+    <text x="130" y="159" text-anchor="middle" font-size="14" fill="#e8445a">!</text>
+    <text x="130" y="173" text-anchor="middle" font-size="8" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700">ALARMĂ</text>`
+    :`<circle cx="130" cy="155" r="14" fill="rgba(46,204,113,.1)" stroke="#2ecc71" stroke-width="1"/>
+    <text x="130" y="159" text-anchor="middle" font-size="14" fill="#2ecc71">✓</text>`}
+    <!-- Colorimetric tubes (method) -->
+    ${si>=1?`
+    <rect x="195" y="60" width="12" height="80" rx="6" fill="#1e3a4a" stroke="#f5a623" stroke-width="1"/>
+    <rect x="196" y="90" width="10" height="48" rx="5" fill="${si>=2?'#E65100':'#f5a623'}" opacity=".8"/>
+    <text x="201" y="155" text-anchor="middle" font-size="7" fill="#f5a623" font-family="JetBrains Mono,monospace" transform="rotate(90,201,155)">tub color.</text>`:''}
+    <!-- Bottom display -->
+    <rect x="82" y="185" width="96" height="14" rx="3" fill="#0a0e18"/>
+    <text x="130" y="196" text-anchor="middle" font-size="8" fill="${gs.col}" font-family="JetBrains Mono,monospace">${si===0?'STANDBY':si===4?'MULTI-GAZ OK':'CMA: '+['35','3','0.1','0.5'][Math.min(si-1,3)]+' mg/m³'}</text>
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Gazometru portabil — senzori electrochimici</text>
+  </svg>`;
+}
+
+function svgAQI(si){
+  // AQI gauge + city skyline
+  const aqiVals=[1,3,5,7,9];
+  const aqiVal=aqiVals[Math.min(si,4)];
+  const cols=['#2E7D32','#558B2F','#F9A825','#E65100','#C62828'];
+  const labels=['EXCELENT','BUN','MODERAT','RĂU','PERICULOASĂ'];
+  const col=cols[Math.min(si,4)];
+  const angle=-90+aqiVal*18; // -90 to 90
+  const rad=angle*Math.PI/180;
+  const nx=130+75*Math.cos(rad);
+  const ny=140+75*Math.sin(rad);
+
+  // Smog opacity increases with AQI
+  const smog=si*0.12;
+
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- City skyline (simple) -->
+    <rect x="20" y="180" width="220" height="60" fill="#0a0e18"/>
+    <!-- Buildings -->
+    ${[[30,120,25,60],[65,100,20,80],[95,130,30,50],[135,110,25,70],[170,90,35,90],[215,125,25,55]].map(([x,h,w,y2])=>`
+      <rect x="${x}" y="${y2}" width="${w}" height="${260-y2}" fill="#152030" stroke="#1e3a4a" stroke-width="0.5"/>
+      ${[[x+4,y2+8],[x+12,y2+8],[x+4,y2+18],[x+12,y2+18]].map(([wx,wy])=>`<rect x="${wx}" y="${wy}" width="5" height="4" rx="1" fill="#f5a62322" opacity="${Math.random()>0.5?1:0}"/>`).join('')}
+    `).join('')}
+    <!-- Smog layer -->
+    <rect x="0" y="160" width="260" height="100" fill="${col}" opacity="${smog}"/>
+    <!-- Gauge arc -->
+    <path d="M55,140 A75,75 0 0,1 205,140" fill="none" stroke="#1e3a4a" stroke-width="16"/>
+    <!-- Colored segments -->
+    ${cols.map((c,i)=>{
+      const a1=-90+i*18, a2=-90+(i+1)*18;
+      const r1=a1*Math.PI/180, r2=a2*Math.PI/180;
+      const x1=130+75*Math.cos(r1), y1=140+75*Math.sin(r1);
+      const x2=130+75*Math.cos(r2), y2=140+75*Math.sin(r2);
+      return `<path d="M${x1},${y1} A75,75 0 0,1 ${x2},${y2}" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="butt" opacity="${i===Math.min(si,4)?1:0.35}"/>`;
+    }).join('')}
+    <!-- Needle -->
+    <line x1="130" y1="140" x2="${nx}" y2="${ny}" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="130" cy="140" r="7" fill="${col}"/>
+    <!-- Value display -->
+    <text x="130" y="123" text-anchor="middle" font-size="18" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${aqiVal}</text>
+    <text x="130" y="108" text-anchor="middle" font-size="10" fill="${col}" font-family="Syne,sans-serif" font-weight="800">${labels[Math.min(si,4)]}</text>
+    <!-- Labels on arc -->
+    <text x="48" y="148" font-size="7" fill="${cols[0]}" font-family="JetBrains Mono,monospace">1</text>
+    <text x="210" y="148" font-size="7" fill="${cols[4]}" font-family="JetBrains Mono,monospace">10</text>
+    <!-- Action recommendation -->
+    <rect x="20" y="215" width="220" height="26" rx="5" fill="${col}22" stroke="${col}" stroke-width="1"/>
+    <text x="130" y="232" text-anchor="middle" font-size="9" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${['Activitate normala ✓','Grupuri sensibile reduc activitatea exterioara','Toata populatia evita efort fizic exterior','Ramaneti in interior — ferestre inchise','URGENTA — sistati orice activitate exterioara'][Math.min(si,4)]}</text>
+    <text x="130" y="254" text-anchor="middle" font-size="8.5" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Indice AQI — calitateaer.ro</text>
+  </svg>`;
+}
+
+const SVG_FNS=[svgPM,svgConio,svgSidepak,svgGaze,svgAQI];
+
+// ── TESTS DATA ─────────────────────────────────────────────
+const TESTS=[
+  // 0: DIMENSIUNI PM
+  {title:"Clasificarea Particulelor PM",color:"#5C6BC0",steps:[
+    {label:"Definiții",icon:"🌫️",title:"Pulberi & Aerosoli — Termeni de bază",badge:"Pas 1 din 5",
+     text:"<strong>Aerosoli</strong> = particule solide sau lichide dispersate în aer. <strong>Praf</strong> = pulberi cu dimensiuni mai mari, vizibile. Clasificare EPA în funcție de dimensiune → penetrare → nocivitate.",
+     note:"Surse: drumuri neasfaltate, construcții, arderi, industrie, praf natural (saharian, vulcanic), activitate biologică (polen)."},
+    {label:">10 µm — Nas",icon:"👃",title:"Particule >10 µm — Reținute în cavitatea nazală",badge:"Pas 2 din 5",
+     text:"Particulele >10 µm sunt <strong>reținute în cavitatea nazală și faringe</strong> prin impactare inertială. Sunt eficient filtrate de mucusul nazal. Reprezintă <em>praful grosier</em> vizibil.",
+     note:"Perii nazali + mucus = prima barieră de apărare. Praf de construcții, nisip, grăunțe de praf = exemple tipice.",
+     result:[{cls:'good',text:'✅ >10 µm: filtrate eficient în cavitatea nazală'}]},
+    {label:"PM2.5-10",icon:"🫁",title:"PM2.5–10 µm — Bronhii și bronhiole",badge:"Pas 3 din 5",
+     text:"Particulele 2.5–10 µm (<strong>PM10 fracția grosieră</strong>) depășesc filtrul nazal și ajung în bronhii și bronhiole. Clearance-ul mucociliar le elimină parțial, dar iritația bronșică persistă.",
+     note:"PM10: surse principale = construcții, drumuri, industrie. Valoare-limită UE: 40 µg/m³ (medie anuală), 50 µg/m³ (24h, max 35 depășiri/an)."},
+    {label:"PM2.5 — Alveole",icon:"⚠️",title:"PM2.5 — Alveolele pulmonare: 80-90% retenție",badge:"Pas 4 din 5",
+     text:"PM2.5 (<2.5 µm) ajunge în <strong>alveolele pulmonare</strong> unde sunt reținute în proporție de <em>80-90%</em>. Nu pot fi eliminate prin tuse! Traversează bariera alveolară → intră în circulația sangvină.",
+     note:"PM2.5 = carcinogen gr. 1 IARC (2013). Valoare-limită UE: 25 µg/m³ annual. OMS 2021: 5 µg/m³! Surse: arderi diesel, cărbune, lemn.",
+     result:[{cls:'positive',text:'🔴 PM2.5 <2.5µm: 80-90% retenție alveolară — cel mai periculos'}]},
+    {label:"PM0.1 — Ultrafine",icon:"🔬",title:"PM0.1 (<0.1 µm) — Particule ultrafine: trec în sânge",badge:"Pas 5 din 5",
+     text:"Particulele ultrafine PM0.1 au o <strong>comportare paradoxală</strong>: deși ajung în alveole, o parte semnificativă este <em>eliminată cu aerul expirat</em> (difuzie browniană). Dar fracțiunea reținută TRAVERSEAZĂ alveola direct în sânge!",
+     note:"PM0.1 nu are reglementare UE specifică — provocare pentru legislație. Surse: gaze de eșapament direct, nanoparticule industriale.",
+     result:[{cls:'warning',text:'⚠️ PM0.1: trec în sânge prin difuzie → efecte sistemice (cardiovascular, neurologic)'}]}
+  ]},
+
+  // 1: CONIOMETRIE
+  {title:"Coniometria — Numărarea Particulelor",color:"#9575CD",steps:[
+    {label:"Principiu",icon:"🔬",title:"Coniometria — Ce și de ce?",badge:"Pas 1 din 5",
+     text:"<strong>Coniometria</strong> = numărarea microscopică a particulelor de praf din aer. Spre deosebire de gravimetrie (greutate totală), coniometria oferă informații despre <em>distribuția dimensională</em> — esențială pentru evaluarea nocivității.",
+     note:"Nocivitatea prafului NU depinde doar de cantitate (mg/m³), ci mai ales de procentul particulelor <5 µm care ajung în alveole."},
+    {label:"Grid micrometric",icon:"📏",title:"Rețeaua micrometrică — Etalonul de 5 µm",badge:"Pas 2 din 5",
+     text:"La <strong>coniometrul Zeiss</strong>, câmpul microscopic are o rețea cu linii paralele la distanță de <em>5 µm</em> (etalonată). Particulele vizualizate sunt comparate cu această distanță pentru a fi clasificate în >5 µm sau <5 µm.",
+     note:"Linia de 5 µm = critică medical: particulele <5 µm depășesc bariera bronșică și ajung în alveole. Clasificarea lor = direct legată de risc."},
+    {label:"Numărare",icon:"🔢",title:"Numărarea particulelor — 100-400 particule",badge:"Pas 3 din 5",
+     text:"Se numără <strong>100–400 particule</strong> per probă, clasificate în: <em>mari (>5 µm)</em> și <em>mici (<5 µm)</em>. Rezultatul = procentele relative ale fiecărei clase.",
+     note:"Exemplu: 12 particule >5µm + 28 particule <5µm din 40 totale → 30% >5µm, 70% <5µm — Nocivitate RIDICATĂ.",
+     result:[{cls:'warning',text:'⚠️ >50% particule <5µm = praf cu nocivitate RIDICATĂ'}]},
+    {label:"Dispersiograma",icon:"📊",title:"Formula de praf & Conio-dispersiograma",badge:"Pas 4 din 5",
+     text:"<strong>Dispersiograma</strong> = reprezentarea grafică a distribuției dimensionale a particulelor (% fiecărei clase de dimensiune). Formula de praf: % cls 1 / % cls 2 / % cls 3 ...",
+     note:"Praful cu % mare de particule fine <5 µm = mai nociv decât același total de praf grosier >10 µm. Industria minieră, cimentul, silica = exemple de praf fin periculos."},
+    {label:"Compoziție chimică",icon:"⚗️",title:"Determinarea compoziției chimice a pulberilor",badge:"Pas 5 din 5",
+     text:"Unele substanțe conferă pulberilor o <strong>nocivitate crescută</strong>:<br>• SiO₂ liber (silice) → silicoză ireversibilă<br>• Fibre de azbest → mezoteliom pleural<br>• Plumb (Pb) → intoxicație cronică<br>• Hidrocarburi aromatice → cancer pulmonar",
+     note:"Analiza chimică: spectroscopie de masă, fluorescență X, cromatografie. Metodele sunt esențiale pentru praful industrial specific.",
+     result:[{cls:'positive',text:'🔴 SiO₂ + fibre azbest + Pb = risc ocupațional maxim'}]}
+  ]},
+
+  // 2: SIDEPAK
+  {title:"SidePak AM510 — Monitorizare PM2.5",color:"#00897B",steps:[
+    {label:"Principiu",icon:"📱",title:"SidePak AM510 — Monitor personal aerosoli",badge:"Pas 1 din 5",
+     text:"<strong>SidePak AM510</strong> (TSI Inc.) = monitor portabil pentru PM2.5 în timp real. Principiu: <em>spectroscopie de lumină laser</em> (light scattering) — fasciculul laser detectează particulele prin lumina dispersată proporțional cu masa.",
+     note:"Afișaj în timp real: µg/m³ · Media ponderată pe 8h (TWA) · Valori min/max · Data logger cu export USB. Precizie: ±10% față de metodă gravimetrică de referință."},
+    {label:"Aer curat",icon:"✅",title:"Scenariul 1 — Aer curat (interior ventilat)",badge:"Pas 2 din 5",
+     text:"PM2.5 = <strong>35 µg/m³</strong> — nivel moderat. Reprezintă aerul urban tipic în interior fără surse specifice. Sub valoarea-limită UE de 25 µg/m³ medie anuală, dar depășește de 7× norma OMS 2021 (5 µg/m³)!",
+     note:"35 µg/m³ este un nivel NORMAL în multe orașe europene, deși din perspectiva OMS 2021 depășește norma. Lecție: normele UE sunt mult mai permisive decât recomandările OMS.",
+     result:[{cls:'warning',text:'⚠️ 35 µg/m³: Sub norma UE, dar 7× norma OMS 2021!'}]},
+    {label:"Activitate gătit",icon:"🍳",title:"Scenariul 2 — Gătit (prăjire) — 85 µg/m³",badge:"Pas 3 din 5",
+     text:"PM2.5 <strong>sare la 85 µg/m³</strong> în 5 minute de prăjire pe plită. Depășire semnificativă a valorii-limită UE (25 µg/m³). Gătitul = sursă majoră de PM2.5 interior, mai ales cu gaze naturale sau prăjire la temperaturi înalte.",
+     note:"Hota fără evacuare externă este aproape inutilă — recirculă particulele. Inducția + hotă cu evacuare externă = soluție optimă. Fereastră deschisă = minim necesar.",
+     result:[{cls:'positive',text:'🔴 85 µg/m³: DEPĂȘIRE! Gătitul = sursă majoră PM2.5 interior'}]},
+    {label:"Trafic intens",icon:"🚗",title:"Scenariul 3 — Stradă cu trafic intens — 150 µg/m³",badge:"Pas 4 din 5",
+     text:"PM2.5 = <strong>150 µg/m³</strong> lângă o stradă aglomerată (ora de vârf). De 6× norma UE și 30× norma OMS 2021! Mersul pe bicicletă sau alergat pe o astfel de stradă = efort respirator crescut → inhalare accelerată de PM2.5.",
+     note:"Recomandare: evitați stăzile aglomerate pentru activitate fizică. Aplicațiile AQI (IQAir, AirVisual) ajută la alegerea rutelor cu aer mai curat.",
+     result:[{cls:'positive',text:'🔴 150 µg/m³: RISC RIDICAT — grupuri sensibile rămân în interior'}]},
+    {label:"Episod smog",icon:"🏭",title:"Scenariul 4 — Episod de smog / praf saharian — 260 µg/m³",badge:"Pas 5 din 5",
+     text:"PM2.5 = <strong>260 µg/m³</strong> — episod sever (ex: București, Martie 2024, praf saharian). De 52× norma OMS! Alertă ANPM activată. Recomandare: rămâneți în interior, nu ventilați, măști FFP2 obligatorii dacă ieșiți.",
+     note:"Calitateaer.ro publică alerte în timp real. Aplicații recomandate: IQAir, AirVisual, ANPM Mobile. Măști utile: FFP2/N95 (NU măști chirurgicale — nu filtrează PM2.5).",
+     result:[{cls:'positive',text:'🔴 260 µg/m³: PERICULOS — ALERTĂ SMOG · FFP2 obligatorie afară'}]}
+  ]},
+
+  // 3: GAZE TOXICE
+  {title:"Detectarea Gazelor Toxice",color:"#C62828",steps:[
+    {label:"Principiu",icon:"☁️",title:"Gaze toxice — Metode de detectare",badge:"Pas 1 din 5",
+     text:"Gazele toxice din aer se detectează prin: <strong>Metode rapide orientative</strong> (tuburi colorimetrice — schimbare culoare proporțional cu concentrația) și <strong>Analizoare automate</strong> (senzori electrochimici, spectroscopie IR, cromatografie GC).",
+     note:"Biomarkeri: COHb în sânge (CO), acid trans-trans-muconico urinar (benzen), 1-OH-piren urinar (HAP). Indirecte = exposimetrie biologică."},
+    {label:"CO",icon:"🔴",title:"Monoxid de Carbon (CO) — 25 ppm detectat",badge:"Pas 2 din 5",
+     text:"<strong>CO = gazul ucigaș tăcut</strong>. Incolor, inodor, insipid — nedetectabil fără instrumente! Se leagă de hemoglobina de 250× mai puternic decât O₂ → COHb → hipoxie tisulară. Intoxicație acută: >200 ppm/1h = cefalee; >1000 ppm = pierdere cunoștință.",
+     note:"CMA mediu muncă: 20 mg/m³ (17 ppm). Valoare-limită aer ambient UE: 10 mg/m³ (8h). Detectoare CO obligatorii în apartamente cu centrale termice pe gaz!",
+     result:[{cls:'warning',text:'⚠️ 25 ppm CO: ATENȚIE! Sursa probabil: sobă/centrală defectă'}]},
+    {label:"NO₂",icon:"🟠",title:"Dioxid de Azot (NO₂) — 0.5 ppm detectat",badge:"Pas 3 din 5",
+     text:"<strong>NO₂</strong> (gaz roșu-brun, miros înțepător) apare din <em>arderea la temperaturi înalte</em>: motoare diesel, centrale termoelectrice. Iritant puternic al căilor respiratorii, inflamație pulmonară. La expunere cronică: astm bronșic, BPOC.",
+     note:"Valoare-limită UE: 40 µg/m³ medie anuală (≈21 ppb). OMS 2021: 10 µg/m³! NO₂ din gătitul pe gaz natural — sursă semnificativă interior.",
+     result:[{cls:'positive',text:'🔴 0.5 ppm NO₂: DEPĂȘIRE CMA! Sursă: trafic diesel intens nearby'}]},
+    {label:"SO₂",icon:"🟡",title:"Dioxid de Sulf (SO₂) — 2 ppm detectat",badge:"Pas 4 din 5",
+     text:"<strong>SO₂</strong> (miros înțepător de sulf) provine din arderea combustibililor cu sulf (cărbune, petrol). Reacționează cu H₂O → H₂SO₃/H₂SO₄ → <em>ploaie acidă</em>. Bronhospasm acut, mai ales la astmatici.",
+     note:"Emisiile de SO₂ au scăzut dramatic în UE (-90% din 1980). România: termocentrale pe cărbune = surse principale. Valoare-limită UE: 125 µg/m³ (24h).",
+     result:[{cls:'positive',text:'🔴 2 ppm SO₂: DEPĂȘIRE! Sursă industrială în apropiere'}]},
+    {label:"Multi-gaz OK",icon:"✅",title:"Monitoring multi-gaz — Toate în normă",badge:"Pas 5 din 5",
+     text:"Gazometrul portabil monitorizează <strong>4 gaze simultan</strong>: CO, H₂S, NO₂, O₂. Toate în parametri normali. Această tehnologie este obligatorie în: spații confinete (canalizare, rezervoare), laboratoare chimice, industrie, urgențe CBRN.",
+     note:"Senzori electrochimici: durata de viață 1-3 ani. Calibrare obligatorie la 6 luni sau conform producătorului. Testare zilnică cu gaz etalon = bună practică.",
+     result:[{cls:'good',text:'✅ CO: 0 ppm · NO₂: 0 ppb · SO₂: 0 ppb · O₂: 20.9% — NORMAL'}]}
+  ]},
+
+  // 4: AQI
+  {title:"Indicele AQI & calitateaer.ro",color:"#E65100",steps:[
+    {label:"Definiție AQI",icon:"📊",title:"Indicele AQI — Ce este și cum se citește?",badge:"Pas 1 din 5",
+     text:"<strong>AQI (Air Quality Index)</strong> = un singur număr care rezumă calitatea aerului pentru mai mulți poluanți simultan. Calculat prin încadrarea mediei orare în intervale de concentrație pentru SO₂, NO₂, O₃, CO, PM10, PM2.5.",
+     note:"Indicele GENERAL = cel mai mare indice specific dintre toți poluanții monitorizați. Un poluant cu valoare ridicată 'domină' indicele general — principiul celei mai defavorabile situații."},
+    {label:"AQI 3 — BUN",icon:"😊",title:"AQI = 3 (Bun) — Condiții tipice zi de toamnă",badge:"Pas 2 din 5",
+     text:"<strong>AQI 3 = Bun</strong>. Activitate normală fără restricții. Grupurile sensibile pot desfășura activitate fizică în exterior fără grijă. Tipic: zi cu vânt ușor, fără inversii termice, fără episoade de poluare.",
+     note:"Orașul cu cel mai bun AQI din România: Sulina (Delta Dunării), zone montane. Cel mai poluat: București, Ploiești, Brăila (trafic + industrie + centralele pe gaz/cărbune).",
+     result:[{cls:'good',text:'✅ AQI 3: Condiții bune — activitate normala exterioară ✓'}]},
+    {label:"AQI 5 — Moderat",icon:"😐",title:"AQI = 5 (Moderat) — Grupuri sensibile afectate",badge:"Pas 3 din 5",
+     text:"<strong>AQI 5 = Moderat</strong>. Persoanele cu astm, BPOC, boli cardiovasculare, copii <5 ani și vârstnici >65 ar trebui să <em>reducă activitatea fizică intensă în exterior</em>. Populația generală: impact minim.",
+     note:"AQI 5 este frecvent în marile orașe române în zilele fără vânt. Cauzat de PM10 (praf urban), NO₂ (trafic), uneori O₃ (zi însorită). Aplicația calitateaer.ro notifică automat.",
+     result:[{cls:'warning',text:'⚠️ AQI 5: Grupuri sensibile reduc efortul exterior!'}]},
+    {label:"AQI 8 — Rău",icon:"😷",title:"AQI = 8 (Rău) — Restricții extinse",badge:"Pas 4 din 5",
+     text:"<strong>AQI 8 = Rău</strong>. Toată populația trebuie să reducă activitatea fizică în exterior. Prag de ALERTĂ poate fi activat → restricții trafic, informare populație. Tipic în episoade de iarnă cu inversii termice + arderi de biomasă.",
+     note:"Inversie termică = stratul rece de aer la sol blochează dispersia poluanților. Iarna în depresiuni (Brașov, Petroșani, Ploiești): AQI 7-9 în zilele cu cer senin și frig.",
+     result:[{cls:'positive',text:'🔴 AQI 8: Rămâneți în interior! Închideți ferestrele, purificator HEPA activ'}]},
+    {label:"AQI 10 — Periculos",icon:"🚨",title:"AQI = 10 (Periculos) — Urgență sanitară",badge:"Pas 5 din 5",
+     text:"<strong>AQI 10 = Periculos</strong>. Urgență de sănătate publică. Toată activitatea în exterior este contraindicată. Autoritățile pot dispune: oprirea traficului, închiderea școlilor, restricții industriale. Mască FFP2/N95 obligatorie dacă ieșiți.",
+     note:"Exemplu real: praf saharian Marzo 2024, București → PM10 de 5× norma, AQI 9-10 timp de 48h. Spitalele au raportat creșteri de 30-40% ale prezentărilor cu exacerbări astm și BPOC.",
+     result:[{cls:'positive',text:'🔴 AQI 10: URGENȚĂ! FFP2 + rămâneți în interior + purificator HEPA'}]}
+  ]}
+];
+
+// ── ENGINE ────────────────────────────────────────────────────
+const curStep=[0,0,0,0,0];
+const VL=['Penetrare particule in ap. respirator','Coniometru Zeiss — ob. x40, grid 5µm','SidePak AM510 — PM2.5 timp real','Gazometru portabil — senzori electrochimici','Indice AQI — calitateaer.ro'];
+
+const panelsDiv=document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div=document.createElement('div');
+  div.className='test-panel'+(ti===0?' active':'');
+  div.id='panel-'+ti;
+  div.innerHTML=`
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}">${VL[ti]}</div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Înapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Următorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=document.getElementById('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  document.getElementById('card-'+ti).classList.toggle('highlight',si>0);
+  document.getElementById('svg-'+ti).innerHTML=SVG_FNS[ti](si);
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result)step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  document.getElementById('info-'+ti).innerHTML=html;
+  document.getElementById('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  document.getElementById('prev-'+ti).disabled=si===0;
+  const nb=document.getElementById('next-'+ti);
+  nb.disabled=si===total-1;
+  nb.textContent=si===total-1?'✓ Finalizat':'Următorul pas →';
+  nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=document.getElementById('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>

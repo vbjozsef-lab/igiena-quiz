@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP6B – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#060c18;--panel:#0e1828;--border:#1e3050;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--blue:#2E86DE;--purple:#a78bfa;--orange:#E06020;--text:#d8e4f8;--muted:#6a84a0;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#060c18 60%,#0e1828);}
+  .header-icon{font-size:2.4rem;}
+  header h1{font-size:1.5rem;font-weight:800;color:var(--white);}
+  header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:155px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);}nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:#060c18;}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .clock-hand{transition:transform .8s cubic-bezier(.4,0,.2,1);transform-origin:center;}
+  .bar-fill{transition:width .8s cubic-bezier(.4,0,.2,1);}
+  .pulse{animation:pulseG 1.5s ease-in-out infinite;}@keyframes pulseG{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 6px currentColor);}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--blue);opacity:.03;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🏫</div>
+  <div>
+    <h1>LP6B – Teste Animate Interactive</h1>
+    <p>Ritm Circadian · Orar Optim · Comportamente Risc · HBSC · Prevenire</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">⏰ Ritm Circadian</button>
+  <button onclick="showTest(1)">📅 Orar Optim</button>
+  <button onclick="showTest(2)">🚬 Tabagism & Alcool</button>
+  <button onclick="showTest(3)">📊 HBSC Romania</button>
+  <button onclick="showTest(4)">🛡️ Prevenire LST</button>
+</nav>
+<div id="panels"></div>
+
+<script>
+function g(id){return document.getElementById(id);}
+
+function svgClock(si){
+  // Clock face showing time of day + performance level
+  const hours=[8,9.5,13,14,16,18,20];
+  const perfs=[60,100,55,30,75,50,20];
+  const cols=['#f5a623','#2ecc71','#2A9DBF','#e8445a','#f5a623','#2A9DBF','#e8445a'];
+  const labels=['Mijlociu','MAXIM','Scadere','MINIM','Usoara','Scadere','Minim'];
+  const si2=Math.min(si,hours.length-1);
+  const h=hours[si2];
+  const perf=perfs[si2];
+  const col=cols[si2];
+  // Clock hand angle: 0h = -90deg, 6h = 0, 12h = 90, 18h = 180
+  const angle=(h/24)*360-90;
+  const rad=angle*Math.PI/180;
+  const hx=130+55*Math.cos(rad);
+  const hy=120+55*Math.sin(rad);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Clock face -->
+    <circle cx="130" cy="120" r="90" fill="#0e1828" stroke="#1e3050" stroke-width="2"/>
+    <circle cx="130" cy="120" r="85" fill="none" stroke="#2E86DE" stroke-width="0.5" opacity=".4"/>
+    <!-- Hour markers -->
+    ${[0,3,6,9].map(h=>{
+      const a=(h/12)*360-90;
+      const r=a*Math.PI/180;
+      return `<line x1="${130+70*Math.cos(r)}" y1="${120+70*Math.sin(r)}" x2="${130+82*Math.cos(r)}" y2="${120+82*Math.sin(r)}" stroke="#2E86DE" stroke-width="2"/>`;
+    }).join('')}
+    <!-- Hour labels (6,9,12,18) -->
+    <text x="130" y="38"  text-anchor="middle" font-size="10" fill="#2E86DE" font-family="JetBrains Mono,monospace">12</text>
+    <text x="220" y="124" font-size="10" fill="#2E86DE" font-family="JetBrains Mono,monospace">18</text>
+    <text x="130" y="210" text-anchor="middle" font-size="10" fill="#2E86DE" font-family="JetBrains Mono,monospace">00</text>
+    <text x="32"  y="124" font-size="10" fill="#2E86DE" font-family="JetBrains Mono,monospace">06</text>
+    <!-- Performance arc (colored) -->
+    <circle cx="130" cy="120" r="60" fill="none" stroke="${col}" stroke-width="6" opacity=".2"/>
+    <!-- Clock hand -->
+    <line x1="130" y1="120" x2="${hx}" y2="${hy}" stroke="${col}" stroke-width="3" stroke-linecap="round" class="clock-hand"/>
+    <circle cx="130" cy="120" r="6" fill="${col}"/>
+    <!-- Performance display -->
+    <rect x="90" y="138" width="80" height="28" rx="6" fill="#0a1420" stroke="${col}" stroke-width="1"/>
+    <text x="130" y="151" text-anchor="middle" font-size="10" fill="${col}" font-family="JetBrains Mono,monospace">${Math.floor(h)}:${(h%1*60).toFixed(0).padStart(2,'0')}</text>
+    <text x="130" y="162" text-anchor="middle" font-size="9" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${labels[si2]}</text>
+    <!-- Performance bar -->
+    <rect x="30" y="195" width="200" height="14" rx="7" fill="#0e1828" stroke="#1e3050" stroke-width="1"/>
+    <rect x="30" y="195" width="${perf*2}" height="14" rx="7" fill="${col}" class="bar-fill"/>
+    <text x="130" y="207" text-anchor="middle" font-size="8" fill="white" font-family="JetBrains Mono,monospace" font-weight="bold">Randament: ${perf}%</text>
+    <text x="130" y="230" text-anchor="middle" font-size="9" fill="${col}" font-family="Syne,sans-serif" font-weight="700">${['Trezire - valori medii','9-11 = MAXIM ZILNIC!','Pranz - depresiune postprandi.','13-14 = MINIM ZILNIC','Dupa-amiaza - crestere usoara','Seara - organism obosit','Noaptea - somn obligatoriu'][si2]}</text>
+    <text x="130" y="250" text-anchor="middle" font-size="8.5" fill="#6a84a0" font-family="JetBrains Mono,monospace">Ritm circadian — ore dificile: 9-11</text>
+  </svg>`;
+}
+
+function svgOrar(si){
+  // Weekly bar chart + class hours
+  const days=['Luni','Marti','Miercuri','Joi','Vineri'];
+  const caps=[60,85,100,80,55];
+  const cols2=['#f5a623','#2ecc71','#2ecc71','#2A9DBF','#e8445a'];
+  const recommended=[2,5,5,5,2]; // difficult subjects
+  const classHours=[[3,4],[4,4],[5,5],[5,5],[5,6]]; // [min,max] by level
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Title -->
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a84a0" font-family="JetBrains Mono,monospace">Capacitate saptamanala (%)</text>
+    <!-- Bars -->
+    ${days.map((day,i)=>{
+      const x=15+i*48;
+      const h=caps[i]*1.4;
+      const y=160-h;
+      const isVisible=i<=Math.min(si,4);
+      return `
+      <rect x="${x}" y="${isVisible?y:160}" width="38" height="${isVisible?h:0}" rx="4" fill="${cols2[i]}" opacity=".8"/>
+      <text x="${x+19}" y="175" text-anchor="middle" font-size="8.5" fill="${cols2[i]}" font-family="Syne,sans-serif" font-weight="700">${day}</text>
+      ${isVisible?`<text x="${x+19}" y="${y-4}" text-anchor="middle" font-size="9" fill="${cols2[i]}" font-family="JetBrains Mono,monospace">${caps[i]}%</text>`:''}
+      ${isVisible?`<text x="${x+19}" y="${y+h/2+4}" text-anchor="middle" font-size="8" fill="white" font-family="JetBrains Mono,monospace">${recommended[i]} mat.</text>`:''}`;
+    }).join('')}
+    <!-- Hours per class table -->
+    <rect x="15" y="185" width="230" height="55" rx="7" fill="#0e1828" stroke="#1e3050" stroke-width="1"/>
+    <text x="130" y="200" text-anchor="middle" font-size="9" fill="#6a84a0" font-family="JetBrains Mono,monospace">ORE/ZI RECOMANDATE</text>
+    <text x="38"  y="216" font-size="9" fill="#2ecc71" font-family="JetBrains Mono,monospace">Cls I: 3-4h</text>
+    <text x="38"  y="230" font-size="9" fill="#2A9DBF" font-family="JetBrains Mono,monospace">Cls II-IV: 4h</text>
+    <text x="145" y="216" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">Cls V-VIII: 5h</text>
+    <text x="145" y="230" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">Cls IX-XII: 5-6h</text>
+    <text x="130" y="248" text-anchor="middle" font-size="8.5" fill="#6a84a0" font-family="JetBrains Mono,monospace">Luni/Vineri: max 2 materii dificile!</text>
+  </svg>`;
+}
+
+function svgRisc(si){
+  // Risk behavior chart - bar chart Romania stats
+  const risks=[
+    {label:'Fumat 15-16ani',val:24,col:'#e8445a',unit:'%'},
+    {label:'Debut fumat',val:14,col:'#f5a623',unit:'ani'},
+    {label:'Alcool <13ani',val:41,col:'#E06020',unit:'%'},
+    {label:'Binge drinking',val:18,col:'#a78bfa',unit:'%'},
+    {label:'Cannabis 15-16',val:8, col:'#2ecc71',unit:'%'},
+    {label:'Sex neprotejat',val:40,col:'#2A9DBF',unit:'%'},
+  ];
+  const visible=Math.min(si+1,risks.length);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a84a0" font-family="JetBrains Mono,monospace">Statistici Romania adolescenti (ESPAD/HBSC 2023)</text>
+    ${risks.slice(0,visible).map(({label,val,col,unit},i)=>{
+      const y=22+i*37;
+      const barW=Math.min(val/50*180,180);
+      return `
+      <rect x="20" y="${y}" width="240" height="28" rx="4" fill="#0e1828" stroke="#1e3050" stroke-width=".5"/>
+      <rect x="20" y="${y}" width="${barW}" height="28" rx="4" fill="${col}" opacity=".75"/>
+      <text x="26" y="${y+12}" font-size="9" fill="white" font-family="Syne,sans-serif" font-weight="700">${label}</text>
+      <text x="26" y="${y+23}" font-size="10" fill="white" font-family="JetBrains Mono,monospace" font-weight="bold">${val} ${unit}</text>
+      <text x="${20+barW+5}" y="${y+17}" font-size="8.5" fill="${col}" font-family="JetBrains Mono,monospace">${val>=30?'!!!':val>=15?'!':''}</text>`;
+    }).join('')}
+    ${si>=5?`<text x="130" y="247" text-anchor="middle" font-size="9" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700">Romania: ultimele pozitii UE multi indicatori!</text>
+    <text x="130" y="258" text-anchor="middle" font-size="8.5" fill="#6a84a0" font-family="JetBrains Mono,monospace">Sursa: ESPAD 2023 · HBSC Romania 2022</text>`:''}
+  </svg>`;
+}
+
+function svgHBSC(si){
+  // HBSC infographic - radar/pie style comparison
+  const cats=['Bullying','Sedentarism','Ecrane >3h','Somn insuf.','Carie dental.','Sarcinii adol.'];
+  const romPct=[31,80,67,73,95,305]; // Romania values (305 = per 1000 for pregnancy)
+  const euAvg= [15,60,45,55,60,85];
+  const units=['%','%','%','%','%','/1000'];
+  const visible=Math.min(si+1,cats.length);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a84a0" font-family="JetBrains Mono,monospace">Romania vs Media UE</text>
+    ${cats.slice(0,visible).map((cat,i)=>{
+      const y=22+i*37;
+      const romW=Math.min(romPct[i]/(i===5?400:100)*160,180);
+      const euW=Math.min(euAvg[i]/100*160,180);
+      const worse=romPct[i]>euAvg[i];
+      return `
+      <text x="22" y="${y+10}" font-size="8.5" fill="#a0b4c8" font-family="Syne,sans-serif" font-weight="700">${cat}</text>
+      <!-- EU bar -->
+      <rect x="20" y="${y+12}" width="${euW}" height="8" rx="3" fill="#2A9DBF" opacity=".5"/>
+      <text x="${20+euW+3}" y="${y+20}" font-size="7.5" fill="#2A9DBF" font-family="JetBrains Mono,monospace">UE:${euAvg[i]}${units[i]}</text>
+      <!-- Romania bar -->
+      <rect x="20" y="${y+22}" width="${romW}" height="8" rx="3" fill="${worse?'#e8445a':'#2ecc71'}" opacity=".85"/>
+      <text x="${20+romW+3}" y="${y+30}" font-size="7.5" fill="${worse?'#e8445a':'#2ecc71'}" font-family="JetBrains Mono,monospace" font-weight="700">RO:${romPct[i]}${units[i]}${worse?' ↑':' ='}</text>`;
+    }).join('')}
+    ${si>=5?`<text x="130" y="248" text-anchor="middle" font-size="9.5" fill="#e8445a" font-family="Syne,sans-serif" font-weight="700">6/6 indicatori: Romania DEPASESTE media UE!</text>`:''}
+  </svg>`;
+}
+
+function svgPrevenire(si){
+  // Pyramid/funnel of intervention effectiveness
+  const programs=[
+    {name:'Life Skills Training (LST)',eff:50,col:'#2ecc71',note:'RCT confirmat — nivel A'},
+    {name:'SBIRT in cabinet',eff:25,col:'#2A9DBF',note:'Screening + 5 min interventie'},
+    {name:'Implicarea familiei',eff:50,col:'#f5a623',note:'Cel mai puternic factor'},
+    {name:'Peer Education',eff:35,col:'#a78bfa',note:'Mai eficient decat adult-led'},
+    {name:'Legi stricte varsta minima',eff:40,col:'#e8445a',note:'Aplicare reala = eficienta'},
+  ];
+  const visible=Math.min(si+1,programs.length);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <text x="130" y="14" text-anchor="middle" font-size="9" fill="#6a84a0" font-family="JetBrains Mono,monospace">Eficacitatea interventiilor (% reducere risc)</text>
+    ${programs.slice(0,visible).map(({name,eff,col,note},i)=>{
+      const y=22+i*44;
+      const barW=eff/60*200;
+      return `
+      <rect x="20" y="${y}" width="220" height="36" rx="6" fill="#0e1828" stroke="#1e3050" stroke-width=".8"/>
+      <rect x="20" y="${y}" width="${barW}" height="36" rx="6" fill="${col}" opacity=".8"/>
+      <text x="26" y="${y+14}" font-size="9.5" fill="white" font-family="Syne,sans-serif" font-weight="700">${name}</text>
+      <text x="26" y="${y+27}" font-size="8.5" fill="white" font-family="JetBrains Mono,monospace">${note}</text>
+      <text x="${20+barW-30}" y="${y+21}" font-size="14" fill="white" font-family="JetBrains Mono,monospace" font-weight="bold">-${eff}%</text>`;
+    }).join('')}
+    ${si>=4?`<text x="130" y="248" text-anchor="middle" font-size="9.5" fill="#2ecc71" font-family="Syne,sans-serif" font-weight="700">Combinatie LST + familie + SBIRT = -65% risc!</text>
+    <text x="130" y="260" text-anchor="middle" font-size="8.5" fill="#6a84a0" font-family="JetBrains Mono,monospace">Sursa: Cochrane Substance Use 2022 · Botvin 2021</text>`:''}
+  </svg>`;
+}
+
+const SVG_FNS=[svgClock,svgOrar,svgRisc,svgHBSC,svgPrevenire];
+const VL=['Ritm circadian — curbele randamentului zilnic','Orar optimal — distributia orelor pe saptamana','Statistici comportamente de risc Romania 2023','Romania vs Media UE — indicatori HBSC','Eficacitatea interventiilor de prevenire (%)'];
+
+const TESTS=[
+  {title:"Ritmul Circadian & Capacitatea de Lucru",color:"#2E86DE",steps:[
+    {label:"Dimineata",icon:"🌅",title:"Dimineata — debut activitate (08:00)",badge:"Pas 1 din 7",
+     text:"La <strong>8:00</strong> dimineata, randamentul este la valori <em>mijlocii</em> (60%). Organismul tocmai s-a trezit, cortizolul creste, atentia se instaleaza treptat. Nu este momentul optim pentru teste sau materii dificile.",
+     note:"Ritmul circadian = ceas biologic intern cu ciclu de ~24h. Controlat de nucleul suprachiasmatic (hipotalamus) + lumina. Adolescentii: decalaj fiziologic cu 2h mai tarziu fata de adulti!"},
+    {label:"Maxim 9-11",icon:"⭐",title:"9-11 — MAXIMUL ZILNIC al randamentului",badge:"Pas 2 din 7",
+     text:"Intervalul <strong>9-11</strong> = maximul fiziologic al randamentului intelectual. Cortizol ridicat, glucoza cerebrala optima, atentie si memorie la varful capacitatii. <em>Materiile cele mai dificile trebuie plasate in acest interval!</em>",
+     note:"Studiu Tonetti 2022 (Chronobiology Int): performanta la teste de memorie si concentrare = cu 23% mai buna la 9-11 vs 8:00. Matematica, fizica, chimie = ideal dimineata.",
+     result:[{cls:'good',text:'✅ 9-11 = MAXIM ZILNIC — materii dificile ACUM'}]},
+    {label:"Pranz 12-13",icon:"🍽️",title:"12-13 — Scadere postprandiala",badge:"Pas 3 din 7",
+     text:"La <strong>12-13</strong> apare o scadere naturala a randamentului (ritm circadian + efect postprandial). Somnolenta dupa masa = fiziologica, nu lenea! Sângele iriga tractul digestiv → mai putin la creier.",
+     note:"'Post-lunch dip' = fenomen universal circadian, indiferent de masa de pranz. Si la copiii care nu mananca dimineata apare acest dip. Nu se recomanda ore grele la 12-13."},
+    {label:"Minim 13-14",icon:"😴",title:"13-14 — MINIMUL ZILNIC",badge:"Pas 4 din 7",
+     text:"<strong>13-14</strong> = depresiune postprandiala, valori minime zilnice (30%). Somnolenta maxima, concentrare minima, memorie de lucru redusa. In tarile mediteraneene = siesta traditionala (are baza stiintifica!).",
+     note:"Statele cu program de siesta (Spania, Italia, Grecia): productivitate postsiesta mult mai buna. Siesta 20-30 min optima — mai mult = 'sleep inertia'.",
+     result:[{cls:'positive',text:'🔴 13-14 = MINIM ZILNIC — evita lectii noi, teste'}]},
+    {label:"Dupa-amiaza",icon:"📈",title:"15-17 — Crestere usoara (al 2-lea pic)",badge:"Pas 5 din 7",
+     text:"La <strong>15-17</strong> apare un al doilea varf de randament, inferior insa celui de dimineata (75%). Potrivit pentru activitati moderare, repetitii, arte, sport, activitati practice.",
+     note:"Al 2-lea pic de randament = temperatura corporala maxima zilnica. Coordonarea motorie e excelenta → sport, muzica, activitati practice sunt ideale.",
+     result:[{cls:'warning',text:'⚠️ 15-17 = al 2-lea pic — inferior matinatii, bun pt repetitii'}]},
+    {label:"Seara",icon:"🌆",title:"18-19 — Scadere seara",badge:"Pas 6 din 7",
+     text:"Dupa <strong>18:00</strong> incepe scaderea progresiva a randamentului. Melatonina incepe sa creasca (mai ales dupa 20:00). Temele tardive (>20:00) perturba consolidarea memoriei in somn.",
+     note:"Somn + consolidare memorie: in fazele NREM de somn profund se consolideaza memoria declarativa (fapte, formule). Privarea de somn = -40% memorie a doua zi. Adolescenti: 8-10h somn/noapte."},
+    {label:"Concluzie",icon:"📋",title:"Lectia cheie — Implicatii practice",badge:"Pas 7 din 7",
+     text:"Orarul optim: <strong>materii dificile 9-11</strong>, repetitii dupa-amiaza 15-17, <em>NO lectii noi seara >20:00</em>. Ora de start scoala: AAP recomanda ≥8:30 pentru liceu (70% din adolescenti = privati cronic de somn).",
+     note:"Romania: ora de start 8:00 standard — sub recomandarile AAP 2023. Fiecare 10 min mai tarziu = +3% atenție demonstrat (studiu pe 30.000 elevi SUA).",
+     result:[{cls:'good',text:'✅ 9-11 = maxim | 13-14 = minim | >20:00 = contraproductiv'}]}
+  ]},
+  {title:"Orarul Scolar Optim",color:"#1A5A9A",steps:[
+    {label:"Principii",icon:"📚",title:"Principiile igienice ale orarului",badge:"Pas 1 din 5",
+     text:"Orarul scolar trebuie sa respecte <strong>curbele fiziologice zilnice, saptamanale si anuale</strong> ale capacitatii de lucru. Baza: alternarea perioadelor de activitate cu odihna, schimbarea tipului de activitate (intelectuala ↔ fizica).",
+     note:"Principii valide international: UNICEF, OMS, AAP recomanda aceleasi principii de baza. Diferentele nationale apar in aplicarea practica (ora de start, numar ore, teme)."},
+    {label:"Distributia saptamanala",icon:"📅",title:"Distributia orara in cursul saptamanii",badge:"Pas 2 din 5",
+     text:"<strong>Luni</strong>: capacitate mai redusa (readaptare dupa weekend) → maxim 2 materii dificile. <strong>Marti-Miercuri-Joi</strong>: capacitate maxima → materii dificile, examene. <strong>Vineri</strong>: oboseala cumulata → materii usoare.",
+     note:"Regula practica: daca o ora de matematica trebuie planificata, ea merge Marti sau Miercuri la 9:00 — nu Luni prima ora si nu Vineri ultima ora.",
+     result:[{cls:'good',text:'✅ Marti-Miercuri = ideal pentru materii dificile si examene'}]},
+    {label:"Ore pe zi",icon:"🕐",title:"Numarul optim de ore pe zi",badge:"Pas 3 din 5",
+     text:"<strong>Clasa I</strong>: 3-4 ore/zi. <strong>Cl. II-IV</strong>: 4 ore/zi. <strong>Cl. V-VIII</strong>: 5 ore/zi. <strong>Cl. IX-XII</strong>: 5-6 ore/zi. Pauza obligatorie dupa fiecare ora (10-15 min) + pauza mare (20-30 min).",
+     note:"Finlanda (top PISA 2022): ora de scoala = 45 min + 15 min pauza obligatorie (iesire afara), ore zilnice mai putine, teme minime → rezultate mai bune!",
+     result:[{cls:'warning',text:'⚠️ Cls I: 3-4h | Cls V-VIII: 5h | Liceu: 5-6h — limite absolute'}]},
+    {label:"Temele",icon:"📝",title:"Temele pentru acasa — norme OMS/UNICEF",badge:"Pas 4 din 5",
+     text:"Norme recomandate: <strong>Cl. I-IV: max 30 min/seara</strong>. <strong>Cl. V-VIII: max 60-90 min</strong>. <strong>Liceu: max 2h</strong>. Temele seara >21:00 = contraproductive (interfereaza cu consolidarea somnului REM).",
+     note:"Paradoxul temelor: mai multe teme ≠ mai buni la scoala. PISA 2022: Finlanda (putine teme) si Japonia (multe teme) ambele performante — calitatea conteaza, nu cantitatea.",
+     result:[{cls:'positive',text:'🔴 Teme >21:00 sau >2h/zi = perturba somnul si memoria'}]},
+    {label:"Concluzie",icon:"📋",title:"Orarul ideal — sinteza",badge:"Pas 5 din 5",
+     text:"Orarul ideal: materii grele <strong>Marti-Miercuri-Joi la 9-11</strong>, materii usoare Luni-Vineri si dupa 14:00, pauze reale de 15 min, pauza mare 20-30 min, educatie fizica in mijlocul zilei.",
+     note:"Supraincarcare scolara Romania: elevii romani aloca 9.3h/zi activitatilor scolare (locul 3 global, dupa Japonia si Coreea). Corelatie negativa cu starea de bine si sanatatea mintala (PISA 2022).",
+     result:[{cls:'good',text:'✅ Orar optim = 9-11 materii grele + pauze reale + teme limitate'}]}
+  ]},
+  {title:"Tabagism & Alcool — Statistici Romania",color:"#E06020",steps:[
+    {label:"Tabagism",icon:"🚬",title:"Fumatul la adolescenti — Romania 2023",badge:"Pas 1 din 6",
+     text:"<strong>24%</strong> din adolescentii de 15-16 ani sunt fumatori in Romania (ESPAD 2023). Varsta medie debut: <strong>14 ani</strong>. Factorul #1 de debut: <em>peer pressure</em> (influenta grupului de colegi), urmat de curiozitate si publicitate indirecta.",
+     note:"E-cigarette si IQOS: prezentate ca 'alternative sigure', dar contin ACEEASI cantitate de nicotina → dependenta identica! Studiu EFSA 2023: nu sunt instrumente de renuntare la fumat."},
+    {label:"Alcool",icon:"🍺",title:"Alcool la adolescenti — cifre alarmante",badge:"Pas 2 din 6",
+     text:"<strong>41%</strong> din adolescentii romani au experimentat alcool pana la 13 ani (HBSC 2022). <strong>18%</strong> raporteaza binge drinking lunar (4+/5+ doze intr-o ocazie). Creierul adolescentului (cortex prefrontal) se maturizeaza pana la 25 ani!",
+     note:"Debut alcool <15 ani = risc de dependenta 4× mai mare vs debut >21 ani (NIAAA). Alcool adolescenti + condus = implicat in 35% din accidentele mortale 15-24 ani.",
+     result:[{cls:'positive',text:'🔴 41% au baut alcool pana la 13 ani — risc major de dependenta'}]},
+    {label:"Droguri",icon:"💊",title:"Droguri la adolescenti Romania",badge:"Pas 3 din 6",
+     text:"<strong>Cannabis</strong>: 8% adolescenți 15-16 ani au experimentat (ESPAD 2023). <strong>NPS ('etnobotanice')</strong>: risc imprevizibil, compozitie necunoscuta, prevalenta crescanda in urban. Debut droguri: medie 13-14 ani.",
+     note:"80% din adolescentii dependenti de droguri NU primesc tratament (EMCDDA 2023). Droguri injectabile = 15% din cazurile HIV Romania. Tratamentul = eficient daca inceput timpuriu.",
+     result:[{cls:'positive',text:'🔴 NPS etnobotanice: compozitie imprevizibila = risc vital!'}]},
+    {label:"Sex neprotejat",icon:"💔",title:"Comportament sexual la risc — Romania locul 1 UE",badge:"Pas 4 din 6",
+     text:"Varsta medie debut sexual Romania: <strong>16.4 ani</strong> (sub media UE de 17.2). Utilizare prezervativ la ultimul contact: <strong>60%</strong> — insuficient. Romania: <strong>locul 1 UE</strong> la rata nasterilor la adolescente (30.5/1000 vs 8.5/1000 media UE).",
+     note:"HPV vaccin: disponibil gratuit pentru fete 11-18 ani (si baieti din 2023). Vaccinare HPV: reduce 99.9% riscul cancerului de col uterin. Uptake Romania: ~30% (UE media 60%).",
+     result:[{cls:'positive',text:'🔴 Romania: locul 1 UE sarcini adolescente. Educatie sexuala obligatorie!'}]},
+    {label:"Bullying",icon:"😢",title:"Bullying si violenta la adolescenti",badge:"Pas 5 din 6",
+     text:"<strong>31%</strong> din elevii din Romania = victime bullying (UNICEF 2022) — <em>locul 3 in UE!</em>. Cyberbullying: 20% victime. Social media >3h/zi: risc depresie ×2 (JAMA 2023). Adolescenti Romania: 6.7h/zi ecran.",
+     note:"Bullying sever coreleaza cu riscul suicidar (×3). Legea 221/2019: obliga scolile la protocoale anti-bullying — aplicare inegala in Romania.",
+     result:[{cls:'positive',text:'🔴 Romania locul 3 UE bullying — 31% victime!'}]},
+    {label:"Concluzie",icon:"📊",title:"Tabloul complet — Romania in coada UE",badge:"Pas 6 din 6",
+     text:"Romania se plaseaza in ultimele pozitii UE la: sarcini adolescente, bullying, carie dentara, vaccinare HPV, educatie sexuala, activitate fizica. <strong>Paradox</strong>: una din cele mai mici rate de consum de droguri, dar una din cele mai mari de alcool precoce.",
+     note:"Comparatie pozitiva: Estonia a redus de 10× rata sarcinilor la adolescente in 10 ani prin introducerea educatiei sexuale obligatorii + acces contraceptie gratuit.",
+     result:[{cls:'warning',text:'⚠️ Actiune urgenta necesara — indicatori critici'},{cls:'good',text:'✅ Solutiile exista si sunt dovedite — vointa politica necesara'}]}
+  ]},
+  {title:"Datele HBSC Romania vs. UE",color:"#2A9DBF",steps:[
+    {label:"Bullying",icon:"🥊",title:"Bullying — Romania vs. UE",badge:"Pas 1 din 6",
+     text:"Romania: <strong>31%</strong> victime bullying vs media UE de 15%. De 2× mai mult! HBSC (Health Behaviour in School-aged Children) = studiu OMS la fiecare 4 ani, 50 de tari.",
+     note:"Studiul HBSC 2022 include Romania pentru prima data cu date complete. Bullying atat fizic cat si relational (excludere din grup, zvonuri) masurat standardizat."},
+    {label:"Sedentarism",icon:"🛋️",title:"Sedentarism — 80% sub norma OMS",badge:"Pas 2 din 6",
+     text:"Romania: <strong>80%</strong> din adolescenti sub 60 min activitate fizica/zi (vs 60% media UE). OMS recomanda 60 min/zi activitate moderata-intensa. Romania: 2h sport/saptamana la scoala — insuficient.",
+     note:"Activitate fizica 60 min/zi: +20% performanta cognitiva, -30% anxietate, +45 min somn/noapte. Beneficiile sunt uriase, costul = 0.",
+     result:[{cls:'positive',text:'🔴 Romania 80% sedentari (adolescenti) — necesita interventie urgenta'}]},
+    {label:"Ecrane",icon:"📱",title:"Screen time excesiv — dublu fata de norma",badge:"Pas 3 din 6",
+     text:"Romania: <strong>67%</strong> din adolescenti depasesc 2h/zi ecran recreational (vs 45% media UE). Media zilnica Romania: 6.7h ecran/zi — triplul recomandarilor OMS. Social media = principalul contribuitor.",
+     note:"Instagram Study (JAMA 2023): social media >3h/zi coreleaza cu risc depresie ×2, anxietate ×1.7, imagine corporala negativa la fete. Efectele sunt independente de alti factori."},
+    {label:"Somn",icon:"😴",title:"Privarea de somn — 73% dorm insuficient",badge:"Pas 4 din 6",
+     text:"Romania: <strong>73%</strong> din adolescenti (14-17 ani) dorm sub 8-10 ore recomandate (vs 55% media UE). Cauze: ora de start devreme (8:00), ecrane seara, teme tardive.",
+     note:"Privarea de somn la adolescenti: -40% memorie, +60% risc obezitate, ×3 risc accidente, ×2 risc depresie. AAP 2023: ora start scoala ≥8:30 pentru liceu = obligatorie in SUA.",
+     result:[{cls:'positive',text:'🔴 73% dorm insuficient — ora de start 8:00 = problema reala'}]},
+    {label:"Carie dentara",icon:"🦷",title:"Sanatate dentara — locul 1 negativ UE",badge:"Pas 5 din 6",
+     text:"Romania: <strong>95%</strong> din copiii de 12 ani au cel putin 1 dinte cariat — <em>locul 1 negativ in UE</em> (media UE: 60%). Cauze: consum zahar crescut, periaj deficitar, fluorizare absenta, acces redus la stomatolog.",
+     note:"Paradox: caria dentara = boala cronica 100% prevenibila. Costul preventirii (periaj 2×/zi + fluorizare): aproape 0. Costul tratamentului: enorm si dureros.",
+     result:[{cls:'positive',text:'🔴 95% carie la 12 ani — locul 1 negativ UE. Prevenibil 100%!'}]},
+    {label:"Concluzie",icon:"📊",title:"Romania la coada UE — tabloul complet",badge:"Pas 6 din 6",
+     text:"La <strong>6 din 6 indicatori HBSC</strong> analizati, Romania se plaseaza semnificativ peste media UE negativa sau sub media UE pozitiva. Urgenta interventiei: sistemica, nu individuala.",
+     note:"Vestea buna: toate interventiile eficiente exista si sunt ieftine. Estonia, Letonia, Lituania = exemple de tari similare care au imbunatatit radical indicatorii in 10-15 ani.",
+     result:[{cls:'positive',text:'🔴 6/6 indicatori defavorabili vs UE'},{cls:'good',text:'✅ Solutii dovedite exist — implementare = prioritate nationala'}]}
+  ]},
+  {title:"Prevenirea Comportamentelor de Risc",color:"#1A8A5A",steps:[
+    {label:"Life Skills",icon:"🎯",title:"Life Skills Training (LST) — gold standard",badge:"Pas 1 din 5",
+     text:"<strong>Life Skills Training</strong> (Botvin 1980, revizuit 2021) = programul de preventie cu CEA MAI BUNA dovada stiintifica. RCT confirmat: reduce fumatul cu 50%, alcoolul cu 55%, drogurile cu 60% la 6 ani follow-up.",
+     note:"LST = 15 sesiuni de abilitati de viata: rezistenta la presiunea grupului, luarea deciziilor, stima de sine, comunicare asertiva. Poate fi predat de profesori instruiti, fara specialisti.",
+     result:[{cls:'good',text:'✅ LST: -50% fumat, -60% droguri — nivel de dovada A (RCT)'}]},
+    {label:"SBIRT",icon:"🏥",title:"SBIRT in cabinet — 5 minute care salveaza",badge:"Pas 2 din 5",
+     text:"<strong>SBIRT</strong> (Screening, Brief Intervention, Referral to Treatment): screening scurt (2 intrebari) + interventie minima 5 min + trimitere specialitate daca necesar. Eficacitate dovedita: -25% consum alcool, -20% fumat.",
+     note:"US Preventive Services Task Force (nivel B): SBIRT recomandat la TOTI adolescentii la fiecare vizita. Cost per pacient: <5 min. Cel mai eficient raport cost-beneficiu cunoscut.",
+     result:[{cls:'good',text:'✅ SBIRT: -25% alcool in 5 minute! Cost = minimal'}]},
+    {label:"Familie",icon:"👨‍👩‍👧",title:"Implicarea familiei — factorul #1 protector",badge:"Pas 3 din 5",
+     text:"Parintii implicati = <strong>cel mai puternic factor protector</strong> cunoscut. Prezenta regulata la mese in familie: -50% risc droguri, -40% alcool, -30% sex precoce (Columbia Univ. 2022). Comunicare deschisa >orice program formal.",
+     note:"Paradox: parintii subestimeaza influenta lor la adolescenti ('nu ma asculta'). Date reale: adolescentii citeaza parintii ca principalul motiv pentru a nu consuma droguri (NIDA 2022).",
+     result:[{cls:'good',text:'✅ Cina in familie 5×/saptamana = -50% risc droguri!'}]},
+    {label:"Peer Education",icon:"👫",title:"Educatia par la par — adolescent catre adolescent",badge:"Pas 4 din 5",
+     text:"<strong>Peer education</strong> = adolescenti instruiti care educa colegii. Mai eficienta decat programele adult-led (mesajul e mai credibil de la un egal). Eficacitate: -35% initierea fumatului, -30% comportament sexual risc.",
+     note:"Selectia peer educatorilor: voluntari motivati, dupa training structurat (10-15 ore). Programele bazate pe dovezi: APAUSE (UK), Peer Group Connection (SUA).",
+     result:[{cls:'good',text:'✅ Peer education = -35% fumat, mai eficient ca lectia adulta'}]},
+    {label:"Concluzie",icon:"📋",title:"Combinatia optima — -65% risc",badge:"Pas 5 din 5",
+     text:"Combinatia optima: <strong>LST in scoala</strong> + <strong>SBIRT in cabinet</strong> + <strong>implicarea familiei</strong> = reducere risc cumulata de ~65%. Nici o interventie singulara nu este suficienta.",
+     note:"Monitorizare periodica: HBSC si ESPAD la 4 ani + monitorizare medicala bilanț anuala (Ordin MS 1/2021). Fara date = fara strategie.",
+     result:[{cls:'good',text:'✅ LST + SBIRT + familie + peer ed = -65% risc comportamente risc'}]}
+  ]}
+];
+
+const curStep=[0,0,0,0,0];
+const panelsDiv=document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div=document.createElement('div');
+  div.className='test-panel'+(ti===0?' active':'');
+  div.id='panel-'+ti;
+  div.innerHTML=`
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}">${VL[ti]}</div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Inapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Urmatorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  g('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=g('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  g('card-'+ti).classList.toggle('highlight',si>0);
+  g('svg-'+ti).innerHTML=SVG_FNS[ti](si);
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result)step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  g('info-'+ti).innerHTML=html;
+  g('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  g('prev-'+ti).disabled=si===0;
+  const nb=g('next-'+ti);nb.disabled=si===total-1;nb.textContent=si===total-1?'✓ Finalizat':'Urmatorul pas →';nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=g('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>

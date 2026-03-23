@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP1A – Teste Animate Interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root{--bg:#0d1821;--panel:#152030;--border:#1e3a4a;--teal:#00c8d7;--amber:#f5a623;--red:#e8445a;--green:#2ecc71;--blue:#2A9DBF;--purple:#a78bfa;--text:#e2eaf0;--muted:#6b8a9e;--white:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+  header{padding:2rem 3rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.2rem;background:linear-gradient(135deg,#0d1821 60%,#152030);}
+  .header-icon{font-size:2.4rem;}
+  header h1{font-size:1.5rem;font-weight:800;color:var(--white);}
+  header p{font-size:.85rem;color:var(--muted);margin-top:.15rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:155px;padding:.9rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .25s;white-space:nowrap;}
+  nav button:hover{color:var(--text);background:rgba(255,255,255,.03);}
+  nav button.active{color:var(--white);border-bottom-color:var(--teal);}
+  .test-panel{display:none;padding:2.5rem 3rem;max-width:1100px;margin:0 auto;}.test-panel.active{display:block;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:110px;cursor:pointer;}
+  .step-dot .circle{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border);background:var(--panel);transition:all .35s;z-index:1;}
+  .step-dot.done .circle{border-color:var(--teal);background:rgba(0,200,215,.12);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(245,166,35,.15);box-shadow:0 0 18px rgba(245,166,35,.35);transform:scale(1.15);}
+  .step-dot .label{font-size:.67rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:100px;line-height:1.3;transition:color .25s;}
+  .step-dot.done .label{color:var(--teal);}.step-dot.active .label{color:var(--amber);font-weight:700;}
+  .step-connector{flex:0 0 20px;height:2px;margin-top:25px;background:var(--border);transition:background .5s;}.step-connector.done{background:var(--teal);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:2rem;min-height:340px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.highlight{border-color:var(--teal);box-shadow:0 0 30px rgba(0,200,215,.08);}
+  .stage-visual{flex:0 0 280px;display:flex;flex-direction:column;align-items:center;gap:.8rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.35rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .step-badge{display:inline-block;background:rgba(0,200,215,.12);color:var(--teal);font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.8rem;}
+  .stage-info p{font-size:.9rem;color:var(--text);line-height:1.7;margin-bottom:.5rem;}
+  .note{font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.8rem 1.2rem;border-radius:10px;font-size:.9rem;font-weight:700;margin-top:.8rem;animation:fadeSlide .4s ease;}
+  .result-box.positive{background:rgba(232,68,90,.15);color:var(--red);border:1px solid rgba(232,68,90,.3);}
+  .result-box.warning{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+  .result-box.good{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:1rem;margin-top:1.8rem;align-items:center;}
+  .btn{padding:.65rem 1.5rem;border-radius:8px;border:none;font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+  .btn-primary{background:var(--teal);color:var(--bg);}.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.3;cursor:default;transform:none;}
+  .btn-secondary{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-secondary:hover{color:var(--text);}
+  .btn-reset{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-reset:hover{color:var(--red);border-color:var(--red);}
+  .step-counter{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);}
+  .vis-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-align:center;padding:.3rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .mercury{transition:height .8s cubic-bezier(.4,0,.2,1),y .8s cubic-bezier(.4,0,.2,1),fill 1s ease;}
+  .needle{transition:transform .8s cubic-bezier(.4,0,.2,1);}
+  .spin-anim{animation:spinA 2s linear infinite;}
+  @keyframes spinA{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .wave{animation:waveA 2s ease-in-out infinite;}
+  @keyframes waveA{0%,100%{d:path("M20,150 Q60,130 100,150 Q140,170 180,150 Q220,130 260,150");}50%{d:path("M20,150 Q60,170 100,150 Q140,130 180,150 Q220,170 260,150");}}
+  .bg-dots{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;background:var(--teal);opacity:.04;animation:floatDot linear infinite;}
+  @keyframes floatDot{from{transform:translateY(100vh) scale(.5);}to{transform:translateY(-20vh) scale(1);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-visual{flex:none;width:100%;}.test-panel{padding:1.5rem 1rem;}header{padding:1.2rem 1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgDots"></div>
+<header>
+  <div class="header-icon">🌡️</div>
+  <div>
+    <h1>LP1A – Teste Animate Interactive</h1>
+    <p>Temperatura · Umiditate · Mișcare Aer · Temperatură Radiantă · Confort Termic</p>
+  </div>
+</header>
+<nav id="tabNav">
+  <button class="active" onclick="showTest(0)">🌡️ Temperatura</button>
+  <button onclick="showTest(1)">💧 Umiditate</button>
+  <button onclick="showTest(2)">💨 Mișcare Aer</button>
+  <button onclick="showTest(3)">☀️ Temp. Radiantă</button>
+  <button onclick="showTest(4)">🧘 Confort Termic</button>
+</nav>
+<div id="panels"></div>
+
+<script>
+// ── SVG BUILDERS ──────────────────────────────────────────────
+function svgTemp(si){
+  const temps=[16,18,20,22,24];
+  const t=temps[Math.min(si,4)];
+  const mercH=t*3; // scaled
+  const mercY=220-mercH;
+  const cols=['#4A90D9','#5AAAD9','#7ABBA0','#F5A623','#E8445A'];
+  const col=cols[Math.min(si,4)];
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Thermometer body -->
+    <rect x="115" y="30" width="30" height="170" rx="15" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1.5"/>
+    <!-- Mercury tube -->
+    <rect x="121" y="32" width="18" height="166" rx="9" fill="#0a1520"/>
+    <!-- Mercury fill -->
+    <rect class="mercury" x="122" y="${mercY}" width="16" height="${mercH}" rx="8" fill="${col}"/>
+    <!-- Bulb -->
+    <circle cx="130" cy="210" r="18" fill="${col}" stroke="#1e3a4a" stroke-width="2"/>
+    <circle cx="130" cy="210" r="13" fill="${col}" opacity=".8"/>
+    <!-- Scale marks -->
+    ${[10,15,20,25,30,35,40].map(v=>{
+      const y=200-v*3;
+      return `<line x1="145" y1="${y}" x2="${v%10===0?158:152}" y2="${y}" stroke="#6b8a9e" stroke-width="1"/>
+              ${v%10===0?`<text x="163" y="${y+4}" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">${v}°</text>`:''}`;
+    }).join('')}
+    <!-- Current reading -->
+    <rect x="30" y="115" width="72" height="30" rx="6" fill="#152030" stroke="${col}" stroke-width="1.5"/>
+    <text x="66" y="135" text-anchor="middle" font-size="16" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="bold">${t}°C</text>
+    <!-- Zone indicator -->
+    ${si>=2?`<rect x="119" y="${200-22*3}" width="22" height="${(22-18)*3}" rx="3" fill="#2ecc71" opacity=".25"/>
+    <text x="100" y="${200-20*3+5}" text-anchor="end" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">OPTIM</text>`:''}
+    <!-- Placement guide -->
+    ${si>=3?`
+    <line x1="30" y1="60" x2="90" y2="60" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="60" y="55" text-anchor="middle" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">1.5m</text>
+    <line x1="30" y1="120" x2="90" y2="120" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="60" y="115" text-anchor="middle" font-size="8" fill="#f5a623" font-family="JetBrains Mono,monospace">1.0m</text>`:''}
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Termometru — °C</text>
+  </svg>`;
+}
+
+function svgUmiditate(si){
+  const urVals=[30,45,55,70,85];
+  const ur=urVals[Math.min(si,4)];
+  const angle=(ur/100)*180-90; // -90 to 90 degrees
+  const rad=angle*Math.PI/180;
+  const nx=130+70*Math.sin(rad);
+  const ny=160-70*Math.cos(rad);
+  const arcColor=ur<30?'#e8445a':ur>70?'#e8445a':'#2ecc71';
+  // Psychrometer (wet/dry bulb) for steps 2+
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Hygrometer gauge -->
+    <path d="M60,160 A70,70 0 0,1 200,160" fill="none" stroke="#1e3a4a" stroke-width="14"/>
+    <path d="M60,160 A70,70 0 0,1 200,160" fill="none" stroke="#2A9DBF" stroke-width="2"/>
+    <!-- Colored arc -->
+    <path d="M60,160 A70,70 0 0,1 ${nx},${ny}" fill="none" stroke="${arcColor}" stroke-width="10" stroke-linecap="round"/>
+    <!-- Scale labels -->
+    <text x="52" y="172" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">0</text>
+    <text x="126" y="88"  text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">50</text>
+    <text x="202" y="172" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">100</text>
+    <!-- Zones -->
+    <text x="80"  y="148" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">USCAT</text>
+    <text x="114" y="100" text-anchor="middle" font-size="8" fill="#2ecc71" font-family="JetBrains Mono,monospace">OPTIM</text>
+    <text x="172" y="148" font-size="8" fill="#e8445a" font-family="JetBrains Mono,monospace">UMED</text>
+    <!-- Needle -->
+    <line x1="130" y1="160" x2="${nx}" y2="${ny}" stroke="${arcColor}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="130" cy="160" r="7" fill="${arcColor}"/>
+    <!-- Value display -->
+    <rect x="98" y="170" width="64" height="28" rx="6" fill="#152030" stroke="${arcColor}" stroke-width="1.5"/>
+    <text x="130" y="189" text-anchor="middle" font-size="16" fill="${arcColor}" font-family="JetBrains Mono,monospace" font-weight="bold">${ur}%</text>
+    <!-- Psychrometer illustration for step 1+ -->
+    ${si>=1?`
+    <!-- Dry bulb thermometer -->
+    <rect x="32" y="40" width="14" height="100" rx="7" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1"/>
+    <rect x="34" y="42" width="10" height="96" rx="5" fill="#0a1520"/>
+    <rect x="35" y="82" width="8" height="56" rx="4" fill="#2A9DBF"/>
+    <circle cx="39" cy="145" r="9" fill="#2A9DBF"/>
+    <text x="39" y="30" text-anchor="middle" font-size="8" fill="#2A9DBF" font-family="JetBrains Mono,monospace">uscat</text>
+    <text x="39" y="165" text-anchor="middle" font-size="8" fill="#2A9DBF" font-family="JetBrains Mono,monospace">T1</text>
+    <!-- Wet bulb thermometer -->
+    <rect x="52" y="40" width="14" height="100" rx="7" fill="#1e3a4a" stroke="#a78bfa" stroke-width="1"/>
+    <rect x="54" y="42" width="10" height="96" rx="5" fill="#0a1520"/>
+    <rect x="55" y="92" width="8" height="46" rx="4" fill="#a78bfa"/>
+    <circle cx="59" cy="145" r="9" fill="#a78bfa"/>
+    <!-- Wet cloth around bulb -->
+    <ellipse cx="59" cy="145" rx="12" ry="10" fill="none" stroke="#a078e8" stroke-width="2" stroke-dasharray="3,2"/>
+    <text x="59" y="30" text-anchor="middle" font-size="8" fill="#a78bfa" font-family="JetBrains Mono,monospace">umed</text>
+    <text x="59" y="165" text-anchor="middle" font-size="8" fill="#a78bfa" font-family="JetBrains Mono,monospace">T2</text>
+    <!-- Arrow evaporation -->
+    <text x="75" y="145" font-size="10" fill="#a078e8">→</text>
+    <text x="82" y="140" font-size="8" fill="#a078e8" font-family="JetBrains Mono,monospace">evap.</text>`:''}
+    ${si>=3?`<text x="130" y="220" text-anchor="middle" font-size="9" fill="#e8445a" font-family="JetBrains Mono,monospace">NECONFORM — aer UMED</text>`:''}
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Higrometru / Psicrometru</text>
+  </svg>`;
+}
+
+function svgAer(si){
+  const speeds=[0,0.2,0.35,0.5,1.2];
+  const sp=speeds[Math.min(si,4)];
+  const bladeAngle=si*45;
+  // Anemometer: rotating cups
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Anemometer pole -->
+    <rect x="126" y="100" width="8" height="130" rx="4" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="1"/>
+    <!-- Center hub -->
+    <circle cx="130" cy="100" r="12" fill="#1e3a4a" stroke="#2A9DBF" stroke-width="2"/>
+    <circle cx="130" cy="100" r="7" fill="#2A9DBF"/>
+    <!-- Rotating arms + cups -->
+    <g id="anem-rot" style="transform-origin:130px 100px;transform:rotate(${bladeAngle}deg);transition:transform .8s ease">
+      <!-- Arm 1 (top) -->
+      <line x1="130" y1="100" x2="130" y2="55" stroke="#3a5a6a" stroke-width="3"/>
+      <ellipse cx="130" cy="50" rx="14" ry="9" fill="#2A9DBF" stroke="#1A4A5A" stroke-width="1"/>
+      <!-- Arm 2 (right) -->
+      <line x1="130" y1="100" x2="168" y2="122" stroke="#3a5a6a" stroke-width="3"/>
+      <ellipse cx="172" cy="125" rx="14" ry="9" fill="#2A9DBF" stroke="#1A4A5A" stroke-width="1" transform="rotate(60,172,125)"/>
+      <!-- Arm 3 (left) -->
+      <line x1="130" y1="100" x2="92" y2="122" stroke="#3a5a6a" stroke-width="3"/>
+      <ellipse cx="88" cy="125" rx="14" ry="9" fill="#2A9DBF" stroke="#1A4A5A" stroke-width="1" transform="rotate(-60,88,125)"/>
+    </g>
+    <!-- Display -->
+    <rect x="50" y="30" width="90" height="42" rx="8" fill="#152030" stroke="#2A9DBF" stroke-width="1.5"/>
+    <text x="95" y="47" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">viteza vant</text>
+    <text x="95" y="65" text-anchor="middle" font-size="16" fill="${sp>0.5?'#e8445a':sp>0.3?'#f5a623':'#2ecc71'}" font-family="JetBrains Mono,monospace" font-weight="bold">${sp.toFixed(2)} m/s</text>
+    <!-- Norm indicator -->
+    <rect x="30" y="200" width="200" height="38" rx="8" fill="#152030" stroke="${sp>0.5?'#e8445a':sp<=0.3?'#2ecc71':'#f5a623'}" stroke-width="1.5"/>
+    <text x="130" y="216" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Normă: 0.1–0.3 m/s optim, max 0.5 m/s</text>
+    <text x="130" y="230" text-anchor="middle" font-size="10" fill="${sp>0.5?'#e8445a':sp<=0.3?'#2ecc71':'#f5a623'}" font-family="Syne,sans-serif" font-weight="700">
+      ${sp===0?'Calm — fără curent':sp<=0.3?'OPTIM ✓':sp<=0.5?'Acceptabil':'DEPĂȘIT — disconfort ✗'}
+    </text>
+    <!-- Wind lines -->
+    ${si>=2?[40,70,100,130,160,190,220].map((y,i)=>`
+      <line x1="${10+i*5}" y1="${y}" x2="${35+i*8}" y2="${y}" stroke="#2A9DBF" stroke-width="${1+i%2}" opacity="${.3+si*.1}" stroke-dasharray="${si>=4?'0':'6,3'}"/>
+    `).join(''):''}
+    <text x="130" y="250" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Anemometru digital — m/s</text>
+  </svg>`;
+}
+
+function svgRadiant(si){
+  // Actinometer + radiating surface
+  const radTemps=[25,40,60,80,95];
+  const rt=radTemps[Math.min(si,4)];
+  const glowR=si*8;
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Radiating surface (heater) -->
+    <rect x="20" y="80" width="70" height="130" rx="6" fill="#1e3a4a" stroke="${rt>80?'#e8445a':'#f5a623'}" stroke-width="2"/>
+    <!-- Heating elements -->
+    ${[0,1,2,3,4].map(i=>`
+      <rect x="28" y="${95+i*22}" width="54" height="8" rx="4" fill="${rt>60?'#E86030':'#C04020'}" opacity="${.5+i*.1}"/>
+    `).join('')}
+    <!-- Glow effect -->
+    ${si>=2?`<ellipse cx="55" cy="145" rx="${30+glowR}" ry="${50+glowR}" fill="rgba(232,120,20,.08)"/>`:''}
+    <!-- IR rays -->
+    ${si>=1?[0,1,2,3,4,5].map(i=>{
+      const angle=-60+i*24;
+      const r=angle*Math.PI/180;
+      const x2=90+80*Math.cos(r);
+      const y2=145+60*Math.sin(r);
+      return `<line x1="90" y1="145" x2="${x2}" y2="${y2}" stroke="#f5a623" stroke-width="${si>=3?2:1}" opacity="${.3+si*.1}" stroke-dasharray="5,3"/>`;
+    }).join(''):''}
+    <!-- Actinometer -->
+    <circle cx="185" cy="130" r="38" fill="#152030" stroke="${si>=2?'#f5a623':'#1e3a4a'}" stroke-width="2"/>
+    <circle cx="185" cy="130" r="30" fill="#0a1520"/>
+    <!-- Sensor surface -->
+    <circle cx="185" cy="130" r="22" fill="${si>=1?'rgba(245,166,35,0.2)':'#1e3a4a'}"/>
+    <circle cx="185" cy="130" r="15" fill="${si>=2?'#C04020':'#1e3a4a'}"/>
+    <text x="185" y="175" text-anchor="middle" font-size="9" fill="#f5a623" font-family="JetBrains Mono,monospace">actinometru</text>
+    <!-- Temperature display -->
+    <rect x="140" y="30" width="90" height="36" rx="7" fill="#152030" stroke="${rt>80?'#e8445a':'#f5a623'}" stroke-width="1.5"/>
+    <text x="185" y="53" text-anchor="middle" font-size="18" fill="${rt>80?'#e8445a':'#f5a623'}" font-family="JetBrains Mono,monospace" font-weight="bold">${rt}°C</text>
+    <!-- Norm badge -->
+    ${si>=3?`<rect x="30" y="225" width="200" height="22" rx="6" fill="#152030" stroke="${rt>80?'#e8445a':'#2ecc71'}" stroke-width="1"/>
+    <text x="130" y="240" text-anchor="middle" font-size="9" fill="${rt>80?'#e8445a':'#2ecc71'}" font-family="JetBrains Mono,monospace">${rt>80?'DEPĂȘIT — max 80°C!':'Norma max 80°C ✓'}</text>`:''}
+    <text x="130" y="255" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Actinometru — radiatii infrarosii</text>
+  </svg>`;
+}
+
+function svgConfort(si){
+  // Human silhouette with comfort zones
+  const colors=['#4A90D9','#2A9DBF','#2ecc71','#f5a623','#e8445a'];
+  const labels=['Frig','Racoare','CONFORT','Cald','Fierbinte'];
+  const active=Math.min(si,4);
+  return `<svg width="260" height="260" viewBox="0 0 260 260">
+    <!-- Comfort zone scale (horizontal) -->
+    ${colors.map((c,i)=>`<rect x="${20+i*44}" y="20" width="42" height="28" rx="${i===active?6:4}" fill="${i===active?c:c+'44'}" stroke="${i===active?c:c+'22'}" stroke-width="${i===active?2:1}"/>
+    <text x="${41+i*44}" y="38" text-anchor="middle" font-size="${i===active?9:8}" fill="${i===active?'white':c}" font-family="Syne,sans-serif" font-weight="${i===active?'700':'400'}">${labels[i]}</text>`).join('')}
+    <!-- Temperature arrow -->
+    <text x="${41+active*44}" y="15" text-anchor="middle" font-size="10" fill="${colors[active]}">▼</text>
+    <!-- Human silhouette -->
+    <!-- Head -->
+    <circle cx="130" cy="95" r="22" fill="${colors[active]}22" stroke="${colors[active]}" stroke-width="2"/>
+    <circle cx="130" cy="95" r="16" fill="${colors[active]}33"/>
+    <!-- Body -->
+    <path d="M108,117 Q130,125 152,117 L160,185 Q145,195 130,192 Q115,195 100,185 Z" fill="${colors[active]}22" stroke="${colors[active]}" stroke-width="1.5"/>
+    <!-- Arms -->
+    <path d="M110,125 Q90,140 82,160" stroke="${colors[active]}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M150,125 Q170,140 178,160" stroke="${colors[active]}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Legs -->
+    <path d="M115,190 Q110,215 108,230" stroke="${colors[active]}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M145,190 Q150,215 152,230" stroke="${colors[active]}" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Feeling indicators -->
+    ${active===0?'<text x="130" y="93" text-anchor="middle" font-size="18">🥶</text>'
+    :active===1?'<text x="130" y="93" text-anchor="middle" font-size="18">😬</text>'
+    :active===2?'<text x="130" y="93" text-anchor="middle" font-size="18">😊</text>'
+    :active===3?'<text x="130" y="93" text-anchor="middle" font-size="18">😓</text>'
+    :'<text x="130" y="93" text-anchor="middle" font-size="18">🥵</text>'}
+    <!-- Parameters box -->
+    <rect x="20" y="195" width="220" height="45" rx="8" fill="#152030" stroke="${colors[active]}" stroke-width="1.5"/>
+    <text x="130" y="210" text-anchor="middle" font-size="8" fill="#6b8a9e" font-family="JetBrains Mono,monospace">T=${[16,18,20,22,26][active]}°C · UR=${[40,45,55,65,80][active]}% · v=${[0.05,0.1,0.2,0.4,0.8][active]}m/s</text>
+    <text x="130" y="227" text-anchor="middle" font-size="10" fill="${colors[active]}" font-family="Syne,sans-serif" font-weight="700">${['Microclimat RECE — disconfort','Microclimat RĂCOROS — acceptabil','Microclimat OPTIM ✓','Microclimat CALD — disconfort','Microclimat FIERBINTE — pericol'][active]}</text>
+    <text x="130" y="245" text-anchor="middle" font-size="9" fill="#6b8a9e" font-family="JetBrains Mono,monospace">Zona de confort: 18-22°C · UR 30-70% · v &lt;0.3 m/s</text>
+  </svg>`;
+}
+
+const SVG_FNS=[svgTemp,svgUmiditate,svgAer,svgRadiant,svgConfort];
+
+// ── TESTS DATA ─────────────────────────────────────────────
+const TESTS=[
+  // 0: TEMPERATURA
+  {title:"Măsurarea Temperaturii Aerului",color:"#2A9DBF",steps:[
+    {label:"Principiu",icon:"🌡️",title:"Temperatura aerului — definiție și scale",badge:"Pas 1 din 5",
+     text:"<strong>Temperatura aerului</strong> = gradul de agitație termică a moleculelor de aer. Scale: <em>Celsius (°C)</em> — 100 grade (0°=topire gheață, 100°=fierbere apă) · Fahrenheit (°F) = 180 grade · Kelvin (K) = scara absolută (0K = -273°C).",
+     note:"Conversie: °C = (°F - 32) × 5/9 · K = °C + 273. În practică igienică se folosește exclusiv scala Celsius."},
+    {label:"Instrumente",icon:"🔬",title:"Termometre — tipuri și utilizări",badge:"Pas 2 din 5",
+     text:"<strong>Termometre obișnuite:</strong> de cameră, exterior, baie (lichid în tub capilar). <strong>Speciale:</strong> medical (35-42°C) · Six-Bellami (max/min, meteorologie) · Termograf (înregistrare continuă). <strong>Digitale:</strong> afișaj electronic, precizie mai mare.",
+     note:"Termograful produce o termogramă — graficul variației temperaturii în timp. Util pentru monitorizarea continuă a condițiilor de microclimat."},
+    {label:"Metodologie",icon:"📐",title:"Metodologia corectă de măsurare",badge:"Pas 3 din 5",
+     text:"Determinări <strong>multiple</strong> în mai multe puncte: pe orizontală (centru + colțuri) și verticală (0,1m · 1,0m · 1,5m înălțime). Se calculează <em>valoarea medie</em>. Interior: ferit de curenti; Exterior: la umbră, protejat de precipitații.",
+     note:"Surse de eroare: atingerea rezervorului cu mâna · suflul expirator al operatorului · surse de căldură în apropiere · radiații solare directe pe termometru.",
+     result:[{cls:'warning',text:'⚠️ Minim 3 puncte de măsurare → valoare medie'}]},
+    {label:"Norme locuințe",icon:"🏠",title:"Norme sanitare pentru locuințe",badge:"Pas 4 din 5",
+     text:"Temperatură medie optimă: <strong>18-22°C</strong>.<br>Diferențe maxime: <em>±2-3°C orizontal</em> · <em>±1,5-2°C vertical</em>.<br>Variații în 24h: ≤4-6°C (sobe) · ≤2-3°C (centrală termică).<br>Diferența perete - aer: <4°C.",
+     note:"Spitale: 20-22°C · Muncă ușoară: 20°C · Muncă grea: 10-12°C. Sub 18°C = risc reumatism, afecțiuni respiratorii.",
+     result:[{cls:'good',text:'✅ 18-22°C = CONFORT termic locuințe'},{cls:'positive',text:'🔴 <18°C sau >24°C = DISCONFORT — măsuri de corectare'}]},
+    {label:"Concluzie",icon:"📋",title:"Interpretarea rezultatelor & Raportare",badge:"Pas 5 din 5",
+     text:"Temperatura aerului trebuie interpretată <strong>împreună cu umiditatea și viteza aerului</strong> — formează împreună microclimatul. Un parametru singular nu definește confortul termic.",
+     note:"Termograful digital înregistrează variațiile → detectare probleme (noapte, weekend). Util în clinici, farmacii, depozite alimente.",
+     result:[{cls:'good',text:'✅ T = 20°C · UR = 50% · v = 0.2 m/s = MICROCLIMAT OPTIM'}]}
+  ]},
+
+  // 1: UMIDITATE
+  {title:"Determinarea Umidității Aerului",color:"#a78bfa",steps:[
+    {label:"Definiții",icon:"💧",title:"Umiditatea — UA, UM, UR, DS",badge:"Pas 1 din 5",
+     text:"<strong>UA</strong> (Umiditate Absolută) = cantitatea de vapori de apă per m³ aer (g/m³).<br><strong>UM</strong> (Umiditate Maximă) = saturația la o anumită T°C — crește cu temperatura.<br><strong>UR</strong> = UA/UM × 100 (%) = gradul de saturație.<br><strong>DS</strong> = UM - UA = deficitul de saturație.",
+     note:"UR crește dacă scade temperatura (seara, noapte) sau dacă crește UA (respirație, gătit). DS mare = aer uscat = evaporare rapidă de pe mucoase."},
+    {label:"Psicrometru",icon:"🌡️",title:"Metoda psihrometrică — principiu",badge:"Pas 2 din 5",
+     text:"<strong>Psicrometrul</strong> are doi termometri identici: <em>uscat</em> (T1 = temperatura aerului) și <em>umed</em> (T2 = bulb înfășurat în tifon umezit). Evaporarea apei răcește T2. Diferența T1-T2 (depresia psihrometrică) este proporțională cu uscăciunea aerului.",
+     note:"Dacă UR=100%: T1=T2 (fără evaporare). Dacă UR scade: T1-T2 crește. UR se citește din tabele psihrometrice sau se calculează cu formula August."},
+    {label:"Higrometrul",icon:"📡",title:"Metoda higrometrică — higrometrul cu fir de păr",badge:"Pas 3 din 5",
+     text:"Principiu: <strong>lungimea firului de păr variază proporțional cu umiditatea</strong> (părul se alungește când e umed, se scurtează când e uscat). Variația lungimii mișcă un ac indicator pe scala gradată.",
+     note:"Higrometru electronic (digital): senzor capacitiv sau rezistiv — mai precis, răspuns rapid. Termohigrometrul digital: T + UR simultan, valori min/max."},
+    {label:"Norme sanitare",icon:"📊",title:"Norme de umiditate & efecte asupra sănătății",badge:"Pas 4 din 5",
+     text:"<strong>UR optimă: 50 ± 20%</strong> (adică 30-70%).<br>• <em>UR &lt;30%</em> = aer uscat → uscăciunea mucoaselor, risc infecții respiratorii, disconfort ocular.<br>• <em>UR &gt;70%</em> = aer umed → creșterea mucegaiurilor și acarienilor (alergen!), disconfort termic.",
+     note:"Acarienii din praful de casă se înmulțesc rapid la UR>70%. Principalul alergen pentru astm bronșic alergic.",
+     result:[{cls:'good',text:'✅ UR 30-70% = OPTIM'},{cls:'positive',text:'🔴 UR <30% = USCAT | UR >70% = UMED — riscuri sanitare'}]},
+    {label:"Concluzie",icon:"📋",title:"Interpretare & Corelații",badge:"Pas 5 din 5",
+     text:"Umiditatea se interpretează <strong>corelat cu temperatura</strong>: la T ridicată + UR ridicată → disconfort termic sever (transpirația nu se evaporă). La T scăzută + UR ridicată → senzație de frig intens.",
+     note:"Dezumidificatoare: UR>70%. Umidificatoare: UR<30% iarna (încălzire centrală usucă aerul). Controlul UR = esențial în sălile de operații, farmacii, arhive.",
+     result:[{cls:'good',text:'✅ UR = 55% la 20°C = CONFORT optim'}]}
+  ]},
+
+  // 2: MIȘCARE AER
+  {title:"Determinarea Vitezei de Mișcare a Aerului",color:"#2ecc71",steps:[
+    {label:"Importanță",icon:"💨",title:"Curenții de aer — importanță igienică",badge:"Pas 1 din 5",
+     text:"Mișcarea aerului influențează <strong>schimbul de căldură</strong> dintre organism și mediu (prin convecție și evaporare). Curentul crește pierderea de căldură → senzație de frig, disconfort. La o viteză &gt;0,5 m/s devine perceptibil ca curent neplăcut.",
+     note:"Curenții de aer joacă rol dublu: pozitiv (ventilație naturală, răcire în călduri) și negativ (hipotermie locală, reumatism, nevralgie)."},
+    {label:"Anemometru",icon:"🔬",title:"Anemometrul — principiu și tipuri",badge:"Pas 2 din 5",
+     text:"<strong>Anemometrul cu cupe rotative</strong>: 3 cupe semisferice care se rotesc sub acțiunea vântului — numărul de rotații/minut → viteză m/s.<br><strong>Digital</strong>: senzor cu elice + afișaj electronic, afișează viteza curentă, medie și maximă.",
+     note:"Anemometre speciale: cu fir cald (katermometru), cu ultrasunete (precizie mare). Interval măsurare digital: 0,3-30 m/s."},
+    {label:"Metodologie",icon:"📐",title:"Metodologia de măsurare",badge:"Pas 3 din 5",
+     text:"Se plasează anemometrul în <strong>zona de interes</strong> (zona de lucru, lângă ferestre/guri de ventilație). Se efectuează determinări timp de <em>minim 1 minut</em>, se înregistrează viteza medie. Măsurători în multiple puncte.",
+     note:"Katermometrul (fir cald): mai sensibil la viteze mici (0,05-5 m/s) — util în încăperi. Anemometrul cu cupe: mai precis la viteze mari (exterior, ventilație industrială)."},
+    {label:"Norme sanitare",icon:"📊",title:"Norme de viteză a aerului",badge:"Pas 4 din 5",
+     text:"<strong>Viteza recomandată: 0,1-0,3 m/s</strong> în spații interioare.<br>Maxim admis: <strong>0,5 m/s</strong>.<br>• &lt;0,1 m/s = aer stagnant → acumulare CO₂, umiditate, mirosuri.<br>• &gt;0,5 m/s = curent neplăcut → senzație de frig, disconfort.",
+     note:"Ventilarea naturală sau mecanică trebuie să asigure schimbul de aer (15-20 m³/h per persoană) fără viteze excesive în zona ocupată.",
+     result:[{cls:'good',text:'✅ v = 0,1-0,3 m/s = OPTIM'},{cls:'positive',text:'🔴 v > 0,5 m/s = DISCONFORT — reglare ventilație'}]},
+    {label:"Concluzie",icon:"📋",title:"Interpretare globală & Ventilare",badge:"Pas 5 din 5",
+     text:"Viteza aerului controlează <strong>ventilarea naturală</strong>. Combinată cu temperatura și umiditatea, definește confortul termic. Ventilarea mecanică trebuie să evite viteze >0,5 m/s în zona de lucru.",
+     note:"Metode de control: deflectoare de aer, difuzoare orientabile, perdele de aer, sisteme HVAC cu control digital al vitezei.",
+     result:[{cls:'good',text:'✅ v = 0,2 m/s = ventilare bună fără disconfort'}]}
+  ]},
+
+  // 3: TEMPERATURA RADIANTĂ
+  {title:"Temperatura Radiantă & Actinometria",color:"#f5a623",steps:[
+    {label:"Principiu",icon:"☀️",title:"Radiația calorică — surse și efecte",badge:"Pas 1 din 5",
+     text:"<strong>Radiația calorică (IR)</strong> = căldură transmisă prin unde electromagnetice fără contact fizic. Surse: <em>solare</em> (directe sau difuze), <em>corpuri de încălzit</em> din încăperi (radiatoare, sobe, echipamente industriale).",
+     note:"Senzația de căldură produsă de razele IR este independentă de temperatura aerului. Poți simți căldura radiantă la temperatura aerului de 15°C (lângă un radiator)."},
+    {label:"Actinometrul",icon:"🔬",title:"Actinometrul — instrument de măsură",badge:"Pas 2 din 5",
+     text:"<strong>Actinometrul</strong> = instrument care măsoară intensitatea radiației calorice incidente. Principiu: suprafața neagră absoarbe radiația și se încălzește → se măsoară temperatura suprafeței.<br>Unitatea de măsură: <em>cal/cm²/min</em> sau W/m².",
+     note:"Globtermometrul (termometrul de glob Vernon): un termometru în interiorul unei sfere negre mate ø=15cm măsoară temperatura radiantă medie a ambianței."},
+    {label:"Metodologie",icon:"📐",title:"Metodologia de măsurare",badge:"Pas 3 din 5",
+     text:"Actinometrul se plasează <strong>perpendicular pe sursa de radiație</strong>. Se determină intensitatea din diferite direcții și se calculează media. Se identifică sursele de radiație excesivă (geamuri sudice, echipamente industriale fierbinți).",
+     note:"Temperatura suprafețelor interioare (pereți, podea) influențează confortul termic: suprafețe reci → pierdere de căldură prin radiație de la corp."},
+    {label:"Norme sanitare",icon:"📊",title:"Norme pentru corpurile de încălzit",badge:"Pas 4 din 5",
+     text:"<strong>Temperatura maximă a corpurilor de încălzit: 80°C</strong>.<br>Gradientul temperaturi suprafețe - aer: <strong>&lt;4°C</strong>.<br>• Suprafețe &gt;80°C = risc arsuri, radiație excesivă → disconfort.<br>• Pardoseală rece &lt;16°C sau &gt;28°C = disconfort podiatric.",
+     note:"Radiatoare moderne: temperatura suprafeței 45-65°C — confort optim. Sisteme cu podea radiantă: temperatura pardoselii 22-26°C.",
+     result:[{cls:'good',text:'✅ T radiator ≤80°C = CONFORM'},{cls:'positive',text:'🔴 T radiator >80°C = NECONFORM — risc arsuri și disconfort'}]},
+    {label:"Concluzie",icon:"📋",title:"Temperatura radiantă medie & Confort",badge:"Pas 5 din 5",
+     text:"Temperatura radiantă medie (Trm) contribuie la ecuația confortului termic alături de T aer, UR și viteza aerului. Trm &gt; T aer → senzație de căldură. Trm &lt; T aer (suprafețe reci) → senzație de frig chiar la T aer normală.",
+     note:"Indici integrativi: indicele de vânt, temperatura echivalentă, temperatura efectivă (TE) — combină T, UR și v pentru o singură valoare de confort.",
+     result:[{cls:'good',text:'✅ Trm ≈ T aer ± 2°C = confort termic optim'}]}
+  ]},
+
+  // 4: CONFORT TERMIC
+  {title:"Confortul Termic al Microclimatului",color:"#00c8d7",steps:[
+    {label:"Definiție",icon:"🧘",title:"Microclimatul și confortul termic",badge:"Pas 1 din 5",
+     text:"<strong>Microclimatul</strong> = totalitatea factorilor fizici ai aerului (T°, radiație calorică, umiditate, curenți) care influențează schimburile de căldură organism-mediu. Confortul termic = starea în care organismul nu depune efort termoregulator.",
+     note:"Tipuri de microclimat: urban (efectul de insulă de căldură), al încăperii (casă, birou, spital), individual subvestimentar (dependent de îmbrăcăminte)."},
+    {label:"Factori",icon:"🌡️",title:"Factorii confortului termic",badge:"Pas 2 din 5",
+     text:"<strong>Parametrii de microclimat:</strong><br>• Temperatura aerului: 18-22°C (locuințe)<br>• Umiditatea relativă: 30-70%<br>• Viteza aerului: 0,1-0,3 m/s<br>• Temperatura radiantă medie: ≈ T aer<br><em>Toți factorii acționează SIMULTAN!</em>",
+     note:"Factori individuali: îmbrăcămintea (rezistență termică în clo), activitatea fizică (producție de căldură metabolică), vârsta, starea de sănătate."},
+    {label:"Zona de confort",icon:"✅",title:"Zona de confort termic — condiții optime",badge:"Pas 3 din 5",
+     text:"<strong>Condiții optime pentru adulți în repaus:</strong><br>• T = 18-22°C (casă) / 20-22°C (spital)<br>• UR = 50 ± 20%<br>• v ≤ 0,3 m/s<br>• Gradient vertical T: ≤2°C/m<br>• Diferență pereți-aer: ≤4°C",
+     note:"Zona de confort variază cu activitatea: muncă grea → T optim 10-12°C (pierderile mari de căldură prin muncă musculară). Vârstnici și bolnavi: T optimă mai ridicată (22-24°C).",
+     result:[{cls:'good',text:'✅ Confort termic: T 20°C · UR 55% · v 0.2 m/s'}]},
+    {label:"Microclimat nefavorabil",icon:"⚠️",title:"Efecte ale microclimatului nefavorabil",badge:"Pas 4 din 5",
+     text:"<strong>Microclimat rece</strong> (T &lt;18°C + UR mare + v mare): hipotermie, reumatism, infecții respiratorii, reducerea imunității.<br><strong>Microclimat cald</strong> (T &gt;24°C + UR mare): deshidratare, hipertermie, colaps termic, reducerea capacității de muncă.",
+     note:"Pacienții gravi sunt deosebit de vulnerabili! Temperatura din salon influențează direct evoluția bolii. Hipotermia prelungește recuperarea post-operatorie.",
+     result:[{cls:'positive',text:'🔴 Microclimat rece sau fierbinte = risc pentru sănătate'},{cls:'warning',text:'⚠️ Monitorizare continuă în spitale, școli, locuri de muncă'}]},
+    {label:"Evaluare globală",icon:"📋",title:"Evaluarea complexă a microclimatului",badge:"Pas 5 din 5",
+     text:"Evaluarea microclimatului = măsurarea <strong>simultană</strong> a T, UR, v și Tr. Indici integrativi: <em>Temperatura Efectivă (TE)</em>, <em>Indicele Wet Bulb Globe Temperature (WBGT)</em>, <em>Predictive Mean Vote (PMV)</em>.",
+     note:"ISO 7730 (confort termic în medii moderate), ISO 7243 (stres termic la cald), SR EN ISO 11079 (stres termic la frig) — standarde internaționale de referință.",
+     result:[{cls:'good',text:'✅ Evaluare completă = T + UR + v + Tr → indice integrat PMV'}]}
+  ]}
+];
+
+// ── ENGINE ──────────────────────────────────────────────────
+const curStep=[0,0,0,0,0];
+const panelsDiv=document.getElementById('panels');
+TESTS.forEach((_,ti)=>{
+  const div=document.createElement('div');
+  div.className='test-panel'+(ti===0?' active':'');
+  div.id='panel-'+ti;
+  div.innerHTML=`
+    <div class="pipeline" id="pipeline-${ti}"></div>
+    <div class="stage-card" id="card-${ti}">
+      <div class="stage-visual">
+        <div id="svg-${ti}"></div>
+        <div class="vis-label" id="vl-${ti}"></div>
+      </div>
+      <div class="stage-info" id="info-${ti}"></div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-secondary" id="prev-${ti}" onclick="prevStep(${ti})" disabled>← Înapoi</button>
+      <button class="btn btn-primary" id="next-${ti}" onclick="nextStep(${ti})">Următorul pas →</button>
+      <span class="step-counter" id="counter-${ti}">Pas 1/${TESTS[ti].steps.length}</span>
+      <button class="btn btn-reset" onclick="resetTest(${ti})">↺ Resetare</button>
+    </div>`;
+  panelsDiv.appendChild(div);
+});
+
+const VL=['Termometru — masurare temperatura aer','Higrometru / Psicrometru — umiditate','Anemometru — viteza curentilor de aer','Actinometru — radiatii infrarosii','Zona de confort termic — microclimat'];
+
+function showTest(idx){
+  document.querySelectorAll('.test-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tabNav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.querySelectorAll('#tabNav button')[idx].classList.add('active');
+  renderStep(idx);
+}
+function renderStep(ti){
+  const t=TESTS[ti],si=curStep[ti],step=t.steps[si],total=t.steps.length;
+  const pl=document.getElementById('pipeline-'+ti);pl.innerHTML='';
+  t.steps.forEach((s,i)=>{
+    const dot=document.createElement('div');
+    dot.className='step-dot'+(i<si?' done':i===si?' active':'');
+    dot.innerHTML='<div class="circle">'+s.icon+'</div><div class="label">'+s.label+'</div>';
+    dot.onclick=()=>{curStep[ti]=i;renderStep(ti);};
+    pl.appendChild(dot);
+    if(i<total-1){const c=document.createElement('div');c.className='step-connector'+(i<si?' done':'');pl.appendChild(c);}
+  });
+  document.getElementById('card-'+ti).classList.toggle('highlight',si>0);
+  document.getElementById('svg-'+ti).innerHTML=SVG_FNS[ti](si);
+  document.getElementById('vl-'+ti).textContent=VL[ti];
+  let html='<span class="step-badge">'+step.badge+'</span><h2>'+step.title+'</h2><p>'+step.text+'</p>'+(step.note?'<div class="note">💡 '+step.note+'</div>':'');
+  if(step.result)step.result.forEach(r=>{html+='<div class="result-box '+r.cls+'">'+r.text+'</div>';});
+  document.getElementById('info-'+ti).innerHTML=html;
+  document.getElementById('counter-'+ti).textContent='Pas '+(si+1)+'/'+total;
+  document.getElementById('prev-'+ti).disabled=si===0;
+  const nb=document.getElementById('next-'+ti);
+  nb.disabled=si===total-1;
+  nb.textContent=si===total-1?'✓ Finalizat':'Următorul pas →';
+  nb.style.background=si===total-1?'#2ecc71':t.color;
+}
+function nextStep(ti){if(curStep[ti]<TESTS[ti].steps.length-1){curStep[ti]++;renderStep(ti);}}
+function prevStep(ti){if(curStep[ti]>0){curStep[ti]--;renderStep(ti);}}
+function resetTest(ti){curStep[ti]=0;renderStep(ti);}
+const bgD=document.getElementById('bgDots');
+for(let i=0;i<12;i++){const d=document.createElement('div');d.className='dot';const sz=Math.random()*80+20;d.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*20+15)+'s;animation-delay:-'+(Math.random()*20)+'s;';bgD.appendChild(d);}
+renderStep(0);
+</script>
+</body>
+</html>
