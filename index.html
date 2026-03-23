@@ -1953,7 +1953,6 @@ function FisaGrupScreen({session, student, onBack}) {
         <div style={{width:60,height:60,border:"5px solid #e2e8f0",borderTopColor:"#2E86DE",borderRadius:"50%",animation:"spin 1s linear infinite",margin:"0 auto 20px"}}/>
         <h2 style={{color:"#0d2040",fontSize:20,margin:"0 0 8px"}}>Se evaluează răspunsurile…</h2>
         <p style={{color:"#64748b",fontSize:14,lineHeight:1.7}}>Claude AI analizează fiecare răspuns în raport cu cunoștințele de igienă.</p>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     </div>
   );
@@ -2728,7 +2727,9 @@ function App() {
 
   // Lab router — route to correct lab based on session
   if (screen==="labRouter") {
-    if (session?.labId==="lp1a") setScreen("lp1a_modules");
+    // Check fisa mode FIRST — before lab-specific routing
+    if (session?.labCode?.endsWith("-FISA")) { setScreen("fisa_grup"); }
+    else if (session?.labId==="lp1a") setScreen("lp1a_modules");
     else if (session?.labId==="lp1b") setScreen("lp1b_modules");
     else if (session?.labId==="lp2a") setScreen("lp2a_modules");
     else if (session?.labId==="lp2b") setScreen("lp2b_modules");
@@ -2740,7 +2741,7 @@ function App() {
     else if (session?.labId==="lp4b") setScreen("lp4b_modules");
     else if (session?.labId==="lp5a") setScreen("lp5a_modules");
     else if (session?.labId==="lp5b") setScreen("lp5b_modules");
-    else if (session?.labCode?.endsWith("-FISA")) setScreen("fisa_grup");
+    else if (false) setScreen("never"); // placeholder
     else { setErrMsg(`Practica ${session?.labCode} nu are quiz activ inca.`); setScreen("error"); }
     return null;
   }
@@ -2840,6 +2841,15 @@ function App() {
   if (showDemo) return (
     <DemoScreen lab={LABS.find(l=>l.id===session?.labId)} onBack={()=>setShowDemo(false)}/>
   );
+  // ── FIȘĂ GRUP SCREEN ──────────────────────────────────────
+  if (screen==="fisa_grup") return (
+    <FisaGrupScreen
+      session={session}
+      student={student}
+      onBack={()=>setScreen("home")}
+    />
+  );
+
   if (screen==="quiz" && module) return (
     <QuizScreen studentName={student?.name} studentGroup={student?.group} studentSpec={student?.spec||""}
       labId={session?.labId} module={module} sessionTeacher={session?.teacher||""} sessionSemester={session?.semester||""}
@@ -2858,11 +2868,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
-  // ── FIȘĂ GRUP SCREEN ───────────────────────────────────────
-  if (screen==="fisa_grup") return (
-    <FisaGrupScreen
-      session={session}
-      student={student}
-      onBack={()=>setScreen("home")}
-    />
-  );
