@@ -1699,10 +1699,12 @@ function NomenclatorEditor({nomenclator, onChange}) {
 // FIȘE GRUP COMPONENT
 // ════════════════════════════════════════════════════════════
 const FISE_LABS = {
-  lp1a: { title:"LP1A · Igiena Aerului", file:"fise_lucru_lp1a.html", available:true,
-    grupe:9, desc:"9 fișe tematice: microclimat, temperatură, umiditate, mișcare aer, temperatură radiantă, confort termic, pulberi, gaze, alergie latex" },
-  lp1b: { title:"LP1B · Pulberi & Gaze",  file:"", available:false, grupe:0, desc:"În pregătire" },
-  lp2a: { title:"LP2A · Fumat & Microbi", file:"", available:false, grupe:0, desc:"În pregătire" },
+  lp1a: { title:"LP1A · Igiena Aerului", available:true,
+    grupe:9, desc:"9 fișe: microclimat, temperatură, umiditate, mișcare aer, temperatură radiantă, confort termic, pulberi, gaze, alergie latex" },
+  lp6b: { title:"LP6B · Igiena Școlară", available:true,
+    grupe:6, desc:"6 fișe: variații zilnice, variații săptămânale, variații anuale, orar școlar, comportamente de risc, plan de prevenire" },
+  lp1b: { title:"LP1B · Pulberi & Gaze",  available:false, grupe:0, desc:"În pregătire" },
+  lp2a: { title:"LP2A · Fumat & Microbi", available:false, grupe:0, desc:"În pregătire" },
 };
 
 
@@ -1810,6 +1812,74 @@ const FISE_DATA = {
         {q:"Care este singura măsură eficientă de prevenire? De ce?", h:"Eliminarea completă a latexului. Antihistaminicele nu previn."},
         {q:"Ce recomandați pentru întregul colectiv medical?", h:"Protocol latex-free, screening angajare, mănuși nitril, instruire."},
       ], conc:["Diagnosticul probabil","Mecanismul (2-3 cuvinte)","Măsura de prevenire esențială"] },
+  ],
+  lp6b: [
+    { id:"g1", emoji:"⏰", title:"Capacitatea de lucru — variații zilnice",
+      color:"#1a5a9a",
+      caz:[{l:"Elev cls. VIII-a, miercuri",v:""},{l:"08:00",v:"matematică"},{l:"09:00",v:"română"},{l:"10:00",v:"biologie"},{l:"13:00",v:"test fizică"},{l:"14:00",v:"activitate suplimentară"},{l:"19:30",v:"meditație"}],
+      qs:[
+        {q:"Explicați ce înseamnă capacitatea de lucru și cum variază în cursul zilei.",h:"Valori: 8:00 mijlocii, 9-11 maxime, 13-14 depresie postprandială, 15-17 ușoară creștere, după 19 scade."},
+        {q:"Analizați programul elevului: ce este greșit față de normele de igienă școlară?",h:"Test la 13:00 = depresie postprandială (minim zilnic). Meditație la 19:30 = randament minim."},
+        {q:"Care interval orar este cel mai favorabil pentru activități intelectuale intense? De ce?",h:"9-11 dimineața = maxim fiziologic zilnic (cortizol ridicat, memorie și atenție optime)."},
+        {q:"Ce efecte pot apărea dacă elevul este solicitat intens după ora 19:00?",h:"Randament scăzut, consolidare memoriei perturbată în somn, oboseală cronică, insomnie."},
+        {q:"Ce riscuri pe termen lung are un program care ignoră ritmul circadian al elevului?",h:"Burnout, anxietate cronică, scăderea performanțelor, tulburări de somn persistente."},
+        {q:"Propuneți o variantă mai bună de organizare a zilei pentru acest elev.",h:"Activități grele 9-11, fără test la 13:00 (mai bine 10-11), fără meditație după 19:00."},
+      ], conc:["Intervalul optim identificat","Intervalul nefavorabil","3 măsuri propuse"] },
+    { id:"g2", emoji:"📅", title:"Variațiile săptămânale ale randamentului",
+      color:"#0891b2",
+      caz:[{l:"Luni",v:"matematică, fizică, chimie"},{l:"Marți-Miercuri",v:"discipline medii"},{l:"Joi",v:"test biologie"},{l:"Vineri",v:"teză + 2 ore grele"}],
+      qs:[
+        {q:"Analizați programarea din punct de vedere al igienei școlare. Ce principii sunt încălcate?",h:"Luni = capacitate redusă (readaptare). Vineri = mult scăzută (oboseală cumulată săptămână)."},
+        {q:"În ce zile ale săptămânii este capacitatea de lucru mai redusă și de ce?",h:"Luni: readaptare după weekend. Vineri: oboseală acumulată pe toată săptămâna."},
+        {q:"În ce zile sunt recomandate activitățile mai solicitante? Argumentați.",h:"Marți, miercuri, joi = vârf săptămânal al capacității de lucru: randament maxim."},
+        {q:"Ce efecte pot apărea asupra elevilor dacă programarea ignoră curbele săptămânale?",h:"Stres, anxietate, rezultate slabe la teste programate greșit, oboseală cronică."},
+        {q:"De ce nu este indicat să se programeze teze sau teste importante luni sau vineri?",h:"Capacitate redusă → rezultate nu reflectă adevăratul potențial → nedreptate față de elev."},
+        {q:"Reorganizați săptămâna în mod igienic și explicați logica propunerii.",h:"Grele: Mar-Mie-Joi. Ușoare: Luni-Vineri. Teste: Marți sau Miercuri dimineața 9-11."},
+      ], conc:["Zilele problematice identificate","Zilele favorabile","Principala greșeală"] },
+    { id:"g3", emoji:"📆", title:"Variațiile sezoniere și anuale ale randamentului",
+      color:"#059669",
+      caz:[{l:"Simptome observate",v:"oboseală accentuată, iritabilitate, randament scăzut"},{l:"Moment 1",v:"sfârșit de semestru"},{l:"Moment 2",v:"după lucrări de control consecutive"},{l:"Moment 3",v:"înainte de examenul final"},{l:"Moment 4",v:"sfârșit de an școlar"}],
+      qs:[
+        {q:"Explicați ce variații anuale ale randamentului sunt cunoscute în igiena școlară.",h:"Scăderi la: sfârsit semestre, după evaluări repetate, înainte examene, sfârsit an."},
+        {q:"De ce apar scăderi ale randamentului la finalul semestrului și după evaluări repetate?",h:"Oboseală cumulată, stres cronic, epuizarea resurselor cognitive și motivaționale."},
+        {q:"Ce efecte pot apărea asupra sănătății elevilor suprasolicitați în perioadele critice?",h:"Burnout, insomnii, iritabilitate, scădere imunitate, anxietate, performanțe scăzute."},
+        {q:"Ce măsuri organizatorice ar putea preveni suprasolicitarea la nivel de școală?",h:"Planificarea echilibrată a testelor, vacanțe respectate, alternarea disciplinelor."},
+        {q:"Formulați 3 recomandări pentru profesori pentru a preveni suprasolicitarea elevilor.",h:"Max 1-2 lucrări/săptămână, anunțare cu 1 săptămână înainte, recuperare după examene."},
+        {q:"Formulați 3 recomandări pentru elevi privind gestionarea perioadelor critice.",h:"Program regulat de somn, pauze active 10 min/oră, planificare studiu pe etape."},
+      ], conc:["Momentul cel mai critic","Cauza principală","3 măsuri pentru școală"] },
+    { id:"g4", emoji:"📋", title:"Orarul școlar — analiză și corectare",
+      color:"#d97706",
+      caz:[{l:"Clasă gimnaziu, luni",v:"7 ore"},{l:"Primele 3 ore",v:"matematică, fizică, chimie"},{l:"Alternanță",v:"absentă"},{l:"Ultima oră",v:"test scris"},{l:"Vineri aceeași săptămână",v:"6 ore + 2 discipline dificile"}],
+      qs:[
+        {q:"Identificați toate greșelile de organizare a orarului din cazul prezentat.",h:"7 ore luni, 3 discipline grele consecutiv, fără alternanță, test la ultima oră, vineri supraîncărcat."},
+        {q:"Ce principii igienice trebuie respectate la alcătuirea orarului școlar?",h:"Curbe fiziologice zilnice/săptămânale, alternanță activitate-repaus, intelectual-fizic-dinamic."},
+        {q:"De ce este importantă alternarea activităților intelectuale cu cele fizice sau dinamice?",h:"Prevenirea oboselii, refacerea atenției, activarea circulației, creșterea motivației."},
+        {q:"Câte ore sunt recomandate pe zi pentru clasele V-VIII? Dar pentru liceu?",h:"Cls V-VIII: 5 ore/zi. Liceu (IX-XII): 5-6 ore/zi — normele igienice recomandate."},
+        {q:"Propuneți o formă corectată a orarului pentru ziua de luni a acestei clase.",h:"Max 5 ore, discipline grele 9-11, sport sau desen intercalat, fără test la ultima oră."},
+        {q:"Explicați de ce marți, miercuri și joi sunt mai potrivite pentru sarcini mai grele.",h:"Capacitate maximă săptămânală: readaptare completă, oboseală minimă, maxim cognitiv."},
+      ], conc:["Principiul încălcat principal","Cea mai mare eroare identificată","Orarul corectat propus"] },
+    { id:"g5", emoji:"⚠️", title:"Identificarea comportamentelor de risc",
+      color:"#dc2626",
+      caz:[{l:"Clasă de liceu",v:""},{l:"Alimentație",v:"băuturi energizante, alimente dezechilibrate"},{l:"Substanțe",v:"interes fumat și alcool"},{l:"Igienă",v:"neglijarea igienei orale"},{l:"Comportament",v:"agresivitate între colegi"}],
+      qs:[
+        {q:"Identificați toate comportamentele de risc din caz și clasificați-le pe categorii.",h:"Alimentar, substanțe (fumat/alcool), igienic (oral), comportamental (violență/bullying)."},
+        {q:"Explicați de ce aceste comportamente sunt abordate în cadrul igienei școlare.",h:"Școala = mediu de formare a obiceiurilor. Prevenție primară = cel mai eficient moment."},
+        {q:"Ce consecințe pot avea aceste comportamente pe termen scurt și lung?",h:"Scurt: performanțe, relații. Lung: boli cronice, dependențe, probleme sociale/profesionale."},
+        {q:"Care grupuri de elevi sunt mai vulnerabile la aceste comportamente și de ce?",h:"Cei cu dificultăți familiale, izolați social, stimă de sine scăzută, expuși presiunii colegilor."},
+        {q:"Formulați 3 măsuri de prevenire concrete aplicabile la nivelul școlii.",h:"Educație pentru sănătate, peer education, politică anti-bullying, consilier psihologic."},
+        {q:"Formulați 3 mesaje-cheie clare pentru elevii de liceu privind aceste riscuri.",h:"Mesaje pozitive, bazate pe consecințe reale, relevante pentru vârsta și preocupările lor."},
+      ], conc:["Comportamentele de risc identificate","Cel mai urgent risc","3 măsuri pentru școală"] },
+    { id:"g6", emoji:"🛡️", title:"Plan de prevenire a comportamentelor de risc",
+      color:"#7c3aed",
+      caz:[{l:"Problemă identificată",v:""},{l:"Observație 1",v:"lipsă de informare la elevi"},{l:"Observație 2",v:"obiceiuri nesănătoase"},{l:"Observație 3",v:"interes crescut pentru fumat și alcool"},{l:"Observație 4",v:"participare redusă la activități educative"}],
+      qs:[
+        {q:"Ce metode de prevenire sunt recomandate în igiena școlară? Enumerați cel puțin 4.",h:"Educație sanitară, monitorizare, chestionare, consiliere, peer education, măsuri legislative."},
+        {q:"Ce rol joacă educația sanitară în prevenirea comportamentelor de risc la elevi?",h:"Informare corectă → schimbarea atitudinilor → formarea deprinderilor sănătoase durabile."},
+        {q:"De ce sunt utile chestionarele și interviurile în evaluarea comportamentelor elevilor?",h:"Identifică problemele reale, permit planificarea țintită, monitorizează evoluția în timp."},
+        {q:"Ce rol are monitorizarea medicală periodică în igiena școlară?",h:"Depistare precoce a problemelor, urmărire indicatori sănătate, trimitere la specialiști."},
+        {q:"Elaborați un mini-plan de intervenție pentru o lună pentru școala din caz.",h:"Săpt 1: evaluare inițială. Săpt 2: informare. Săpt 3: activitate practică. Săpt 4: evaluare."},
+        {q:"Cum ați evalua dacă programul de prevenire a avut succes? Ce indicatori ați urmări?",h:"Chestionar pre-post, absențe, incidente, cunoștințe dobândite, atitudini modificate."},
+      ], conc:["Obiectivul principal al planului","Metoda principală aleasă","3 activități propuse"] },
   ]
 };
 
@@ -2080,7 +2150,7 @@ async function submitFisaGrup(f, answers, concluzii, student, session, setPhase,
 
 function FiseGrupTab({ selLab }) {
   const labId = selLab?.id || "lp1a";
-  const hasFisa = labId === "lp1a"; // only lp1a has fisa for now
+  const hasFisa = labId === "lp1a" || labId === "lp6b";
 
   return (
     <div>
