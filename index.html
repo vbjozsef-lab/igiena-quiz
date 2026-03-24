@@ -1744,6 +1744,8 @@ function NomenclatorEditor({nomenclator, onChange}) {
 const FISE_LABS = {
   lp1a: { title:"LP1A · Igiena Aerului", available:true,
     grupe:9, desc:"9 fise: microclimat, temperatura, umiditate, miscare aer, temperatura radianta, confort termic, pulberi, gaze, alergie latex" },
+  lp6a: { title:"LP6A · Radiații Ionizante", available:true,
+    grupe:6, desc:"6 fise: surse si tipuri, unitati de masura, tipuri expunere, dozimetrie, limite si protectia personalului, radioprotectia pacientului" },
   lp6b: { title:"LP6B · Igiena Scolara", available:true,
     grupe:6, desc:"6 fise: variatii zilnice, variatii saptamanale, variatii anuale, orar scolar, comportamente de risc, plan de prevenire" },
   lp1b: { title:"LP1B · Pulberi & Gaze", available:false, grupe:0, desc:"In pregatire" },
@@ -1909,6 +1911,73 @@ const FISE_DATA = {
         {q:"Elaborați un mini-plan de intervenție pentru o lună.",h:"Săpt 1: evaluare. Săpt 2: informare. Săpt 3: activitate. Săpt 4: evaluare."},
         {q:"Cum ați evalua dacă programul a avut succes?",h:"Chestionar pre-post, absențe, incidente."},
       ], conc:["Obiectivul principal","Metoda principală","3 activități propuse"] },
+  ],
+  lp6a: [
+    { id:"g1", emoji:"☢️", title:"Surse și tipuri de radiații ionizante", color:"#b91c1c",
+      caz:[{l:"Context",v:"Laborator igienă — LP6A"},{l:"Tema",v:"Surse naturale vs. artificiale și tipuri de radiații"},{l:"Utilitate",v:"diagnosticare medicală, terapie, industrie"}],
+      qs:[
+        {q:"Enumerați cel puțin 4 surse naturale de radiații ionizante și explicați originea lor.",h:"Cosmos, sol (uraniu, toriu), aer (radon), apă, alimente (K-40). Fond natural: ~2,4 mSv/an global."},
+        {q:"Enumerați cel puțin 4 surse artificiale (umane) de radiații ionizante.",h:"Aparatură Roentgen, mine uraniu, centrale nucleare, armament nuclear, cercetare, reziduuri radioactive."},
+        {q:"Descrieți caracteristicile radiațiilor X și γ (origine, penetranță, utilizare medicală).",h:"X: tub Roentgen, 50-150 kVp, imagistică. γ: nuclee radioactive (Co-60, Tc-99m), terapie/scintigrafie."},
+        {q:"Descrieți particulele α și β: compoziție, penetranță și riscul principal pentru sănătate.",h:"α: 2p+2n, penetranță mică (hârtie), periculos intern. β: electroni, penetranță medie (1-2cm țesut)."},
+        {q:"Dați 3 exemple concrete de utilizare medicală a radiațiilor ionizante.",h:"Rx torace, CT abdomen, scintigrafie osoasă (Tc-99m), radioterapie (Linac), brahiterapie."},
+        {q:"De ce este radonul-222 considerat o sursă de risc major în interiorul clădirilor?",h:"Gaz radioactiv, emite α, se acumulează în subsoluri/case neventilate. >300 Bq/m³ = acțiune necesară."},
+      ], conc:["Sursa naturală cu cel mai mare risc","Sursa artificială cea mai frecventă în medicină","Radiația cu penetranță maximă"] },
+
+    { id:"g2", emoji:"📏", title:"Unități de măsură — Bq, Gy, Sv", color:"#0891b2",
+      caz:[{l:"Context",v:"Laboratorul de igienă — LP6A"},{l:"Tema",v:"Unități SI pentru radiații ionizante"},{l:"Provocare",v:"Confuzia dintre doze absorbite, echivalente și efective"}],
+      qs:[
+        {q:"Definiți Becquerelul (Bq) și Curie (Ci). Care este relația dintre ele? Ce măsoară?",h:"Bq = 1 dezintegrare/secundă = activitate radioactivă. 1 Ci = 3,7×10¹⁰ Bq. Măsoară sursa, nu doza."},
+        {q:"Definiți Gray (Gy). Ce reprezintă fizic și care este echivalentul său vechi (rad)?",h:"Gy = 1 J/kg = energia transferată la 1 kg materie. 1 Gy = 100 rad. Doză absorbită."},
+        {q:"Definiți Sievert (Sv). Cum se calculează și de ce este necesar față de Gray?",h:"Sv = Gy × wR. Necesat pentru că diferite radiații au eficacitate biologică diferită (RBE). 1 Sv = 100 rem."},
+        {q:"Care este factorul de ponderare wR pentru raze X/γ, particule α și neutroni? De ce diferă?",h:"Raze X/γ/β: wR=1. Particule α: wR=20. Neutroni: wR=5-20. Diferă prin densitatea ionizării în țesuturi."},
+        {q:"Explicați diferența dintre doză absorbită, doză echivalentă și doză efectivă. Dați formule.",h:"Absorbită (Gy)=energie/masă. Echivalentă (Sv)=Gy×wR (radiație). Efectivă (Sv)=Σ(echiv×wT) (organ)."},
+        {q:"Dați un exemplu concret: un radiolog primește 2 mGy raze X la mâini. Calculați doza echivalentă.",h:"Sv = 2 mGy × 1 (wR raze X) = 2 mSv. Limita mâini: 500 mSv/an. Deci 2 mSv = 0,4% din limita."},
+      ], conc:["Unitatea care măsoară activitatea sursei","Unitatea pentru efectul biologic","Diferența Gy vs. Sv"] },
+
+    { id:"g3", emoji:"🔄", title:"Tipuri de expunere la radiații ionizante", color:"#059669",
+      caz:[{l:"Context",v:"Laborator igienă — LP6A"},{l:"Situații clinice",v:"Radiolog, pacient CT, personal mină uraniu, gravida expusă"},{l:"Sarcina",v:"Clasificați tipul de expunere pentru fiecare situație"}],
+      qs:[
+        {q:"Explicați diferența dintre expunerea externă și expunerea internă. Dați exemple pentru fiecare.",h:"Externă: sursa în afara corpului (Rx, γ). Internă: sursă înghițită/inhalată/injectată (Tc-99m, radon, I-131)."},
+        {q:"Definiți expunerea profesională. Enumerați 5 categorii de personal medical expus profesional.",h:"Radiologi, tehnicieni Rx, cardiologi intervențional, medici medicină nucleară, radioterapeuți."},
+        {q:"Definiți expunerea neprofesională nemedicală. Dați 3 exemple concrete.",h:"Fond natural (cosmic, radon), zbor avion (0,003 mSv/h), locuință cu materiale radioactive, test nuclear."},
+        {q:"Definiți expunerea medicală. Enumerați cel puțin 4 categorii de persoane expuse medical.",h:"Pacienți Rx/CT/scintigrafie, screening (mamografie), cercetare biomedică, însoțitori pacienți (mame sugari)."},
+        {q:"Clasificați tipul de expunere pentru: radiolog, pacient CT torace, minier mină uraniu, gravida în sală Rx.",h:"Radiolog=profesională. Pacient CT=medicală. Miner=profesională. Gravidă în sală Rx=profesională (risc fetus!)."},
+        {q:"De ce expunerea internă cu particule α este mai periculoasă decât expunerea externă cu α?",h:"α extern: oprită de piele (penetranță minimă). α intern (inhalat/ingerat): ionizare masivă în țesuturi, risc cancer."},
+      ], conc:["Diferența esențială extern vs. intern","Categoria de expunere cu limita cea mai strictă","Exemplul clinic cel mai relevant"] },
+
+    { id:"g4", emoji:"📡", title:"Dozimetrie și detectarea radiațiilor", color:"#7c3aed",
+      caz:[{l:"Context",v:"Laboratorul de igienă — LP6A"},{l:"Echipament disponibil",v:"Detector Geiger-Müller, fotodozimetru, TLD"},{l:"Sarcina",v:"Alegeți și justificați aparatul potrivit pentru fiecare situație"}],
+      qs:[
+        {q:"Descrieți principiul de funcționare al detectorului Geiger-Müller. Ce tipuri de radiații detectează?",h:"Ionizarea gazului din tub → avalansă electroni → impuls electric → cpm/µSv/h. Detectează X, γ, β. NU α eficient."},
+        {q:"Descrieți fotodozimetrul: principiu, utilizare, unde se poartă și cum se citește.",h:"Film fotografic impresionat de radiații → densitometrie. Torace/abdomen, sub sortul Pb. Lunar la lab. CNCAN."},
+        {q:"Descrieți dozimetria prin termoluminiscență (TLD): principiu, avantaje față de fotodozimetru.",h:"LiF/Al₂O₃ stochează energia → luminescentă la încălzire. Mai sensibil (0,1 mSv), mai durabil, recitibil."},
+        {q:"Unde se poartă dozimetrul în funcție de tipul de activitate? Dați 3 situații specifice.",h:"Torace: radiologie standard. Sub sortul Pb: cardiologie intervențională. Abdomen: gravide. Inel: mâini."},
+        {q:"Care sunt avantajele dozimetriei în timp real față de fotodozimetru? Dați un exemplu de studiu.",h:"Feedback imediat → modifică comportamentul. Studiu Pena RSNA 2011: cardiologie, reducere doze 30% cu afișaj."},
+        {q:"Ce informații conține un registru dozimetric personal și cât timp se arhivează conform Legii 111/1996?",h:"Doze lunare, cumulate anual, alerte depășire. Arhivare: 50 de ani (pe durata vieții + 30 ani conform CNCAN)."},
+      ], conc:["Aparatul pentru monitorizare permanentă","Aparatul pentru situații de urgență/screening","Unde se poartă dozimetrul la gravide"] },
+
+    { id:"g5", emoji:"🛡️", title:"Limite de expunere și protecția personalului", color:"#d97706",
+      caz:[{l:"Situație",v:"Secție de radiologie — 3 angajați"},{l:"Persoana A",v:"Radiolog — 18 mSv doză efectivă/an"},{l:"Persoana B",v:"Asistentă gravidă — 0,8 mSv fetus estimat"},{l:"Persoana C",v:"Tehnician — cristalin 160 mSv/an"}],
+      qs:[
+        {q:"Analizați situația persoanei A (18 mSv/an). Este conformă cu limita? Ce se recomandă?",h:"Limita: 20 mSv/an (100 mSv/5 ani). 18 mSv = 90% din limita → aproape de prag → investigare cauze, reducare."},
+        {q:"Analizați situația persoanei B (gravidă, 0,8 mSv fetus). Este conformă? Ce se întâmplă la declararea sarcinii?",h:"Limita fetus: <1 mSv pe toată sarcina. 0,8 mSv = 80% din limita → risc! La declarare: scoatere din mediu obligatorie."},
+        {q:"Analizați situația persoanei C (cristalin 160 mSv/an). Este conformă cu norma actualizată?",h:"Limita cristalin ICRP 2012: 20 mSv/an (revizuită de la 150 mSv/an). 160 mSv = DEPĂȘIRE de 8× → risc cataractă."},
+        {q:"Enumerați echipamentele de protecție individuală și specificați atenuarea fiecăruia.",h:"Șort Pb (0,25-0,5mm, >95%). Guler tiroidian (0,5mm). Ochelari Pb (1,5-2mm). Mănuși Pb (0,5mm). Dozimetru."},
+        {q:"Enumerați echipamentele de protecție colectivă și principiul lor de funcționare.",h:"Ecrane Pb fixe (2mm). Paravane mobile Pb. Geam plumbat (2mm). Telecomandă. Regula 1/r² (distanța)."},
+        {q:"Formulați 5 măsuri concrete pentru radioprotecția personalului medical dintr-o secție de radiologie.",h:"Aparatură performantă, echipamente Pb, dozimetru, control medical periodic, scoatere gravide, instruire CNCAN."},
+      ], conc:["Situația cea mai critică (A/B/C) și motivul","Limita pentru cristalin (valoarea actualizată 2012)","Echipamentul individual cel mai important"] },
+
+    { id:"g6", emoji:"🏥", title:"Radioprotecția pacientului", color:"#1a5a9a",
+      caz:[{l:"Context",v:"Cabinet radiologie ambulatoriu"},{l:"Solicitare 1",v:"Rx torace de rutină anuală (pacient asimptomatic)"},{l:"Solicitare 2",v:"CT abdomen-pelvis (a 3-a în 6 luni)"},{l:"Solicitare 3",v:"Mamografie screening (femeie 35 ani, fără factori risc)"},{l:"Sarcina",v:"Evaluați fiecare solicitare prin prisma radioprotecției pacientului"}],
+      qs:[
+        {q:"Evaluați solicitarea 1: Rx torace de rutină anuală la pacient asimptomatic. Este justificată?",h:"NU justificată! Principiul ALARA: NU se fac Rx fără anamneza și examen clinic. NU se fac Rx de rutină!"},
+        {q:"Evaluați solicitarea 2: al 3-lea CT abdomen-pelvis în 6 luni (5-10 mSv fiecare = 15-30 mSv cumulat). Ce faceți?",h:"Verificați indicația fiecărui CT. Dacă nu există modificare, refuzați sau propuneți alternativă (ecografie, RMN)."},
+        {q:"Evaluați solicitarea 3: mamografie la 35 ani fără factori de risc. Este conformă cu ghidurile?",h:"Screening mamografie: recomandat 40-50+ ani (IARC 2015). La 35 ani fără factori = nejustificată ca screening."},
+        {q:"Explicați principiul justificării în radioprotecția pacientului. Care sunt cele 2 niveluri?",h:"Justificare generală (tip procedură) și justificare individuală (pacient concret). Beneficiul net > riscul radiologic."},
+        {q:"Ce măsuri tehnice reduc doza la pacient în cursul unei examinări radiologice?",h:"Colimator restrâns, filme rapide, protocol CT adaptat, fluoroscopie pulsată, protecție organe critice (șort, guler)."},
+        {q:"Cum se protejează organele critice la pacienți? Dați exemple specifice pe categorii de pacienți.",h:"Gonado-protecție copii/tineri. Guler tiroidian (Rx torace copii). Șort abdominal gravide. Ochelari (Rx craniu)."},
+      ], conc:["Solicitarea nejustificată și motivul","Principiul de bază al radioprotecției pacientului","Cea mai importantă măsură tehnică de reducere a dozei"] },
   ],
 };
 
@@ -2146,7 +2215,7 @@ async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEv
 // ════════════════════════════════════════════════════════════
 function FiseGrupTab({selLab}) {
   const labId=selLab?.id||"lp1a";
-  const hasFisa=labId==="lp1a"||labId==="lp6b";
+  const hasFisa=labId==="lp1a"||labId==="lp6b"||labId==="lp6a";
   const fisaInfo=FISE_LABS[labId];
   return (
     <div>
