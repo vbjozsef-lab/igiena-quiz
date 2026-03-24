@@ -1041,6 +1041,7 @@ async function loadResults() {
   return data.map(r => ({
     name: r.name, group: r.grp, labId: r.lab_id, labCode: r.lab_code,
     module: r.module, moduleTitle: r.module_title,
+    answersText: r.answers_text||"",
     score: r.score, total: r.total, pct: r.pct,
     timestamp: new Date(r.created_at).getTime(), timeUsed: r.time_used,
     teacher: r.teacher || "",
@@ -1552,7 +1553,22 @@ function AdminPanel({onBack, teacherName}) {
                           <td style={{padding:"9px 12px"}}>
                             {lab && <span style={{background:lab.dim,color:lab.color,borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700}}>{lab.icon} {r.labCode}</span>}
                           </td>
-                          <td style={{padding:"9px 12px",color:"#1a4a28",fontSize:12}}>{r.moduleTitle||"–"}</td>
+                          {(() => {
+                          const parts = (r.moduleTitle||"").split("\n---\n");
+                          const title = parts[0];
+                          const answers = parts[1];
+                          return (
+                            <td style={{padding:"9px 12px",color:"#1a4a28",fontSize:12}}>
+                              <div>{title||"–"}</div>
+                              {answers && (
+                                <details style={{marginTop:4}}>
+                                  <summary style={{fontSize:11,color:"#16a34a",cursor:"pointer",fontWeight:600}}>📄 Vezi răspunsuri</summary>
+                                  <pre style={{fontSize:11,color:"#374151",background:"#f9fafb",padding:"8px",borderRadius:6,marginTop:4,whiteSpace:"pre-wrap",maxWidth:400,maxHeight:200,overflow:"auto"}}>{answers}</pre>
+                                </details>
+                              )}
+                            </td>
+                          );
+                        })()}
                           <td style={{padding:"9px 12px",color:"#1a4a28",fontWeight:600}}>{r.score}/{r.total}</td>
                           <td style={{padding:"9px 12px"}}>
                             <span style={{background:`${pctColor(r.pct)}22`,color:pctColor(r.pct),borderRadius:6,padding:"2px 8px",fontWeight:700}}>{r.pct}%</span>
@@ -2136,7 +2152,8 @@ async function submitFisaGrup(f, answers, concluzii, student, session, setPhase,
       body:JSON.stringify({
         session_id: session?.token||null, name:student?.name, grp:student?.group,
         lab_id: session?.labId, lab_code: session?.labCode,
-        module:`fisa_${f.id}`, module_title:`Fișă Grupă: ${f.title}`,
+        module:"fisa_"+f.id,
+        module_title:"Fisa Grupa: "+f.title+"\n---\n"+f.qs.map((q,i)=>"Q"+(i+1)+": "+q.q+"\nA: "+(answers[i]||"(fara raspuns)")).join("\n\n"),
         score:totalScore, total:maxScore, pct, time_used:0,
         teacher:session?.teacher||"", semester:session?.semester||"",
         specialization:student?.spec||""
