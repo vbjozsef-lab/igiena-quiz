@@ -1680,3 +1680,1014 @@ function AdminPanel({onBack, teacherName}) {
     </div>
   );
 }
+
+// ════════════════════════════════════════════════════════════
+// NOMENCLATOR EDITOR
+// ════════════════════════════════════════════════════════════
+function NomenclatorEditor({nomenclator, onChange}) {
+  const [newSpec, setNewSpec] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [newMod,  setNewMod]  = useState("");
+
+  const addItem = (key, val, reset) => {
+    const v = val.trim();
+    if (!v) return;
+    if (nomenclator[key].includes(v)) return;
+    onChange({...nomenclator, [key]: [...nomenclator[key], v]});
+    reset("");
+  };
+  const removeItem = (key, val) => {
+    onChange({...nomenclator, [key]: nomenclator[key].filter(x=>x!==val)});
+  };
+  const reset = () => { onChange(DEFAULT_NOMENCLATOR); saveNomenclator(DEFAULT_NOMENCLATOR); };
+
+  const Section = ({title, icon, itemKey, items, newVal, setNewVal, placeholder}) => (
+    <div style={{background:"#fff",border:"1.5px solid #e2e8f0",borderRadius:14,padding:20,marginBottom:16}}>
+      <div style={{fontWeight:700,fontSize:14,color:"#1a3a28",marginBottom:12}}>{icon} {title}</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:12}}>
+        {items.map(item=>(
+          <span key={item} style={{background:"#f0fdf4",border:"1px solid #86efac",borderRadius:20,padding:"4px 10px",fontSize:12,color:"#166534",display:"flex",alignItems:"center",gap:6}}>
+            {item}
+            <button onClick={()=>removeItem(itemKey,item)} style={{background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:14,lineHeight:1,padding:0}}>×</button>
+          </span>
+        ))}
+        {items.length===0 && <span style={{color:"#94a3b8",fontSize:12}}>Nicio valoare adăugată</span>}
+      </div>
+      <div style={{display:"flex",gap:8}}>
+        <input value={newVal} onChange={e=>setNewVal(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addItem(itemKey,newVal,setNewVal)}
+          style={{flex:1,padding:"8px 12px",border:"1.5px solid #b2ddc8",borderRadius:9,fontSize:13}} placeholder={placeholder}/>
+        <button onClick={()=>addItem(itemKey,newVal,setNewVal)} style={{padding:"8px 14px",background:"#10b981",color:"#fff",border:"none",borderRadius:9,fontSize:13,fontWeight:700,cursor:"pointer"}}>+</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+        <div>
+          <h3 style={{color:"#0a2a18",fontSize:17,margin:"0 0 4px"}}>🗂️ Nomenclator Clasificare</h3>
+          <p style={{color:"#4a9a6a",fontSize:13,margin:0}}>Valorile apar în dropdown-urile de clasificare la generarea sesiunii QR.</p>
+        </div>
+        <button onClick={reset} style={{padding:"8px 14px",background:"#fef2f2",color:"#dc2626",border:"1px solid #fca5a5",borderRadius:9,fontSize:12,fontWeight:700,cursor:"pointer"}}>↺ Reset</button>
+      </div>
+      <Section title="Specializări" icon="🎓" itemKey="specializations" items={nomenclator.specializations} newVal={newSpec} setNewVal={setNewSpec} placeholder="ex: Medicină Generală"/>
+      <Section title="Ani de studiu" icon="📅" itemKey="years" items={nomenclator.years} newVal={newYear} setNewVal={setNewYear} placeholder="ex: Anul I"/>
+      <Section title="Module" icon="📚" itemKey="modules" items={nomenclator.modules} newVal={newMod} setNewVal={setNewMod} placeholder="ex: Semestrul 1"/>
+    </div>
+  );
+}
+
+
+// ════════════════════════════════════════════════════════════
+// FIȘE GRUP — DATA & COMPONENTS
+// ════════════════════════════════════════════════════════════
+const FISE_LABS = {
+  lp1a: { title:"LP1A · Igiena Aerului", available:true,
+    grupe:9, desc:"9 fise: microclimat, temperatura, umiditate, miscare aer, temperatura radianta, confort termic, pulberi, gaze, alergie latex" },
+  lp6b: { title:"LP6B · Igiena Scolara", available:true,
+    grupe:6, desc:"6 fise: variatii zilnice, variatii saptamanale, variatii anuale, orar scolar, comportamente de risc, plan de prevenire" },
+  lp1b: { title:"LP1B · Pulberi & Gaze", available:false, grupe:0, desc:"In pregatire" },
+  lp2a: { title:"LP2A · Fumat & Microbi", available:false, grupe:0, desc:"In pregatire" },
+};
+
+
+
+// ════════════════════════════════════════════════════════════
+// FISE DATA + STYLES
+// ════════════════════════════════════════════════════════════
+const FISE_DATA = {
+  lp1a: [
+    { id:"g1", emoji:"🏥", title:"Microclimatul și influența asupra sănătății", color:"#1a5a9a",
+      caz:[{l:"Temperatura aerului",v:"24,8°C"},{l:"Umiditate relativă",v:"72%"},{l:"Viteza aerului",v:"0,45 m/s"},{l:"Sursă încălzire",v:"lângă un pat"},{l:"Pacient",v:"în stare gravă, sedat"}],
+      qs:[
+        {q:"Definiți microclimatul. Ce factori îl compun?",h:"Enumerați cei 4 factori principali (T, UR, v, radiație)."},
+        {q:"Ce valori sunt necorespunzătoare față de normele pentru ATI?",h:"Comparați: T° 20-22°C, UR 30-70%, v ≤0,3 m/s."},
+        {q:"De ce este pacientul critic mai vulnerabil la microclimat necorespunzător?",h:"Capacitate de termoreglare, stare clinică."},
+        {q:"Ce efecte produce acest microclimat asupra pacientului sedat?",h:"UR 72% + T 24,8°C + v 0,45 m/s — fiecare efect."},
+        {q:"Ce erori de măsurare ar putea falsifica rezultatele?",h:"Cel puțin 3 surse de eroare."},
+        {q:"Propuneți 3 măsuri concrete de optimizare a microclimatului.",h:"Specifice și realizabile pentru ATI."},
+      ], conc:["Problema principală","Parametrul prioritar","Aparatul/metoda utilă"] },
+    { id:"g2", emoji:"🌡️", title:"Temperatura aerului — norme și interpretare", color:"#0891b2",
+      caz:[{l:"Temperatura medie",v:"18°C"},{l:"Diferența verticală",v:"3°C"},{l:"Temperatura radiatorului",v:"84°C"},{l:"Pacienți",v:"vârstnici, boli respiratorii"}],
+      qs:[
+        {q:"Ce instrumente se folosesc pentru măsurarea temperaturii aerului?",h:"Termometru obișnuit, termograf, digital."},
+        {q:"Cum se efectuează corect măsurarea temperaturii?",h:"Număr puncte, înălțimi, durata, erori."},
+        {q:"Comparați 18°C cu normele pentru spitale și locuințe.",h:"Spitale: 20-22°C, Locuințe: 18-22°C."},
+        {q:"Ce semnificație are diferența verticală de 3°C?",h:"Norma: ≤1,5-2°C. Impact pacienți."},
+        {q:"De ce este problematică temperatura radiatorului de 84°C?",h:"Limita admisă: maximum 80°C."},
+        {q:"Propuneți 3 măsuri concrete.",h:"Tehnice și organizatorice specifice."},
+      ], conc:["Temperatura: conformă/neconformă","Diferența verticală","3 măsuri principale"] },
+    { id:"g3", emoji:"💧", title:"Umiditatea aerului — tipuri, efecte, măsurare", color:"#0ea5e9",
+      caz:[{l:"Temperatura aerului",v:"21°C"},{l:"Umiditate relativă",v:"28%"},{l:"Personal",v:"uscăciune oculară, nazală, disconfort"}],
+      qs:[
+        {q:"Explicați diferența dintre UA, UM și UR. Dați formulele.",h:"UR = UA/UM × 100 (%)."},
+        {q:"Calculați UR dacă UA = 6 g/m³ și UM = 12 g/m³.",h:"UR = 6/12 × 100 = 50%."},
+        {q:"Ce risc apare la UR = 28%? Interpretați față de norme.",h:"Sub 30% = aer uscat."},
+        {q:"Ce manifestări clinice apar la personal?",h:"Mucoase uscate → infecții respiratorii."},
+        {q:"Ce aparate de măsurare a umidității cunoașteți?",h:"Psicrometru, higrometru, digital."},
+        {q:"Formulați 3 măsuri concrete de ameliorare.",h:"Umidificatoare, ventilare, surse de apă."},
+      ], conc:["Definiția UR (formulă)","UR calculată din date","Problema principală"] },
+    { id:"g4", emoji:"💨", title:"Mișcarea aerului — importanță și norme", color:"#059669",
+      caz:[{l:"Viteza aerului",v:"0,6 m/s"},{l:"Temperatura",v:"20°C"},{l:"Umiditate relativă",v:"50%"},{l:"Personal",v:"senzație de curent"}],
+      qs:[
+        {q:"Explicați importanța mișcării aerului (roluri pozitive și negative).",h:"Pozitiv: ventilare. Negativ: curent, hipotermie."},
+        {q:"Ce aparat se folosește pentru măsurare?",h:"Anemometru digital / katermometru."},
+        {q:"Comparați 0,6 m/s cu valorile recomandate.",h:"Normă: 0,1-0,3 m/s optim, max 0,5 m/s."},
+        {q:"De ce produce 0,6 m/s disconfort?",h:"Convecție → pierdere căldură → hipotermie locală."},
+        {q:"Ce categorii de persoane sunt mai sensibile?",h:"Vârstnici, pacienți cu reumatism."},
+        {q:"Formulați 3 măsuri de corectare.",h:"Deflectoare, reglaj ventilare."},
+      ], conc:["Valoarea normală","Interpretarea 0,6 m/s","Măsura cea mai importantă"] },
+    { id:"g5", emoji:"☀️", title:"Temperatura radiantă și sursele de căldură", color:"#d97706",
+      caz:[{l:"Temperatura aerului",v:"21°C"},{l:"Senzație",v:"căldură excesivă localizată"},{l:"Surse",v:"radiator + soare pe perete"},{l:"Diferență T pereți–aer",v:"mare"}],
+      qs:[
+        {q:"Definiți temperatura radiantă. Cum diferă de temperatura aerului?",h:"T radiantă = energia IR de la suprafețe."},
+        {q:"Dați 3 exemple de surse de radiație calorică din interior.",h:"Radiatoare, lămpi, ferestre expuse."},
+        {q:"Ce aparat se folosește pentru determinare?",h:"Actinometru / globtermometru Vernon."},
+        {q:"Care este limita maximă pentru corpurile de încălzit?",h:"Maximum 80°C."},
+        {q:"De ce contează diferența pereți–aer? Care este norma?",h:"Norma: <4°C."},
+        {q:"Propuneți 3 măsuri de optimizare.",h:"Jaluzele, radiatoare moderne, izolație."},
+      ], conc:["Sursa principală de disconfort","Limita legală depășită","Aparatul folosit"] },
+    { id:"g6", emoji:"🧘", title:"Confortul termic și zona de confort", color:"#7c3aed",
+      caz:[{l:"Spațiul A — Locuință",v:"19°C"},{l:"Spațiul B — Secție spital",v:"19°C"},{l:"Spațiul C — Atelier muncă grea",v:"19°C"}],
+      qs:[
+        {q:"Explicați zona de confort termic. Ce factori o determină?",h:"T, UR, v, T radiantă."},
+        {q:"Comparați valorile ideale pentru: locuințe, spitale, atelier muncă grea.",h:"Locuințe: 18-22°C. Spitale: 20-22°C. Muncă grea: 10-12°C."},
+        {q:"În care spații 19°C este adecvat și în care nu?",h:"Locuință: OK. Spital: sub normă. Atelier: prea cald."},
+        {q:"De ce se interpretează confortul diferit după context?",h:"Producția metabolică variază cu activitatea."},
+        {q:"Ce importanță are diferența verticală de temperatură?",h:"Gradient cap-glezne: ≤2°C."},
+        {q:"Formulați concluzia în 3 idei scurte.",h:"Concluzie sintetică, practică."},
+      ], conc:["Definiția confortului termic","Spațiul cel mai problematic","Spațiul cel mai adecvat"] },
+    { id:"g7", emoji:"🌫️", title:"Pulberi și calitatea aerului", color:"#64748b",
+      caz:[{l:"Observație vizuală",v:"praf vizibil pe suprafețe"},{l:"Pacienți",v:"astm și tuse frecventă"},{l:"Suspiciune",v:"PM2.5 crescut"},{l:"Ventilație",v:"deficitară"}],
+      qs:[
+        {q:"Ce sunt pulberile/aerosolii? Definiți și enumerați tipurile.",h:"Aerosoli = particule solide/lichide."},
+        {q:"De ce este dimensiunea particulelor importantă pentru sănătate?",h:">10µm CRS, <10µm bronhiole, <5µm alveole."},
+        {q:"De ce PM2.5 este mai periculos decât PM10?",h:"Alveolar, carcinogen gr. 1."},
+        {q:"Ce efecte apar la pacienții cu astm expuși la PM2.5?",h:"Exacerbare, wheezing, dispnee."},
+        {q:"Ce metode de determinare cunoașteți? Descrieți 2.",h:"Gravimetrice (SidePak) și coniometrice (Zeiss)."},
+        {q:"Propuneți 3 măsuri preventive concrete.",h:"HEPA, termopan, purificatoare aer."},
+      ], conc:["Tipul principal de risc","Pacienții cei mai vulnerabili","Metoda de determinare utilă"] },
+    { id:"g8", emoji:"⚗️", title:"Gaze toxice din aer", color:"#b91c1c",
+      caz:[{l:"Simptome",v:"cefalee + iritație oculară"},{l:"Suspiciune",v:"expunere gaze toxice"},{l:"Disponibil",v:"gazometru portabil"}],
+      qs:[
+        {q:"Enumerați 4 gaze toxice frecvente și sursa principală.",h:"CO (ardere), NO₂ (trafic), SO₂ (combustibili), O₃."},
+        {q:"Ce metode rapide de detectare cunoașteți?",h:"Tuburi Dräger, senzori electrochimici."},
+        {q:"Ce informații oferă un gazometru portabil?",h:"CO, H₂S, O₂, NO₂ — simultan, cu alarmă sonoră."},
+        {q:"Definiți CMA. CMA momentană vs. CMA medie 24h?",h:"Momentană: probă 30 min. Medie 24h: probe multiple."},
+        {q:"Ce ați face imediat dacă CO > 35 ppm?",h:"Evacuare, ventilare, identificarea sursei."},
+        {q:"Formulați 3 măsuri de protecție pe termen lung.",h:"Detectoare permanente, ventilare forțată."},
+      ], conc:["Suspiciunea principală","Ce înseamnă CMA","Măsura imediată"] },
+    { id:"g9", emoji:"🧤", title:"Alergia la latex — pulberi cu risc medical", color:"#9333ea",
+      caz:[{l:"Simptome",v:"rinoconjunctivită, wheezing, tuse"},{l:"Apariție",v:"minute după deschiderea cutiei de mănuși"},{l:"Context",v:"spațiu slab ventilat"}],
+      qs:[
+        {q:"Care este diagnosticul probabil? Ce tip de reacție alergică?",h:"Alergie la latex IgE mediată (tip I)."},
+        {q:"Explicați mecanismul apariției simptomelor.",h:"Alergene latex pe pudra de talc → aeropurtate → IgE → histamina."},
+        {q:"Ce rol are pudra de talc în declanșarea simptomelor?",h:"Vehicol pentru alergene aeropurtate."},
+        {q:"Ce manifestări clinice apar în ordinea severității?",h:"Urticarie → rinoconjunctivită → bronhospasm → șoc anafilactic."},
+        {q:"Care este singura măsură eficientă de prevenire?",h:"Eliminarea completă a latexului."},
+        {q:"Ce recomandați pentru întregul colectiv medical?",h:"Protocol latex-free, mănuși nitril, instruire."},
+      ], conc:["Diagnosticul probabil","Mecanismul (2-3 cuvinte)","Măsura de prevenire esențială"] },
+  ],
+  lp6b: [
+    { id:"g1", emoji:"⏰", title:"Capacitatea de lucru — variații zilnice", color:"#1a5a9a",
+      caz:[{l:"Elev cls. VIII-a, miercuri",v:""},{l:"08:00",v:"matematică"},{l:"09:00",v:"română"},{l:"10:00",v:"biologie"},{l:"13:00",v:"test fizică"},{l:"14:00",v:"activitate suplimentară"},{l:"19:30",v:"meditație"}],
+      qs:[
+        {q:"Explicați ce înseamnă capacitatea de lucru și cum variază în cursul zilei.",h:"Valori: 8:00 mijlocii, 9-11 maxime, 13-14 depresie, 15-17 creștere, după 19 scade."},
+        {q:"Analizați programul elevului: ce este greșit față de normele de igienă școlară?",h:"Test la 13:00 = depresie postprandială. Meditație la 19:30 = randament minim."},
+        {q:"Care interval orar este cel mai favorabil pentru activități intelectuale intense?",h:"9-11 dimineața = maxim fiziologic zilnic."},
+        {q:"Ce efecte pot apărea dacă elevul este solicitat intens după ora 19:00?",h:"Randament scăzut, somn perturbat, oboseală cronică."},
+        {q:"Ce riscuri pe termen lung are un program care ignoră ritmul circadian?",h:"Burnout, anxietate cronică, tulburări de somn persistente."},
+        {q:"Propuneți o variantă mai bună de organizare a zilei pentru acest elev.",h:"Activități grele 9-11, fără test la 13:00, fără meditație după 19:00."},
+      ], conc:["Intervalul optim identificat","Intervalul nefavorabil","3 măsuri propuse"] },
+    { id:"g2", emoji:"📅", title:"Variațiile săptămânale ale randamentului", color:"#0891b2",
+      caz:[{l:"Luni",v:"matematică, fizică, chimie"},{l:"Marți-Miercuri",v:"discipline medii"},{l:"Joi",v:"test biologie"},{l:"Vineri",v:"teză + 2 ore grele"}],
+      qs:[
+        {q:"Analizați programarea din punct de vedere al igienei școlare.",h:"Luni = capacitate redusă. Vineri = mult scăzută."},
+        {q:"În ce zile este capacitatea de lucru mai redusă și de ce?",h:"Luni: readaptare. Vineri: oboseală cumulată."},
+        {q:"În ce zile sunt recomandate activitățile solicitante?",h:"Marți, miercuri, joi = vârf săptămânal."},
+        {q:"Ce efecte pot apărea dacă programarea ignoră curbele săptămânale?",h:"Stres, anxietate, rezultate slabe la teste programate greșit."},
+        {q:"De ce nu este indicat să se programeze teze luni sau vineri?",h:"Capacitate redusă → rezultate nu reflectă potențialul."},
+        {q:"Reorganizați săptămâna în mod igienic și explicați logica.",h:"Grele: Mar-Mie-Joi. Ușoare: Luni-Vineri. Teste: Marți 9-11."},
+      ], conc:["Zilele problematice","Zilele favorabile","Principala greșeală"] },
+    { id:"g3", emoji:"📆", title:"Variațiile sezoniere și anuale ale randamentului", color:"#059669",
+      caz:[{l:"Simptome observate",v:"oboseală, iritabilitate, randament scăzut"},{l:"Moment 1",v:"sfârșit de semestru"},{l:"Moment 2",v:"după lucrări consecutive"},{l:"Moment 3",v:"înainte de examenul final"},{l:"Moment 4",v:"sfârșit de an școlar"}],
+      qs:[
+        {q:"Explicați ce variații anuale ale randamentului sunt cunoscute în igiena școlară.",h:"Scăderi: sfârsit semestre, după evaluări, înainte examene, sfârsit an."},
+        {q:"De ce apar scăderi ale randamentului la finalul semestrului?",h:"Oboseală cumulată, stres cronic."},
+        {q:"Ce efecte pot apărea asupra sănătății elevilor suprasolicitați?",h:"Burnout, insomnii, iritabilitate."},
+        {q:"Ce măsuri organizatorice ar putea preveni suprasolicitarea?",h:"Planificarea echilibrată a testelor."},
+        {q:"Formulați 3 recomandări pentru profesori.",h:"Max 1-2 lucrări/săptămână, anunțare prealabilă."},
+        {q:"Formulați 3 recomandări pentru elevi privind perioadele critice.",h:"Somn regulat, pauze active, planificare studiu."},
+      ], conc:["Momentul cel mai critic","Cauza principală","3 măsuri pentru școală"] },
+    { id:"g4", emoji:"📋", title:"Orarul școlar — analiză și corectare", color:"#d97706",
+      caz:[{l:"Clasă gimnaziu, luni",v:"7 ore"},{l:"Primele 3 ore",v:"matematică, fizică, chimie"},{l:"Alternanță",v:"absentă"},{l:"Ultima oră",v:"test scris"},{l:"Vineri",v:"6 ore + 2 discipline dificile"}],
+      qs:[
+        {q:"Identificați toate greșelile de organizare a orarului.",h:"7 ore luni, 3 discipline grele, fără alternanță, test ultima oră."},
+        {q:"Ce principii igienice trebuie respectate la alcătuirea orarului?",h:"Curbe fiziologice, alternanță activitate-repaus."},
+        {q:"De ce este importantă alternarea activităților intelectuale cu cele fizice?",h:"Prevenirea oboselii, refacerea atenției."},
+        {q:"Câte ore sunt recomandate pe zi pentru clasele V-VIII?",h:"5 ore/zi — norma igienică recomandată."},
+        {q:"Propuneți o formă corectată a orarului pentru ziua de luni.",h:"Max 5 ore, discipline grele 9-11, sport intercalat."},
+        {q:"Explicați de ce marți, miercuri și joi sunt mai potrivite pentru sarcini grele.",h:"Capacitate maximă săptămânală."},
+      ], conc:["Principiul încălcat","Cea mai mare eroare","Orarul corectat propus"] },
+    { id:"g5", emoji:"⚠️", title:"Identificarea comportamentelor de risc", color:"#dc2626",
+      caz:[{l:"Clasă de liceu",v:""},{l:"Alimentație",v:"băuturi energizante, alimente dezechilibrate"},{l:"Substanțe",v:"interes fumat și alcool"},{l:"Igienă",v:"neglijarea igienei orale"},{l:"Comportament",v:"agresivitate între colegi"}],
+      qs:[
+        {q:"Identificați toate comportamentele de risc și clasificați-le.",h:"Alimentar, substanțe (fumat/alcool), igienic (oral), comportamental."},
+        {q:"Explicați de ce aceste comportamente sunt abordate în igiena școlară.",h:"Școala = mediu de formare a obiceiurilor."},
+        {q:"Ce consecințe pot avea pe termen scurt și lung?",h:"Scurt: performanțe. Lung: boli cronice, dependențe."},
+        {q:"Care grupuri de elevi sunt mai vulnerabile?",h:"Cei cu dificultăți familiale, izolați social."},
+        {q:"Formulați 3 măsuri de prevenire concrete la nivel de școală.",h:"Educație sănătate, peer education, anti-bullying."},
+        {q:"Formulați 3 mesaje-cheie pentru elevii de liceu.",h:"Mesaje pozitive, consecințe reale, relevante vârstei."},
+      ], conc:["Comportamentele de risc identificate","Cel mai urgent risc","3 măsuri pentru școală"] },
+    { id:"g6", emoji:"🛡️", title:"Plan de prevenire a comportamentelor de risc", color:"#7c3aed",
+      caz:[{l:"Problemă",v:""},{l:"Observație 1",v:"lipsă de informare"},{l:"Observație 2",v:"obiceiuri nesănătoase"},{l:"Observație 3",v:"interes crescut fumat și alcool"},{l:"Observație 4",v:"participare redusă la activități educative"}],
+      qs:[
+        {q:"Ce metode de prevenire sunt recomandate în igiena școlară?",h:"Educație sanitară, monitorizare, chestionare, peer education."},
+        {q:"Ce rol joacă educația sanitară în prevenirea comportamentelor de risc?",h:"Informare → schimbarea atitudinilor → deprinderi sănătoase."},
+        {q:"De ce sunt utile chestionarele și interviurile?",h:"Identifică problemele reale, permit planificarea țintită."},
+        {q:"Ce rol are monitorizarea medicală periodică?",h:"Depistare precoce, urmărire indicatori sănătate."},
+        {q:"Elaborați un mini-plan de intervenție pentru o lună.",h:"Săpt 1: evaluare. Săpt 2: informare. Săpt 3: activitate. Săpt 4: evaluare."},
+        {q:"Cum ați evalua dacă programul a avut succes?",h:"Chestionar pre-post, absențe, incidente."},
+      ], conc:["Obiectivul principal","Metoda principală","3 activități propuse"] },
+  ],
+};
+
+const FS = {
+  page:{minHeight:"100vh",background:"linear-gradient(135deg,#f0f4f8,#e8f0f8)",padding:"0 0 80px"},
+  card:{background:"#fff",borderRadius:14,padding:"20px 18px",boxShadow:"0 2px 12px rgba(0,0,0,.07)"},
+  qCard:{background:"#fff",borderRadius:12,padding:"16px 16px 12px",marginBottom:12,boxShadow:"0 2px 8px rgba(0,0,0,.05)"},
+  ta:{width:"100%",minHeight:80,padding:"9px 12px",border:"1.5px solid #cbd5e1",borderRadius:9,fontSize:14,fontFamily:"inherit",resize:"vertical",lineHeight:1.6,color:"#1e293b",background:"#f8fafc"},
+  hdr:{background:"#0d2040",color:"white",padding:"14px 18px",position:"sticky",top:0,zIndex:100,display:"flex",alignItems:"center",gap:12,boxShadow:"0 2px 12px rgba(0,0,0,.3)"},
+};
+
+// ════════════════════════════════════════════════════════════
+// FIȘĂ GRUP SCREEN
+// ════════════════════════════════════════════════════════════
+function FisaGrupScreen({session, student, onBack}) {
+  const labId = session?.labId || "lp1a";
+  const allFise = FISE_DATA[labId] || FISE_DATA.lp1a;
+  const [selectedFisa, setSelectedFisa] = useState(null);
+  const [answers, setAnswers] = useState({});
+  const [concluzii, setConcluzii] = useState({});
+  const [phase, setPhase] = useState("select");
+  const [evalResults, setEvalResults] = useState(null);
+
+  if (phase === "select") return (
+    <div style={FS.page}>
+      <div style={FS.hdr}>
+        <span style={{fontSize:24}}>📋</span>
+        <div>
+          <div style={{fontWeight:700,fontSize:16}}>Fișe de Lucru — {session?.labCode?.replace("-FISA","")}</div>
+          <div style={{fontSize:12,color:"#90b4d8"}}>{student?.name} · Grupa {student?.group}</div>
+        </div>
+      </div>
+      <div style={{maxWidth:600,margin:"24px auto",padding:"0 16px"}}>
+        <div style={{background:"#fef9c3",border:"1.5px solid #fde68a",borderRadius:10,padding:"12px 16px",marginBottom:20,fontSize:13,color:"#92400e"}}>
+          <strong>📌 Instrucțiune:</strong> Selectați fișa grupei voastre, analizați cazul, răspundeți la întrebări și trimiteți. La final prezentați concluziile în <strong>2 minute</strong>.
+        </div>
+        <h3 style={{color:"#0d2040",fontSize:16,margin:"0 0 14px",fontWeight:700}}>Selectați fișa grupei:</h3>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+          {allFise.map((f,i) => (
+            <button key={f.id} onClick={()=>{setSelectedFisa(f);setPhase("fill");}}
+              style={{padding:"14px 8px",borderRadius:12,border:"2px solid "+f.color+"44",background:f.color+"18",
+                cursor:"pointer",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+              <span style={{fontSize:26}}>{f.emoji}</span>
+              <span style={{fontSize:12,fontWeight:700,color:f.color}}>Grupa {i+1}</span>
+              <span style={{fontSize:10,color:"#64748b",lineHeight:1.3}}>{f.title.split(" — ")[0]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const f = selectedFisa;
+  const answered = f ? f.qs.filter((_,i) => (answers[i]||"").trim().length > 2).length : 0;
+
+  if (phase === "fill") return (
+    <div style={FS.page}>
+      <div style={FS.hdr}>
+        <span style={{fontSize:22}}>{f.emoji}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,fontSize:15}}>Grupa {allFise.indexOf(f)+1} — {f.title.split(" — ")[0]}</div>
+          <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · {answered}/{f.qs.length} completate</div>
+        </div>
+        <button onClick={()=>setPhase("select")} style={{padding:"6px 12px",background:"rgba(255,255,255,.15)",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,color:"white",fontSize:12,cursor:"pointer"}}>← Înapoi</button>
+      </div>
+      <div style={{height:3,background:"#e2e8f0"}}>
+        <div style={{height:"100%",background:"linear-gradient(90deg,#2E86DE,#10b981)",width:(answered/f.qs.length*100)+"%",transition:"width .4s"}}/>
+      </div>
+      <div style={{maxWidth:680,margin:"0 auto",padding:"16px 14px 90px"}}>
+        <div style={{...FS.card,marginBottom:16,background:"#eff6ff",border:"1.5px solid #bfdbfe"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#1e40af",textTransform:"uppercase",letterSpacing:".06em",marginBottom:8}}>📁 Cazul prezentat</div>
+          {f.caz.map((item,i) => (
+            <div key={i} style={{display:"flex",gap:8,padding:"4px 0",borderBottom:i<f.caz.length-1?"1px solid #dbeafe":"none"}}>
+              <span style={{fontSize:13,color:"#64748b",flex:1}}>{item.l}:</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#0d2040",fontFamily:"monospace"}}>{item.v}</span>
+            </div>
+          ))}
+        </div>
+        {f.qs.map((q,i) => (
+          <div key={i} style={{...FS.qCard,borderLeft:"4px solid "+((answers[i]||"").trim().length>2?f.color:"#cbd5e1")}}>
+            <div style={{fontSize:11,fontWeight:700,color:(answers[i]||"").trim().length>2?f.color:"#94a3b8",textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>
+              {(answers[i]||"").trim().length>2?"✓ ":""}Întrebarea {i+1}
+            </div>
+            <div style={{fontSize:15,fontWeight:600,color:"#0d2040",marginBottom:8,lineHeight:1.4}}>{q.q}</div>
+            <textarea style={FS.ta} placeholder="Scrieți răspunsul dvs. aici…"
+              value={answers[i]||""}
+              onChange={e=>{const na={...answers};na[i]=e.target.value;setAnswers(na);}}
+            />
+            <div style={{textAlign:"right",fontSize:11,color:"#94a3b8",marginTop:3}}>{(answers[i]||"").length} caractere</div>
+          </div>
+        ))}
+        <div style={{...FS.card,background:"#f0fdf4",border:"1.5px solid #bbf7d0",marginTop:8}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".06em",marginBottom:10}}>✅ Concluzia grupei</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {f.conc.map((label,i)=>(
+              <div key={i}>
+                <div style={{fontSize:12,fontWeight:600,color:"#4a9a6a",marginBottom:3}}>{label}:</div>
+                <textarea style={{...FS.ta,minHeight:55,borderColor:"#bbf7d0"}}
+                  placeholder="Concluzie scurtă…"
+                  value={concluzii[i]||""}
+                  onChange={e=>{const nc={...concluzii};nc[i]=e.target.value;setConcluzii(nc);}}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderTop:"1.5px solid #e2e8f0",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 -4px 20px rgba(0,0,0,.08)"}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#16a34a"}}>{answered} / {f.qs.length} întrebări</div>
+          <div style={{fontSize:11,color:"#94a3b8"}}>completate</div>
+        </div>
+        <button onClick={()=>{
+            if(answered<1){alert("Completați cel puțin o întrebare înainte de a trimite!");return;}
+            submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEvalResults);
+          }}
+          style={{padding:"12px 22px",background:answered>=1?"linear-gradient(135deg,#10b981,#059669)":"#e2e8f0",
+            color:answered>=1?"white":"#94a3b8",border:"none",borderRadius:11,fontSize:15,fontWeight:700,cursor:"pointer",transition:"all .2s"}}>
+          ✉️ Trimite răspunsurile
+        </button>
+      </div>
+    </div>
+  );
+
+  if (phase === "evaluating") return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#f0f4f8,#e8f0f8)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div style={{...FS.card,maxWidth:440,textAlign:"center",padding:"40px 28px"}}>
+        <div style={{width:60,height:60,border:"5px solid #e2e8f0",borderTopColor:"#2E86DE",borderRadius:"50%",animation:"spin 1s linear infinite",margin:"0 auto 20px"}}/>
+        <h2 style={{color:"#0d2040",fontSize:20,margin:"0 0 8px"}}>Se evaluează răspunsurile…</h2>
+        <p style={{color:"#64748b",fontSize:14,lineHeight:1.7}}>Claude AI analizează fiecare răspuns în raport cu cunoștințele de igienă.</p>
+      </div>
+    </div>
+  );
+
+  if (phase === "done" && evalResults) {
+    const {evaluations,totalScore,maxScore,pct} = evalResults;
+    const sc = pct>=80?"#16a34a":pct>=60?"#d97706":"#dc2626";
+    return (
+      <div style={FS.page}>
+        <div style={FS.hdr}>
+          <span style={{fontSize:22}}>✅</span>
+          <div>
+            <div style={{fontWeight:700,fontSize:16}}>Rezultate — {f.title.split(" — ")[0]}</div>
+            <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · Trimis profesorului</div>
+          </div>
+        </div>
+        <div style={{maxWidth:620,margin:"20px auto",padding:"0 14px 40px"}}>
+          <div style={{...FS.card,textAlign:"center",marginBottom:16,padding:"28px 20px"}}>
+            <div style={{background:"#dcfce7",color:"#16a34a",fontSize:12,fontWeight:700,padding:"5px 14px",borderRadius:20,display:"inline-block",marginBottom:14}}>✅ Răspunsuri trimise profesorului</div>
+            <div style={{width:100,height:100,borderRadius:"50%",border:"6px solid "+sc,margin:"0 auto 14px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+              <span style={{fontSize:30,fontWeight:800,color:sc,lineHeight:1}}>{totalScore}</span>
+              <span style={{fontSize:12,color:sc,opacity:.7}}>/{maxScore}</span>
+            </div>
+            <h3 style={{color:"#0d2040",margin:"0 0 4px"}}>{pct>=80?"Excelent! 🎉":pct>=60?"Bun! 👍":"Necesită îmbunătățiri"}</h3>
+            <p style={{color:"#64748b",fontSize:13}}>{student?.name} · Grupa {student?.group}</p>
+          </div>
+          {f.qs.map((q,i)=>{
+            const ev=evaluations[i]||{score:0,feedback:"Fără evaluare"};
+            const cc=ev.score===2?"#16a34a":ev.score===1?"#d97706":"#dc2626";
+            return (
+              <div key={i} style={{...FS.card,marginBottom:10,borderLeft:"4px solid "+cc}}>
+                <div style={{fontSize:13,fontWeight:600,color:"#0d2040",marginBottom:6}}>Î{i+1}. {q.q}</div>
+                <div style={{fontSize:13,color:"#475569",background:"#f8fafc",borderRadius:7,padding:"7px 10px",marginBottom:7,borderLeft:"3px solid #e2e8f0"}}>{answers[i]||"(fără răspuns)"}</div>
+                <div style={{fontSize:13,background:ev.score===2?"#f0fdf4":ev.score===1?"#fffbeb":"#fef2f2",borderLeft:"3px solid "+cc,padding:"8px 10px",borderRadius:7,lineHeight:1.6}}>
+                  🤖 <strong>Evaluare AI:</strong> {ev.feedback}
+                </div>
+                <span style={{background:ev.score===2?"#dcfce7":ev.score===1?"#fef9c3":"#fee2e2",color:cc,fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:20,display:"inline-block",marginTop:6}}>
+                  {ev.score===2?"✅ 2/2":ev.score===1?"⚠️ 1/2":"❌ 0/2"} puncte
+                </span>
+              </div>
+            );
+          })}
+          <div style={{background:"#eff6ff",borderRadius:12,padding:"12px 16px",marginTop:8,fontSize:13,color:"#1e40af"}}>
+            <strong>⏱️ Urmează:</strong> Prezentați concluziile în <strong>maximum 2 minute</strong>.
+          </div>
+          <button onClick={onBack} style={{width:"100%",padding:14,background:"#0d2040",color:"white",border:"none",borderRadius:12,fontSize:15,fontWeight:700,cursor:"pointer",marginTop:14}}>
+            🏠 Înapoi la pagina principală
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEvalResults) {
+  setPhase("evaluating");
+  const cazStr = f.caz.map(i=>i.l+": "+i.v).join(", ");
+  const qStr = f.qs.map((q,i)=>"Intrebarea "+(i+1)+": "+q.q+"\nRaspuns: "+(answers[i]||"(fara raspuns)")).join("\n\n");
+  const prompt = "Esti profesor de igiena. Evalueaza raspunsurile unui student la fisa \""+f.title+"\"."
+    +"\nContext: "+cazStr+"\n\n"+qStr
+    +"\n\nAcorda scor (0,1,2) si feedback scurt pentru fiecare din cele "+f.qs.length+" intrebari."
+    +"\nCriterii: 2p=corect complet, 1p=partial, 0p=incorect."
+    +'\nRaspunde NUMAI cu JSON: {"evaluations":[{"score":2,"feedback":"..."}]}'
+    +"\nAray-ul trebuie sa contina EXACT "+f.qs.length+" obiecte.";
+  let evaluations=[];
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})
+    });
+    const data=await res.json();
+    const parsed=JSON.parse((data.content?.[0]?.text||"{}").replace(/```json|```/g,"").trim());
+    evaluations=parsed.evaluations||[];
+  } catch(e){
+    evaluations=f.qs.map(()=>({score:1,feedback:"Raspuns inregistrat — evaluare manuala."}));
+  }
+  const totalScore=evaluations.reduce((s,e)=>s+(e.score||0),0);
+  const maxScore=f.qs.length*2;
+  const pct=Math.round(totalScore/maxScore*100);
+  const answersText=f.qs.map((q,i)=>"Q"+(i+1)+": "+q.q+"\nA: "+(answers[i]||"(fara raspuns)")).join("\n\n");
+  const SB="https://hgknirjorjvlofhngvcp.supabase.co";
+  const SK="sb_publishable_PnUOkG2Tpw3wKa9hTZc3Yw_T0bnhFAO";
+  try {
+    await fetch(SB+"/rest/v1/results",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":SK,"Authorization":"Bearer "+SK,"Prefer":"return=minimal"},
+      body:JSON.stringify({
+        session_id:session?.token||null,name:student?.name,grp:student?.group,
+        lab_id:session?.labId,lab_code:session?.labCode,
+        module:"fisa_"+f.id,
+        module_title:"Fisa Grupa: "+f.title+"\n---\n"+answersText,
+        score:totalScore,total:maxScore,pct,time_used:0,
+        teacher:session?.teacher||"",semester:session?.semester||"",
+        specialization:student?.spec||""
+      })
+    });
+  } catch(e){console.error("save error",e);}
+  setEvalResults({evaluations,totalScore,maxScore,pct});
+  setPhase("done");
+}
+
+// ════════════════════════════════════════════════════════════
+// FIȘE GRUP TAB (teacher panel)
+// ════════════════════════════════════════════════════════════
+function FiseGrupTab({selLab}) {
+  const labId=selLab?.id||"lp1a";
+  const hasFisa=labId==="lp1a"||labId==="lp6b";
+  const fisaInfo=FISE_LABS[labId];
+  return (
+    <div>
+      <h3 style={{color:"#0a2a18",fontSize:17,margin:"0 0 4px"}}>📋 Fișe de Lucru pe Grupe</h3>
+      <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Activitate practică — studenții completează pe telefon, evaluate cu AI, trimise automat în Rezultate.</p>
+      <div style={{background:"#eff6ff",border:"1.5px solid #bfdbfe",borderRadius:12,padding:"14px 18px",marginBottom:16}}>
+        <h4 style={{color:"#1e40af",fontSize:13,fontWeight:700,margin:"0 0 10px"}}>⚙️ Cum funcționează — 3 pași</h4>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+          {[["1️⃣","Mergeți la","📱 Generează QR"],["2️⃣","Alegeți tipul","📋 Fișă de grup"],["3️⃣","Studenții scanează","aleg grupa și completează"]].map(([n,t,s],i)=>(
+            <div key={i} style={{background:"white",borderRadius:9,padding:"14px 10px",textAlign:"center",border:"1px solid #dbeafe"}}>
+              <div style={{fontSize:26,marginBottom:6}}>{n}</div>
+              <div style={{fontSize:12,fontWeight:700,color:"#1e3a8a"}}>{t}</div>
+              <div style={{fontSize:11,color:"#64748b",marginTop:4}}>{s}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{background:"white",borderRadius:14,padding:"18px",border:"1.5px solid #b2ddc8",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+        <span style={{fontSize:28}}>{selLab?.icon||"📋"}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,fontSize:15,color:"#0a2a18"}}>{selLab?.code} — {selLab?.title}</div>
+          <div style={{fontSize:12,color:"#4a9a6a",marginTop:2}}>{hasFisa?(fisaInfo?.grupe||0)+" fișe disponibile":"Fișe în pregătire"}</div>
+        </div>
+        {hasFisa?<span style={{background:"#dcfce7",color:"#16a34a",padding:"5px 12px",borderRadius:20,fontSize:12,fontWeight:700}}>✅ Disponibil</span>
+          :<span style={{background:"#f1f5f9",color:"#94a3b8",padding:"5px 12px",borderRadius:20,fontSize:12,fontWeight:600}}>🔜 În pregătire</span>}
+      </div>
+      <div style={{background:"#fef9c3",border:"1.5px solid #fde68a",borderRadius:12,padding:"12px 16px",marginBottom:14,fontSize:13,color:"#92400e"}}>
+        <strong>⚠️ Important:</strong> Fișele se activează prin QR din <strong>📱 Generează QR</strong> — alegeți <em>📋 Fișă de grup</em>.
+      </div>
+      <div style={{background:"#f0fdf4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"12px 16px",fontSize:13,color:"#166534"}}>
+        <strong>📊 Rezultatele:</strong> Apar în <strong>📊 Rezultate</strong> după trimitere. Apăsați <em>📄 Vezi răspunsuri</em> pentru textul complet.
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// FILE MANAGER
+// ════════════════════════════════════════════════════════════
+function FileManager({teacherName, selLab}) {
+  const [files, setFiles]         = React.useState([]);
+  const [loading, setLoading]     = React.useState(true);
+  const [uploading, setUploading] = React.useState(false);
+  const [msg, setMsg]             = React.useState({type:"", text:""});
+  const fileRef = React.useRef();
+
+  const load = () => {
+    setLoading(true);
+    Promise.all([
+      listFiles(teacherName, selLab.id),
+      listAllFiles(selLab.id)
+    ]).then(([own, all]) => {
+      const ownPaths = new Set(own.map(f=>f.path));
+      const merged = [
+        ...own.map(f=>({...f, isOwn:true})),
+        ...all.filter(f=>!ownPaths.has(f.path)).map(f=>({...f, isOwn:false}))
+      ];
+      setFiles(merged);
+      setLoading(false);
+    }).catch(()=>setLoading(false));
+  };
+
+  React.useEffect(()=>{load();},[selLab.id]);
+
+  const upload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true); setMsg({type:"",text:""});
+    try {
+      await uploadFile(teacherName, selLab.id, file);
+      setMsg({type:"ok", text:"Fișier încărcat cu succes!"});
+      load();
+    } catch(err) {
+      setMsg({type:"err", text:"Eroare la încărcare: "+err.message});
+    }
+    setUploading(false);
+  };
+
+  const del = async (path) => {
+    if (!confirm("Ștergeți acest fișier?")) return;
+    try {
+      await deleteFile(path);
+      setMsg({type:"ok", text:"Fișier șters."});
+      load();
+    } catch(err) {
+      setMsg({type:"err", text:"Eroare la ștergere."});
+    }
+  };
+
+  const SB_STORAGE = "https://hgknirjorjvlofhngvcp.supabase.co/storage/v1";
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
+        <div>
+          <h3 style={{color:"#0a2a18",fontSize:17,margin:"0 0 4px"}}>📁 Fișiere mele — {selLab.code}</h3>
+          <p style={{color:"#4a9a6a",fontSize:13,margin:0}}>Încarcă PDF-uri, prezentări sau alte materiale pentru studenți.</p>
+        </div>
+        <div>
+          <input ref={fileRef} type="file" style={{display:"none"}} onChange={upload}
+            accept=".pdf,.pptx,.ppt,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg,.gif,.zip"/>
+          <button onClick={()=>fileRef.current.click()} disabled={uploading}
+            style={{padding:"10px 18px",background:"linear-gradient(135deg,#10b981,#059669)",color:"white",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}}>
+            {uploading?"⏳ Se încarcă…":"📤 Încarcă fișier"}
+          </button>
+        </div>
+      </div>
+      {msg.text && <div style={{padding:"10px 14px",borderRadius:9,marginBottom:14,fontSize:13,fontWeight:600,
+        background:msg.type==="ok"?"#dcfce7":"#fee2e2",color:msg.type==="ok"?"#16a34a":"#dc2626"}}>
+        {msg.type==="ok"?"✅":"❌"} {msg.text}
+      </div>}
+      {loading ? <div style={{textAlign:"center",padding:30,color:"#94a3b8"}}>Se încarcă fișierele…</div>
+      : files.length===0 ? (
+        <div style={{background:"#f0fdf4",border:"1.5px solid #b2ddc8",borderRadius:12,padding:24,textAlign:"center",color:"#4a9a6a"}}>
+          <div style={{fontSize:32,marginBottom:8}}>📂</div>
+          <p style={{fontWeight:600,marginBottom:4}}>Niciun fișier încărcat pentru {selLab.code}</p>
+          <p style={{fontSize:13}}>Apăsați butonul de mai sus pentru a încărca primul fișier.</p>
+        </div>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {files.map((f,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,.05)"}}>
+              <span style={{fontSize:24}}>{getFileIcon(f.name)}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <p style={{fontWeight:600,fontSize:14,color:"#0a2a18",margin:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.name}</p>
+                <p style={{fontSize:11,color:"#94a3b8",margin:"2px 0 0"}}>{f.isOwn?"Fișierul tău":"Alt profesor"} · {Math.round((f.size||0)/1024)} KB</p>
+              </div>
+              <a href={SB_STORAGE+"/object/public/materiale/"+f.path} target="_blank" rel="noreferrer"
+                style={{padding:"6px 12px",background:"#f0fdf4",color:"#16a34a",border:"1px solid #86efac",borderRadius:8,fontSize:12,fontWeight:700,textDecoration:"none"}}>
+                ⬇️ Descarcă
+              </a>
+              {f.isOwn && <button onClick={()=>del(f.path)}
+                style={{padding:"6px 10px",background:"#fef2f2",color:"#dc2626",border:"1px solid #fca5a5",borderRadius:8,fontSize:12,cursor:"pointer"}}>
+                🗑️
+              </button>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// TOKEN JOIN
+// ════════════════════════════════════════════════════════════
+function TokenJoin({token, onValid, onInvalid}) {
+  React.useEffect(()=>{
+    if (!token) { onInvalid("Token lipsă."); return; }
+    getSession(token).then(s=>{
+      if (!s) { onInvalid("Cod QR invalid sau expirat."); return; }
+      if (Date.now() > s.expiresAt) { onInvalid("Sesiunea a expirat. Cereți un cod nou de la profesor."); return; }
+      onValid(s);
+    }).catch(()=>onInvalid("Eroare de rețea. Verificați conexiunea."));
+  },[]);
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:48,height:48,border:"5px solid #e2e8f0",borderTopColor:"#10b981",borderRadius:"50%",animation:"spin 1s linear infinite",margin:"0 auto 16px"}}/>
+        <p style={{color:"#4a9a6a",fontSize:15}}>Se verifică codul QR…</p>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// STUDENT LOGIN
+// ════════════════════════════════════════════════════════════
+function StudentLogin({session, onLogin}) {
+  const [name, setName]   = useState("");
+  const [group, setGroup] = useState("");
+  const [spec, setSpec]   = useState("");
+  const [err, setErr]     = useState("");
+  const lab = LABS.find(l=>l.id===session.labId) || {};
+
+  const go = () => {
+    if (name.trim().length < 3) { setErr("Introduceți numele complet (min. 3 caractere)."); return; }
+    if (!group) { setErr("Selectați grupa!"); return; }
+    if (!spec) { setErr("Selectați specializarea!"); return; }
+    markSessionUsed(session.token, name.trim());
+    onLogin(name.trim(), group, spec);
+  };
+
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{...S.card,maxWidth:420,width:"100%"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <div style={{fontSize:36}}>{lab.icon||"🧪"}</div>
+          <h2 style={{color:"#0a2a18",fontSize:20,margin:"8px 0 4px"}}>{lab.code} — {lab.title}</h2>
+          <p style={{color:"#4a9a6a",fontSize:13,margin:0}}>Profesor: {session.teacher||"–"}</p>
+        </div>
+        <label style={S.label}>Numele și prenumele</label>
+        <input style={{...S.input,marginBottom:12}} placeholder="ex. Ionescu Maria"
+          value={name} onChange={e=>{setName(e.target.value);setErr("");}}
+          onKeyDown={e=>e.key==="Enter"&&go()}/>
+        <label style={S.label}>Grupa</label>
+        <input style={{...S.input,marginBottom:12}} placeholder="ex. 214"
+          value={group} onChange={e=>{setGroup(e.target.value);setErr("");}}/>
+        <label style={S.label}>Specializare</label>
+        <select style={{...S.input,marginBottom:16}} value={spec} onChange={e=>{setSpec(e.target.value);setErr("");}}>
+          <option value="">— Selectați specializarea —</option>
+          {loadNomenclator().specializations.map(s=><option key={s} value={s}>{s}</option>)}
+        </select>
+        {err && <p style={{color:"#dc2626",fontSize:13,margin:"0 0 10px",fontWeight:600}}>{err}</p>}
+        <button style={S.btnG} onClick={go}>Intră la test →</button>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// DEMO SCREEN
+// ════════════════════════════════════════════════════════════
+function DemoScreen({lab, onBack}) {
+  const demos = LAB_DEMOS[lab?.id] || [];
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px"}}>
+      <div style={{maxWidth:800,margin:"0 auto"}}>
+        <button onClick={onBack} style={{...S.btnW,width:"auto",padding:"8px 16px",marginBottom:20,fontSize:13}}>← Înapoi</button>
+        <h2 style={{color:"#0a2a18",fontSize:22,marginBottom:4}}>📽️ Materiale — {lab?.code}</h2>
+        <p style={{color:"#4a9a6a",fontSize:14,marginBottom:20}}>Prezentări interactive și laboratoare animate.</p>
+        {demos.length===0
+          ? <div style={{background:"#f0fdf4",borderRadius:12,padding:24,textAlign:"center",color:"#4a9a6a"}}>
+              <p style={{fontWeight:600}}>Niciun material disponibil pentru {lab?.code}.</p>
+            </div>
+          : <div style={{display:"flex",flexDirection:"column",gap:12}}>
+              {demos.map((d,i)=>(
+                <a key={i} href={d.url} target="_blank" rel="noreferrer"
+                  style={{display:"flex",alignItems:"center",gap:14,padding:"16px 20px",background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:14,textDecoration:"none",color:"#166534",fontWeight:600,fontSize:15}}>
+                  <span style={{fontSize:28}}>🔗</span>
+                  <span style={{flex:1}}>{d.title}</span>
+                  <span style={{fontSize:12,opacity:.6,background:"#dcfce7",padding:"4px 10px",borderRadius:20}}>Deschide →</span>
+                </a>
+              ))}
+            </div>
+        }
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// GENERIC MODULE SELECT
+// ════════════════════════════════════════════════════════════
+function GenericModuleSelect({lab, modules, questions, studentName, onSelect, onDemo}) {
+  const demos = LAB_DEMOS[lab?.id] || [];
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px"}}>
+      <div style={{maxWidth:800,margin:"0 auto"}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{fontSize:42,marginBottom:8}}>{lab?.icon}</div>
+          <h2 style={{color:"#0a2a18",fontSize:22,margin:"0 0 6px"}}>{lab?.code} — {lab?.title}</h2>
+          {studentName && <p style={{color:"#4a9a6a",fontSize:14,margin:0}}>Bun venit, {studentName}!</p>}
+        </div>
+        {demos.length>0 && (
+          <div style={{background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:14,padding:"16px 20px",marginBottom:20}}>
+            <p style={{fontWeight:700,fontSize:14,color:"#0a2a18",margin:"0 0 10px"}}>📽️ Materiale disponibile</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              {demos.map((d,i)=>(
+                <a key={i} href={d.url} target="_blank" rel="noreferrer"
+                  style={{padding:"8px 14px",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"1.5px solid #86efac",borderRadius:10,textDecoration:"none",color:"#166534",fontSize:13,fontWeight:600}}>
+                  🔗 {d.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+        <p style={{fontWeight:700,color:"#0a2a18",fontSize:16,marginBottom:16}}>Selectează modulul:</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+          {modules.map(m=>{
+            const count = (questions[m.id]||[]).length;
+            return (
+              <button key={m.id} onClick={()=>onSelect(m)}
+                style={{padding:"18px 16px",background:m.dim,border:"1.5px solid "+m.border,borderRadius:14,cursor:"pointer",textAlign:"left",transition:"all .2s"}}>
+                <div style={{fontSize:28,marginBottom:6}}>{m.icon}</div>
+                <p style={{fontWeight:700,color:m.color,fontSize:15,margin:"0 0 4px"}}>{m.title}</p>
+                <p style={{color:"#4a7a60",fontSize:12,margin:"0 0 8px"}}>{m.sub}</p>
+                <p style={{color:m.color,fontSize:11,fontWeight:600}}>⏱ {m.time} min · {Math.min(m.count||count,count)} întrebări</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// LP4B MODULE SELECT
+// ════════════════════════════════════════════════════════════
+function LP4BModuleSelect({studentName, onSelect, onDemo}) {
+  return <GenericModuleSelect
+    lab={LABS.find(l=>l.id==="lp4b")}
+    modules={LP4B_MODULES}
+    questions={LP4B_QUESTIONS}
+    studentName={studentName}
+    onSelect={onSelect}
+    onDemo={onDemo}/>;
+}
+
+// ════════════════════════════════════════════════════════════
+// QUIZ SCREEN
+// ════════════════════════════════════════════════════════════
+function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFinish, sessionTeacher, sessionSemester}) {
+  const _labQMap = {
+    lp1a:LP1A_QUESTIONS, lp1b:LP1B_QUESTIONS,
+    lp2a:LP2A_QUESTIONS, lp2b:LP2B_QUESTIONS,
+    lp3a:LP3A_QUESTIONS, lp3b:LP3B_QUESTIONS,
+    lp4a:LP4A_QUESTIONS, lp4b:LP4B_QUESTIONS,
+    lp5a:LP5A_QUESTIONS, lp5b:LP5B_QUESTIONS,
+    lp6a:LP6A_QUESTIONS, lp6b:LP6B_QUESTIONS,
+  };
+  const _allQs = (_labQMap[labId] || LP4B_QUESTIONS)[module.id] || [];
+  const [qs]          = useState(() => shufflePick(_allQs, module.count || _allQs.length));
+  const [cur, setCur] = useState(0);
+  const [sel, setSel] = useState(null);
+  const [ans, setAns] = useState([]);
+  const [startT]      = useState(Date.now());
+  const [showExp, setShowExp] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const q = qs[cur];
+  if (!q) return null;
+
+  const confirm = () => {
+    if (sel===null) return;
+    setConfirmed(true);
+    setShowExp(true);
+  };
+
+  const next = () => {
+    const newAns = [...ans, {q:q.q, chosen:sel, correct:q.c, options:q.o, explanation:q.e||""}];
+    if (cur+1 >= qs.length) {
+      const score = newAns.filter(a=>a.chosen===a.correct).length;
+      const pct = Math.round(score/qs.length*100);
+      const timeUsed = Math.round((Date.now()-startT)/1000);
+      const entry = {
+        name:studentName, group:studentGroup, spec:studentSpec||"",
+        labId, labCode:module.labCode||(LABS.find(l=>l.id===labId)||{}).code,
+        module:module.id, moduleTitle:module.title,
+        score, total:qs.length, pct, timeUsed,
+        timestamp:Date.now(),
+        teacher:sessionTeacher||"", semester:sessionSemester||"",
+        specialization:studentSpec||""
+      };
+      addResult(entry).catch(()=>{});
+      onFinish(entry, newAns, qs);
+    } else {
+      setAns(newAns);
+      setCur(cur+1);
+      setSel(null);
+      setShowExp(false);
+      setConfirmed(false);
+    }
+  };
+
+  const pct = Math.round((cur)/qs.length*100);
+  const pctColor = (p) => p>=80?"#16a34a":p>=60?"#ca8a04":"#dc2626";
+
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"16px"}}>
+      <div style={{maxWidth:680,margin:"0 auto"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16,background:"#fff",borderRadius:14,padding:"12px 16px",border:"1.5px solid #b2ddc8"}}>
+          <div style={{flex:1}}>
+            <p style={{fontWeight:700,color:module.color,fontSize:13,margin:"0 0 2px"}}>{module.icon} {module.title}</p>
+            <p style={{color:"#4a9a6a",fontSize:12,margin:0}}>{studentName} · Î{cur+1}/{qs.length}</p>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <p style={{fontWeight:800,color:pctColor(pct),fontSize:16,margin:"0 0 2px"}}>{cur}/{qs.length}</p>
+            <p style={{color:"#94a3b8",fontSize:11,margin:0}}>răspunsuri</p>
+          </div>
+        </div>
+        <div style={{height:6,background:"#e2e8f0",borderRadius:3,marginBottom:16,overflow:"hidden"}}>
+          <div style={{height:"100%",background:"linear-gradient(90deg,"+module.color+",#10b981)",width:pct+"%",transition:"width .4s",borderRadius:3}}/>
+        </div>
+        {q.s && <div style={{background:"#fef9c3",border:"1px solid #fde68a",borderRadius:10,padding:"10px 14px",marginBottom:12,fontSize:13,color:"#92400e"}}>📊 {q.s}</div>}
+        <div style={{background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:16,padding:"20px",marginBottom:16,boxShadow:"0 2px 12px rgba(0,0,0,.06)"}}>
+          <p style={{fontWeight:700,fontSize:16,color:"#0a2a18",lineHeight:1.5,margin:"0 0 16px"}}>{q.q}</p>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {q.o.map((opt,i)=>{
+              let bg="#f8fdfb", border="1.5px solid #b2ddc8", color="#0a2a18", fw=400;
+              if (confirmed) {
+                if (i===q.c) { bg="#dcfce7"; border="2px solid #16a34a"; color="#166534"; fw=700; }
+                else if (i===sel && i!==q.c) { bg="#fee2e2"; border="2px solid #dc2626"; color="#991b1b"; }
+              } else if (sel===i) { bg=module.dim; border="2px solid "+module.color; color=module.color; fw=700; }
+              return (
+                <button key={i} onClick={()=>{if(!confirmed){setSel(i);}}}
+                  style={{padding:"12px 16px",borderRadius:10,border,background:bg,color,fontWeight:fw,fontSize:14,textAlign:"left",cursor:confirmed?"default":"pointer",transition:"all .15s"}}>
+                  <span style={{opacity:.6,marginRight:8}}>{String.fromCharCode(65+i)}.</span>{opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {showExp && q.e && (
+          <div style={{background:"#eff6ff",border:"1.5px solid #bfdbfe",borderRadius:12,padding:"12px 16px",marginBottom:16,fontSize:13,color:"#1e40af",lineHeight:1.6}}>
+            💡 {q.e}
+          </div>
+        )}
+        {!confirmed
+          ? <button style={{...S.btnG,opacity:sel===null?.4:1}} onClick={confirm} disabled={sel===null}>Confirmă răspunsul</button>
+          : <button style={S.btnG} onClick={next}>{cur+1>=qs.length?"Finalizează testul →":"Următoarea întrebare →"}</button>
+        }
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// RESULT SCREEN
+// ════════════════════════════════════════════════════════════
+function ResultScreen({studentName, studentGroup, labId, module, entry, answers, qs, onRestart, onModules}) {
+  const pctColor = (p) => p>=80?"#16a34a":p>=60?"#ca8a04":"#dc2626";
+  const pc = pctColor(entry.pct);
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",padding:"24px 16px"}}>
+      <div style={{maxWidth:680,margin:"0 auto"}}>
+        <div style={{background:"#fff",border:"1.5px solid #b2ddc8",borderRadius:20,padding:"28px 24px",marginBottom:20,textAlign:"center",boxShadow:"0 4px 20px rgba(0,0,0,.08)"}}>
+          <div style={{width:88,height:88,borderRadius:"50%",border:"5px solid "+pc,margin:"0 auto 14px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+            <span style={{fontSize:26,fontWeight:800,color:pc,lineHeight:1}}>{entry.score}</span>
+            <span style={{fontSize:12,color:pc,opacity:.7}}>/{entry.total}</span>
+          </div>
+          <h2 style={{color:"#0a2a18",fontSize:22,margin:"0 0 4px"}}>{entry.pct}% — {entry.pct>=80?"Excelent! 🎉":entry.pct>=60?"Bun! 👍":"Mai încearcă! 💪"}</h2>
+          <p style={{color:"#4a9a6a",fontSize:14,margin:"0 0 4px"}}>{studentName} · {module.title}</p>
+          <p style={{color:"#94a3b8",fontSize:12,margin:0}}>Timp: {entry.timeUsed}s · {new Date().toLocaleString("ro-RO")}</p>
+        </div>
+        <div style={{display:"flex",gap:10,marginBottom:20}}>
+          <button style={{...S.btnG,flex:1}} onClick={onRestart}>🔄 Reîncepe</button>
+          <button style={{...S.btnW,flex:1}} onClick={onModules}>← Module</button>
+        </div>
+        <h3 style={{color:"#0a2a18",fontSize:16,marginBottom:12}}>Răspunsuri detaliate</h3>
+        {answers.map((a,i)=>{
+          const correct = a.chosen===a.correct;
+          return (
+            <div key={i} style={{background:"#fff",border:"1.5px solid "+(correct?"#86efac":"#fca5a5"),borderRadius:12,padding:"14px 16px",marginBottom:10}}>
+              <p style={{fontWeight:700,fontSize:14,color:"#0a2a18",margin:"0 0 8px"}}>{i+1}. {a.q}</p>
+              <p style={{fontSize:13,color:correct?"#16a34a":"#dc2626",fontWeight:600,margin:"0 0 4px"}}>{correct?"✅":"❌"} {a.options[a.chosen]}</p>
+              {!correct && <p style={{fontSize:13,color:"#16a34a",margin:"0 0 4px"}}>✓ Corect: {a.options[a.correct]}</p>}
+              {a.explanation && <p style={{fontSize:12,color:"#4a9a6a",margin:"4px 0 0",lineHeight:1.5}}>{a.explanation}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// ERROR SCREEN
+// ════════════════════════════════════════════════════════════
+function ErrorScreen({message, onBack}) {
+  return (
+    <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#e8f5ee,#f0f9f4)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div style={{...S.card,maxWidth:380,textAlign:"center"}}>
+        <div style={{fontSize:44,marginBottom:10}}>⚠️</div>
+        <h2 style={{color:"#0a2a18",margin:"0 0 8px"}}>Eroare</h2>
+        <p style={{color:"#4a9a6a",fontSize:14,margin:"0 0 20px"}}>{message}</p>
+        <button style={S.btnG} onClick={onBack}>← Înapoi acasă</button>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════════
+function App() {
+  const [screen,      setScreen]      = useState("home");
+  const [session,     setSession]     = useState(null);
+  const [student,     setStudent]     = useState(null);
+  const [module,      setModule]      = useState(null);
+  const [result,      setResult]      = useState(null);
+  const [answers,     setAnswers]     = useState(null);
+  const [quizQs,      setQuizQs]      = useState([]);
+  const [teacherName, setTeacherName] = useState("");
+  const [showDemo,    setShowDemo]    = useState(false);
+  const [errMsg,      setErrMsg]      = useState("");
+  const [pendingToken,setPendingToken]= useState(null);
+
+  const handleJoinToken = token => { setPendingToken(token); setScreen("tokenJoin"); };
+
+  if (screen==="home")        return <HomePage onAdminLogin={()=>setScreen("adminLogin")} onJoinToken={handleJoinToken}/>;
+  if (screen==="adminLogin")  return <AdminLogin onSuccess={(t)=>{setTeacherName(t);setScreen("admin");}} onBack={()=>setScreen("home")}/>;
+  if (screen==="admin")       return <AdminPanel teacherName={teacherName} onBack={()=>setScreen("home")}/>;
+  if (screen==="tokenJoin")   return (
+    <TokenJoin token={pendingToken}
+      onValid={s=>{setSession(s);setScreen("studentLogin");}}
+      onInvalid={msg=>{setErrMsg(msg);setScreen("error");}}/>
+  );
+  if (screen==="error")       return <ErrorScreen message={errMsg} onBack={()=>{setScreen("home");window.history.pushState({},"",window.location.pathname);}}/>;
+  if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g,sp)=>{setStudent({name:n,group:g,spec:sp||""});setScreen("labRouter");}}/>;
+
+  if (screen==="labRouter") {
+    if (session?.labCode?.endsWith("-FISA")) { setScreen("fisa_grup"); }
+    else if (session?.labId==="lp1a") setScreen("lp1a_modules");
+    else if (session?.labId==="lp1b") setScreen("lp1b_modules");
+    else if (session?.labId==="lp2a") setScreen("lp2a_modules");
+    else if (session?.labId==="lp2b") setScreen("lp2b_modules");
+    else if (session?.labId==="lp3a") setScreen("lp3a_modules");
+    else if (session?.labId==="lp3b") setScreen("lp3b_modules");
+    else if (session?.labId==="lp6a") setScreen("lp6a_modules");
+    else if (session?.labId==="lp6b") setScreen("lp6b_modules");
+    else if (session?.labId==="lp4a") setScreen("lp4a_modules");
+    else if (session?.labId==="lp4b") setScreen("lp4b_modules");
+    else if (session?.labId==="lp5a") setScreen("lp5a_modules");
+    else if (session?.labId==="lp5b") setScreen("lp5b_modules");
+    else { setErrMsg("Practica "+session?.labCode+" nu are quiz activ inca."); setScreen("error"); }
+    return null;
+  }
+
+  if (screen==="fisa_grup") return (
+    <FisaGrupScreen session={session} student={student} onBack={()=>setScreen("home")}/>
+  );
+  if (screen==="lp1a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp1a")} modules={LP1A_MODULES} questions={LP1A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp1b_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp1b")} modules={LP1B_MODULES} questions={LP1B_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp2a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp2a")} modules={LP2A_MODULES} questions={LP2A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp2b_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp2b")} modules={LP2B_MODULES} questions={LP2B_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp3a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp3a")} modules={LP3A_MODULES} questions={LP3A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp3b_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp3b")} modules={LP3B_MODULES} questions={LP3B_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp6a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp6a")} modules={LP6A_MODULES} questions={LP6A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp6b_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp6b")} modules={LP6B_MODULES} questions={LP6B_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp5b_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp5b")} modules={LP5B_MODULES} questions={LP5B_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp5a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp5a")} modules={LP5A_MODULES} questions={LP5A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp4a_modules") return <GenericModuleSelect lab={LABS.find(l=>l.id==="lp4a")} modules={LP4A_MODULES} questions={LP4A_QUESTIONS} studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (screen==="lp4b_modules") return <LP4BModuleSelect studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
+  if (showDemo) return <DemoScreen lab={LABS.find(l=>l.id===session?.labId)} onBack={()=>setShowDemo(false)}/>;
+  if (screen==="quiz" && module) return (
+    <QuizScreen studentName={student?.name} studentGroup={student?.group} studentSpec={student?.spec||""}
+      labId={session?.labId} module={module} sessionTeacher={session?.teacher||""} sessionSemester={session?.semester||""}
+      onFinish={(e,a,q)=>{setResult(e);setAnswers(a);setQuizQs(q);setScreen("result");}}/>
+  );
+  if (screen==="result" && result) return (
+    <ResultScreen studentName={student?.name} studentGroup={student?.group}
+      labId={session?.labId} module={module} entry={result} answers={answers} qs={quizQs||[]}
+      onRestart={()=>{setResult(null);setAnswers(null);setScreen("quiz");}}
+      onModules={()=>{setResult(null);setAnswers(null);setModule(null);setScreen((session?.labId||"lp4b")+"_modules");}}/>
+  );
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
