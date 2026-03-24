@@ -1998,9 +1998,11 @@ function FisaGrupScreen({session, student, onBack}) {
   const [selectedFisa, setSelectedFisa] = useState(null);
   const [answers, setAnswers] = useState({});
   const [concluzii, setConcluzii] = useState({});
+  // phases: select | case | questions | evaluating | done
   const [phase, setPhase] = useState("select");
   const [evalResults, setEvalResults] = useState(null);
 
+  // ── GRUP SELECT ──────────────────────────────────────────
   if (phase === "select") return (
     <div style={FS.page}>
       <div style={FS.hdr}>
@@ -2011,13 +2013,13 @@ function FisaGrupScreen({session, student, onBack}) {
         </div>
       </div>
       <div style={{maxWidth:600,margin:"24px auto",padding:"0 16px"}}>
-        <div style={{background:"#fef9c3",border:"1.5px solid #fde68a",borderRadius:10,padding:"12px 16px",marginBottom:20,fontSize:13,color:"#92400e"}}>
-          <strong>📌 Instrucțiune:</strong> Selectați fișa grupei voastre, analizați cazul, răspundeți la întrebări și trimiteți. La final prezentați concluziile în <strong>2 minute</strong>.
+        <div style={{background:"#fef9c3",border:"1.5px solid #fde68a",borderRadius:10,padding:"14px 18px",marginBottom:20,fontSize:14,color:"#92400e",lineHeight:1.7}}>
+          <strong>📌 Instrucțiune generală:</strong> Fiecare grupă primește un caz clinic/situațional. Citiți cu atenție cazul prezentat, analizați-l împreună, apoi răspundeți la întrebările aferente. La final, prezentați concluziile în <strong>maximum 2 minute</strong>.
         </div>
-        <h3 style={{color:"#0d2040",fontSize:16,margin:"0 0 14px",fontWeight:700}}>Selectați fișa grupei:</h3>
+        <h3 style={{color:"#0d2040",fontSize:16,margin:"0 0 14px",fontWeight:700}}>Selectați fișa grupei voastre:</h3>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
           {allFise.map((f,i) => (
-            <button key={f.id} onClick={()=>{setSelectedFisa(f);setPhase("fill");}}
+            <button key={f.id} onClick={()=>{setSelectedFisa(f);setPhase("case");}}
               style={{padding:"14px 8px",borderRadius:12,border:"2px solid "+f.color+"44",background:f.color+"18",
                 cursor:"pointer",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
               <span style={{fontSize:26}}>{f.emoji}</span>
@@ -2031,45 +2033,137 @@ function FisaGrupScreen({session, student, onBack}) {
   );
 
   const f = selectedFisa;
-  const answered = f ? f.qs.filter((_,i) => (answers[i]||"").trim().length > 2).length : 0;
 
-  if (phase === "fill") return (
+  // ── CASE PRESENTATION ────────────────────────────────────
+  if (phase === "case") return (
     <div style={FS.page}>
       <div style={FS.hdr}>
         <span style={{fontSize:22}}>{f.emoji}</span>
         <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:15}}>Grupa {allFise.indexOf(f)+1} — {f.title.split(" — ")[0]}</div>
-          <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · {answered}/{f.qs.length} completate</div>
+          <div style={{fontWeight:700,fontSize:15}}>Grupa {allFise.indexOf(f)+1} — {f.title}</div>
+          <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · Citiți cazul cu atenție</div>
         </div>
         <button onClick={()=>setPhase("select")} style={{padding:"6px 12px",background:"rgba(255,255,255,.15)",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,color:"white",fontSize:12,cursor:"pointer"}}>← Înapoi</button>
       </div>
-      <div style={{height:3,background:"#e2e8f0"}}>
-        <div style={{height:"100%",background:"linear-gradient(90deg,#2E86DE,#10b981)",width:(answered/f.qs.length*100)+"%",transition:"width .4s"}}/>
-      </div>
-      <div style={{maxWidth:680,margin:"0 auto",padding:"16px 14px 90px"}}>
-        <div style={{...FS.card,marginBottom:16,background:"#eff6ff",border:"1.5px solid #bfdbfe"}}>
-          <div style={{fontSize:12,fontWeight:700,color:"#1e40af",textTransform:"uppercase",letterSpacing:".06em",marginBottom:8}}>📁 Cazul prezentat</div>
-          {f.caz.map((item,i) => (
-            <div key={i} style={{display:"flex",gap:8,padding:"4px 0",borderBottom:i<f.caz.length-1?"1px solid #dbeafe":"none"}}>
-              <span style={{fontSize:13,color:"#64748b",flex:1}}>{item.l}:</span>
-              <span style={{fontSize:13,fontWeight:700,color:"#0d2040",fontFamily:"monospace"}}>{item.v}</span>
+      <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 40px"}}>
+
+        {/* CAZUL — mare, proeminent */}
+        <div style={{background:"white",borderRadius:16,border:"2px solid "+f.color,boxShadow:"0 4px 24px rgba(0,0,0,.1)",overflow:"hidden",marginBottom:24}}>
+          <div style={{background:f.color,padding:"14px 20px",display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:28}}>{f.emoji}</span>
+            <div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,.8)",textTransform:"uppercase",letterSpacing:".08em",fontWeight:700}}>Caz prezentat — Grupa {allFise.indexOf(f)+1}</div>
+              <div style={{fontSize:17,fontWeight:800,color:"white"}}>{f.title}</div>
             </div>
-          ))}
+          </div>
+          <div style={{padding:"20px 24px"}}>
+            <div style={{fontSize:12,fontWeight:700,color:f.color,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>📁 Situația</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {f.caz.map((item,i) => (
+                item.v ? (
+                  <div key={i} style={{display:"flex",gap:12,padding:"8px 12px",background:i%2===0?"#f8fafc":"white",borderRadius:8,alignItems:"baseline"}}>
+                    <span style={{fontSize:13,color:"#64748b",minWidth:160,flexShrink:0,fontWeight:500}}>{item.l}</span>
+                    <span style={{fontSize:14,fontWeight:700,color:"#0d2040",fontFamily:"'Courier New',monospace"}}>{item.v}</span>
+                  </div>
+                ) : (
+                  <div key={i} style={{padding:"6px 0",fontSize:13,color:"#94a3b8",fontStyle:"italic"}}>{item.l}</div>
+                )
+              ))}
+            </div>
+          </div>
         </div>
+
+        {/* Sarcina comună */}
+        <div style={{background:"#eff6ff",border:"1.5px solid #bfdbfe",borderRadius:12,padding:"16px 20px",marginBottom:24}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#1e40af",textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>📌 Sarcina grupei</div>
+          <ol style={{margin:0,paddingLeft:20,fontSize:14,color:"#1e3a8a",lineHeight:2}}>
+            <li>Identificați problema principală</li>
+            <li>Explicați ce principiu de igienă este implicat</li>
+            <li>Precizați efectele posibile asupra sănătății</li>
+            <li>Formulați 3 măsuri concrete de corecție sau prevenire</li>
+            <li>Stabiliți prioritatea intervenției</li>
+          </ol>
+        </div>
+
+        {/* Preview întrebări */}
+        <div style={{background:"#f0fdf4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"16px 20px",marginBottom:28}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>📝 Întrebările aferente cazului ({f.qs.length} întrebări)</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {f.qs.map((q,i)=>(
+              <div key={i} style={{display:"flex",gap:10,fontSize:13,color:"#166534",lineHeight:1.5}}>
+                <span style={{fontWeight:700,minWidth:24,color:f.color}}>{i+1}.</span>
+                <span>{q.q}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <button onClick={()=>setPhase("questions")}
+          style={{width:"100%",padding:"16px",background:"linear-gradient(135deg,"+f.color+","+f.color+"cc)",color:"white",border:"none",borderRadius:14,fontSize:16,fontWeight:800,cursor:"pointer",boxShadow:"0 4px 16px "+f.color+"44",letterSpacing:".02em"}}>
+          Am înțeles cazul — Încep să răspund →
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── QUESTIONS PHASE ──────────────────────────────────────
+  const answered = f ? f.qs.filter((_,i) => (answers[i]||"").trim().length > 2).length : 0;
+
+  if (phase === "questions") return (
+    <div style={FS.page}>
+      <div style={FS.hdr}>
+        <span style={{fontSize:22}}>{f.emoji}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,fontSize:15}}>{f.title}</div>
+          <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · {answered}/{f.qs.length} răspunsuri</div>
+        </div>
+        <button onClick={()=>setPhase("case")} style={{padding:"6px 12px",background:"rgba(255,255,255,.15)",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,color:"white",fontSize:12,cursor:"pointer"}}>📋 Vezi cazul</button>
+      </div>
+      <div style={{height:3,background:"#e2e8f0"}}>
+        <div style={{height:"100%",background:"linear-gradient(90deg,"+f.color+",#10b981)",width:(answered/f.qs.length*100)+"%",transition:"width .4s"}}/>
+      </div>
+
+      <div style={{maxWidth:680,margin:"0 auto",padding:"16px 14px 100px"}}>
+
+        {/* Cazul rezumat — compact, collapsible */}
+        <details style={{marginBottom:16}}>
+          <summary style={{background:"white",border:"1.5px solid "+f.color+"44",borderRadius:10,padding:"10px 16px",
+            fontSize:13,fontWeight:700,color:f.color,cursor:"pointer",listStyle:"none",display:"flex",alignItems:"center",gap:8}}>
+            <span>{f.emoji}</span> 📋 Recitește cazul (apasă pentru a deschide)
+          </summary>
+          <div style={{background:"white",border:"1.5px solid "+f.color+"44",borderTop:"none",borderRadius:"0 0 10px 10px",padding:"12px 16px"}}>
+            {f.caz.map((item,i) => (
+              item.v ? (
+                <div key={i} style={{display:"flex",gap:8,padding:"5px 0",borderBottom:i<f.caz.length-1?"1px solid #f1f5f9":"none"}}>
+                  <span style={{fontSize:13,color:"#64748b",minWidth:150,flexShrink:0}}>{item.l}:</span>
+                  <span style={{fontSize:13,fontWeight:700,color:"#0d2040",fontFamily:"monospace"}}>{item.v}</span>
+                </div>
+              ) : null
+            ))}
+          </div>
+        </details>
+
+        {/* Questions */}
         {f.qs.map((q,i) => (
-          <div key={i} style={{...FS.qCard,borderLeft:"4px solid "+((answers[i]||"").trim().length>2?f.color:"#cbd5e1")}}>
-            <div style={{fontSize:11,fontWeight:700,color:(answers[i]||"").trim().length>2?f.color:"#94a3b8",textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>
-              {(answers[i]||"").trim().length>2?"✓ ":""}Întrebarea {i+1}
+          <div key={i} style={{...FS.qCard,borderLeft:"4px solid "+((answers[i]||"").trim().length>2?f.color:"#cbd5e1"),marginBottom:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <span style={{background:(answers[i]||"").trim().length>2?f.color:"#e2e8f0",color:(answers[i]||"").trim().length>2?"white":"#94a3b8",
+                fontSize:11,fontWeight:800,padding:"2px 8px",borderRadius:20,flexShrink:0}}>
+                Î{i+1}
+              </span>
+              <span style={{fontSize:15,fontWeight:700,color:"#0d2040",lineHeight:1.4}}>{q.q}</span>
             </div>
-            <div style={{fontSize:15,fontWeight:600,color:"#0d2040",marginBottom:8,lineHeight:1.4}}>{q.q}</div>
-            <textarea style={FS.ta} placeholder="Scrieți răspunsul dvs. aici…"
+            <textarea style={FS.ta} placeholder="Scrieți răspunsul grupei dvs. aici…"
               value={answers[i]||""}
               onChange={e=>{const na={...answers};na[i]=e.target.value;setAnswers(na);}}
             />
             <div style={{textAlign:"right",fontSize:11,color:"#94a3b8",marginTop:3}}>{(answers[i]||"").length} caractere</div>
           </div>
         ))}
-        <div style={{...FS.card,background:"#f0fdf4",border:"1.5px solid #bbf7d0",marginTop:8}}>
+
+        {/* Concluzie */}
+        <div style={{background:"#f0fdf4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"16px 18px",marginTop:4}}>
           <div style={{fontSize:12,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".06em",marginBottom:10}}>✅ Concluzia grupei</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {f.conc.map((label,i)=>(
@@ -2085,16 +2179,18 @@ function FisaGrupScreen({session, student, onBack}) {
           </div>
         </div>
       </div>
+
+      {/* Float bar */}
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",borderTop:"1.5px solid #e2e8f0",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 -4px 20px rgba(0,0,0,.08)"}}>
         <div style={{flex:1}}>
-          <div style={{fontSize:13,fontWeight:700,color:"#16a34a"}}>{answered} / {f.qs.length} întrebări</div>
-          <div style={{fontSize:11,color:"#94a3b8"}}>completate</div>
+          <div style={{fontSize:13,fontWeight:700,color:answered>=f.qs.length?"#16a34a":f.color}}>{answered} / {f.qs.length} răspunsuri</div>
+          <div style={{fontSize:11,color:"#94a3b8"}}>{answered>=f.qs.length?"Toate completate!":"completate"}</div>
         </div>
         <button onClick={()=>{
             if(answered<1){alert("Completați cel puțin o întrebare înainte de a trimite!");return;}
             submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEvalResults);
           }}
-          style={{padding:"12px 22px",background:answered>=1?"linear-gradient(135deg,#10b981,#059669)":"#e2e8f0",
+          style={{padding:"12px 24px",background:answered>=1?"linear-gradient(135deg,#10b981,#059669)":"#e2e8f0",
             color:answered>=1?"white":"#94a3b8",border:"none",borderRadius:11,fontSize:15,fontWeight:700,cursor:"pointer",transition:"all .2s"}}>
           ✉️ Trimite răspunsurile
         </button>
@@ -2102,6 +2198,7 @@ function FisaGrupScreen({session, student, onBack}) {
     </div>
   );
 
+  // ── EVALUATING ───────────────────────────────────────────
   if (phase === "evaluating") return (
     <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#f0f4f8,#e8f0f8)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div style={{...FS.card,maxWidth:440,textAlign:"center",padding:"40px 28px"}}>
@@ -2112,6 +2209,7 @@ function FisaGrupScreen({session, student, onBack}) {
     </div>
   );
 
+  // ── DONE ─────────────────────────────────────────────────
   if (phase === "done" && evalResults) {
     const {evaluations,totalScore,maxScore,pct} = evalResults;
     const sc = pct>=80?"#16a34a":pct>=60?"#d97706":"#dc2626";
@@ -2132,14 +2230,22 @@ function FisaGrupScreen({session, student, onBack}) {
               <span style={{fontSize:12,color:sc,opacity:.7}}>/{maxScore}</span>
             </div>
             <h3 style={{color:"#0d2040",margin:"0 0 4px"}}>{pct>=80?"Excelent! 🎉":pct>=60?"Bun! 👍":"Necesită îmbunătățiri"}</h3>
-            <p style={{color:"#64748b",fontSize:13}}>{student?.name} · Grupa {student?.group}</p>
+            <p style={{color:"#64748b",fontSize:13}}>{student?.name} · Grupa {student?.group} · {f.title}</p>
           </div>
+
+          {/* Case recap in results */}
+          <div style={{background:"white",borderRadius:12,border:"1.5px solid "+f.color+"44",padding:"14px 18px",marginBottom:16}}>
+            <div style={{fontSize:12,fontWeight:700,color:f.color,marginBottom:8}}>📋 Cazul analizat</div>
+            <div style={{fontSize:13,color:"#475569"}}>{f.caz.filter(i=>i.v).map(i=>i.l+": "+i.v).join(" · ")}</div>
+          </div>
+
           {f.qs.map((q,i)=>{
             const ev=evaluations[i]||{score:0,feedback:"Fără evaluare"};
             const cc=ev.score===2?"#16a34a":ev.score===1?"#d97706":"#dc2626";
             return (
               <div key={i} style={{...FS.card,marginBottom:10,borderLeft:"4px solid "+cc}}>
-                <div style={{fontSize:13,fontWeight:600,color:"#0d2040",marginBottom:6}}>Î{i+1}. {q.q}</div>
+                <div style={{fontSize:11,fontWeight:700,color:cc,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>Întrebarea {i+1}</div>
+                <div style={{fontSize:13,fontWeight:600,color:"#0d2040",marginBottom:6}}>{q.q}</div>
                 <div style={{fontSize:13,color:"#475569",background:"#f8fafc",borderRadius:7,padding:"7px 10px",marginBottom:7,borderLeft:"3px solid #e2e8f0"}}>{answers[i]||"(fără răspuns)"}</div>
                 <div style={{fontSize:13,background:ev.score===2?"#f0fdf4":ev.score===1?"#fffbeb":"#fef2f2",borderLeft:"3px solid "+cc,padding:"8px 10px",borderRadius:7,lineHeight:1.6}}>
                   🤖 <strong>Evaluare AI:</strong> {ev.feedback}
@@ -2151,7 +2257,7 @@ function FisaGrupScreen({session, student, onBack}) {
             );
           })}
           <div style={{background:"#eff6ff",borderRadius:12,padding:"12px 16px",marginTop:8,fontSize:13,color:"#1e40af"}}>
-            <strong>⏱️ Urmează:</strong> Prezentați concluziile în <strong>maximum 2 minute</strong>.
+            <strong>⏱️ Urmează:</strong> Prezentați cazul și concluziile grupei în <strong>maximum 2 minute</strong>.
           </div>
           <button onClick={onBack} style={{width:"100%",padding:14,background:"#0d2040",color:"white",border:"none",borderRadius:12,fontSize:15,fontWeight:700,cursor:"pointer",marginTop:14}}>
             🏠 Înapoi la pagina principală
@@ -2162,6 +2268,7 @@ function FisaGrupScreen({session, student, onBack}) {
   }
   return null;
 }
+
 
 async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEvalResults) {
   setPhase("evaluating");
