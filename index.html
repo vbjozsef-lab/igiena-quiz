@@ -1882,14 +1882,15 @@ function NomenclatorEditor({nomenclator, onChange}) {
 // FIȘE GRUP — DATA & COMPONENTS
 // ════════════════════════════════════════════════════════════
 const FISE_LABS = {
-  lp1a: { title:"LP1A · Igiena Aerului", available:true,
-    grupe:9, desc:"9 fise: microclimat, temperatura, umiditate, miscare aer, temperatura radianta, confort termic, pulberi, gaze, alergie latex" },
-  lp6a: { title:"LP6A · Radiații Ionizante", available:true,
-    grupe:6, desc:"6 fise: surse si tipuri, unitati de masura, tipuri expunere, dozimetrie, limite si protectia personalului, radioprotectia pacientului" },
-  lp6b: { title:"LP6B · Igiena Scolara", available:true,
-    grupe:6, desc:"6 fise: variatii zilnice, variatii saptamanale, variatii anuale, orar scolar, comportamente de risc, plan de prevenire" },
-  lp1b: { title:"LP1B · Pulberi & Gaze", available:false, grupe:0, desc:"In pregatire" },
-  lp2a: { title:"LP2A · Fumat & Microbi", available:false, grupe:0, desc:"In pregatire" },
+  lp1a: { title:"LP1A · Igiena Aerului",         available:true,  grupe:9, desc:"9 fise: microclimat, temperatura, umiditate, miscare aer, temperatura radianta, confort termic, pulberi, gaze, alergie latex" },
+  lp1b: { title:"LP1B · Pulberi & Gaze",          available:true,  grupe:6, desc:"6 fise: pulberi PM10/PM2.5, COV, NTG birou, stafilococi bloc operator, azbest scoala, formaldehida gradinita" },
+  lp2a: { title:"LP2A · Fumat & Microbi",         available:true,  grupe:6, desc:"6 fise: Fagerstrom + CO, fumat pasiv restaurant, NTG cabinet stomatologic, focar MRSA, sick building, dezinfectie gresita" },
+  lp2b: { title:"LP2B · Iluminat & Sonometrie",   available:true,  grupe:6, desc:"6 fise: iluminat clasa, zgomot cantina, microclimat neonatologie, sonometrie tipografie, iluminat sala operatii, vibratii sofer" },
+  lp3a: { title:"LP3A · Apa fizico-chimic",       available:true,  grupe:6, desc:"6 fise: nitrati sugari, apa imbaierea, pH+clor, fluoroza, plumb conducte, poluare industriala" },
+  lp3b: { title:"LP3B · Apa microbiologie",       available:true,  grupe:6, desc:"6 fise: focar hidric E.coli, Legionella hotel, Cryptosporidium piscina, nitriti accident, farmaceutice rau, THM dezinfectie" },
+  lp4a: { title:"LP4A · Starea de nutritie",      available:true,  grupe:6, desc:"6 fise: obezitate DZ, malnutritie varstnic, ancheta alimentara, sportiv maraton, sugar rahitism, screening NRS spital" },
+  lp6a: { title:"LP6A · Radiații Ionizante",      available:true,  grupe:6, desc:"6 fise: surse si tipuri, unitati de masura, tipuri expunere, dozimetrie, limite si protectia personalului, radioprotectia pacientului" },
+  lp6b: { title:"LP6B · Igiena Scolara",          available:true,  grupe:6, desc:"6 fise: variatii zilnice, variatii saptamanale, variatii anuale, orar scolar, comportamente de risc, plan de prevenire" },
 };
 
 
@@ -2119,6 +2120,414 @@ const FISE_DATA = {
         {q:"Cum se protejează organele critice la pacienți? Dați exemple specifice pe categorii de pacienți.",h:"Gonado-protecție copii/tineri. Guler tiroidian (Rx torace copii). Șort abdominal gravide. Ochelari (Rx craniu)."},
       ], conc:["Solicitarea nejustificată și motivul","Principiul de bază al radioprotecției pacientului","Cea mai importantă măsură tehnică de reducere a dozei"] },
   ],
+  lp1b: [
+    { id:"g1", emoji:"🏭", title:"Pulberi în secția de prelucrare mecanică", color:"#64748b",
+      caz:[{l:"Locație",v:"Atelier strungărie, 12 muncitori"},{l:"PM10 măsurat",v:"0,38 mg/m³"},{l:"PM2.5 estimat",v:"0,19 mg/m³"},{l:"Durată expunere",v:"8h/zi, 5 zile/săptămână"},{l:"EIP",v:"absent — nu poartă mască"},{l:"Simptome",v:"3 muncitori: tuse cronică, dispnee la efort"}],
+      qs:[
+        {q:"Sunteți inspector DSP. Identificați toate neconformitățile față de normele în vigoare.",h:"PM10 norma: 0,35 mg/m³ (depășit). Lipsa EIP = neconformitate gravă. 3 simptomatici = semnal de alarmă ocupațional."},
+        {q:"Calculați doza zilnică inhalată de un muncitor (volum respirator 10 m³/zi).",h:"Doză = 0,38 mg/m³ × 10 m³ = 3,8 mg/zi. Comparat cu limita profesională: 4 mg/zi (aproape de CMP)."},
+        {q:"Ce fracțiune din PM2.5 ajunge la nivel alveolar și ce risc implică?",h:"PM2.5 < 5µm → penetrare alveolară. Risc: pneumoconioze, fibroză, cancer pulmonar (IARC Gr.1)."},
+        {q:"Ce măsuri tehnice obligatorii propuneți pentru reducerea expunerii?",h:"Sistem aspirație localizată, ecrane de protecție, umectare așchii, capsulare utilaje zgomotoase."},
+        {q:"Ce EIP este obligatoriu și ce tip de filtru specificați în recomandare?",h:"Mască FFP2 (PM2.5) sau FFP3 (PM0.1). Obligatorie conform HG 1048/2006."},
+        {q:"Formulați decizia de inspector: ce sancțiuni și termene aplicați?",h:"Suspendare activitate dacă risc iminent. Avertisment + termen 30 zile pentru EIP + sistem aspirație. Reevaluare la 60 zile."},
+      ], conc:["Neconformitățile identificate","Măsura cu prioritate maximă","Termenul de remediere propus"] },
+
+    { id:"g2", emoji:"🌫️", title:"Ceață chimică lângă o fabrică de vopsele", color:"#6b7280",
+      caz:[{l:"Locație",v:"Cartier rezidențial, 200m de fabrică"},{l:"Substanță suspectă",v:"solvenți organici (toluen, xilen)"},{l:"Plângeri",v:"42 de cetățeni: cefalee, iritație oculară, greață"},{l:"Măsurare toluen",v:"85 ppm (olfactiv: 2 ppm)"},{l:"Limita CMA 8h",v:"50 ppm"},{l:"Direcție vânt",v:"dinspre fabrică spre cartier"}],
+      qs:[
+        {q:"Confirmați sau infirmați legătura cauzală dintre fabrică și simptome. Argumentați.",h:"85 ppm depășește CMA de 1,7×. Direcție vânt confirmă sursa. Simptomele concordă cu expunere la toluen. Legătură cauzală probabilă."},
+        {q:"Ce protocoale de urgență activați ca inspector DSP?",h:"Notificare Garda de Mediu + ANPM. Anchetă epidemiologică. Solicitare oprire producție până la remediere. Comunicat public."},
+        {q:"Ce investigații medicale recomandați pentru cei 42 de cetățeni?",h:"Examen neurologic, funcție hepatică (AST/ALT), hemoleucogramă. Biomarkeri: acid hipuric urinar (metabolit toluen)."},
+        {q:"Care este mecanismul de toxicitate al toluenului? Ce organe-țintă sunt afectate?",h:"Neurotoxic: dizolvă mielina. Hepatotoxic: metabolism hepatic cu radicali liberi. SNC (narcoze), ficat, rinichi."},
+        {q:"Ce modificări ale procesului de producție impuneți fabricii?",h:"Sisteme de retenție vapori (condensare), filtre cu carbon activ, monitorizare continuă emisii, program de difuzare nocturnă."},
+        {q:"Redactați concluzia raportului de inspecție în 3 puncte esențiale.",h:"1. Depășire CMA confirmată. 2. Risc pentru sănătate publică demonstrat. 3. Măsuri corective obligatorii cu termen de 15 zile."},
+      ], conc:["Concluzia anchetei cauzale","Măsura de urgență aplicată","Termenul de remediere"] },
+
+    { id:"g3", emoji:"💨", title:"Calitatea aerului interior — birou open-space", color:"#0ea5e9",
+      caz:[{l:"Locație",v:"Birou open-space, 35 angajați, 180 m²"},{l:"CO2 măsurat",v:"2.800 ppm"},{l:"Temperatura",v:"26°C"},{l:"Umiditate",v:"62%"},{l:"Ventilare",v:"mecanică defectă de 3 săptămâni"},{l:"Simptome",v:"sindrom sick building: cefalee, oboseală, dificultăți de concentrare la 60% din personal"}],
+      qs:[
+        {q:"Interpretați 2.800 ppm CO2 față de normele acceptate. Ce indică această valoare?",h:"Normal: <1000 ppm. 1000-2000: acceptabil. >2000: ventilare insuficientă. 2800 ppm = ventilare grav deficitară, acumulare biogaze."},
+        {q:"Care este legătura dintre CO2 crescut și simptomele raportate? Explicați mecanismul.",h:"CO2 >1500 ppm reduce O2 disponibil și crește acidoza cerebrală → cefalee, oboseală cognitivă, somnolență. Nu toxicitate directă, ci marker de calitate aer."},
+        {q:"Calculați rata de ventilare necesară pentru 35 de persoane (normă: 7 l/s/persoană).",h:"Necesar: 35 × 7 = 245 l/s = 882 m³/h. Verificați debitul actual al HVAC și comparați."},
+        {q:"Ce alte poluanți de interior suspectați în acest context?",h:"COV din mobilier/covoare, formaldehidă, particule fine, umiditate crescută → mucegai, alergeni, endotoxine bacteriene."},
+        {q:"Ce măsuri imediate impuneți angajatorului ca inspector de sănătate în muncă?",h:"Reparare urgentă HVAC (max 48h). Ventilare naturală forțată (ferestre). Reducere densitate personal temporar. Monitorizare CO2 continuă."},
+        {q:"Ce document legal impune angajatorului asigurarea calității aerului interior?",h:"Legea 319/2006 securitate și sănătate în muncă. HG 1091/2006. Directive UE 89/654/CEE. Normativ I5 pentru instalații HVAC."},
+      ], conc:["Problema principală identificată","Măsura imediată","Termenul legal de remediere"] },
+
+    { id:"g4", emoji:"🔬", title:"NTG crescut în sala de operații", color:"#7c3aed",
+      caz:[{l:"Locație",v:"Bloc operator, spital județean"},{l:"NTG 37°C/m³",v:"580 germeni/m³"},{l:"Stafilococi",v:"detectați (norma: 0)"},{l:"Streptococi",v:"42/m³ (norma: max 16)"},{l:"Ventilare",v:"laminar flow defect 2 luni"},{l:"Curățenie",v:"protocol corect aplicat"},{l:"Incidente",v:"2 infecții post-operatorii în 3 săptămâni"}],
+      qs:[
+        {q:"Sistați activitatea chirurgicală? Argumentați decizia pe baza datelor.",h:"DA — stafilococi detectați = risc imediat de infecție de plagă. NTG 580 depășește norma 300. 2 infecții postoperatorii confirmă riscul real."},
+        {q:"Care sunt sursele probabile ale contaminării? Analizați fiecare.",h:"Laminar flow defect → pierdere presiune pozitivă → germeni din exterior. Personal purtători Staph. aureus (nazofaringe, tegument). Materiale contaminate."},
+        {q:"Ce investigații microbiologice suplimentare ordonați?",h:"Tampoane nazale personal chirurgical (Staph. aureus). Culturi din plăgile celor 2 pacienți infectați. Tampoane suprafețe + instrumentar. Tipizare moleculară pentru trasabilitate."},
+        {q:"Ce protocol de decontaminare impuneți înainte de redeschidere?",h:"Dezinfecție terminală UV-C + formaldehidă gazoasă (sau HPV). Reparare laminar flow. Reevaluare NTG după 48h. Test de acceptabilitate <300 germeni/m³."},
+        {q:"Ce modificări de protocol impuneți personalului?",h:"Control bacteriologic nazal. Dublare schimburi lenjerie. Halate sterile verificate. Mănuși duble pentru chirurgi. Raportare imediată orice infecție postoperatorie."},
+        {q:"Redactați raportul de inspecție: ce sancțiuni și ce termene?",h:"Suspendare imediată bloc operator. Anchetă epidemiologică obligatorie. Reevaluare la remediere completă. Notificare DSP județean și MS."},
+      ], conc:["Decizia de inspector (da/nu sistare)","Sursa probabilă de contaminare","Condiția de redeschidere"] },
+
+    { id:"g5", emoji:"🏗️", title:"Pulberi de azbest în clădire renovată", color:"#b45309",
+      caz:[{l:"Locație",v:"Școală construită 1975, renovare parțială"},{l:"Material suspect",v:"tencuială veche, izolație tavan"},{l:"Fibre azbest",v:"0,8 f/ml (norma: <0,1 f/ml)"},{l:"Expuși",v:"850 elevi + 60 cadre didactice, 6 săptămâni"},{l:"Stare material",v:"friabil, deteriorat — risc eliberare fibre"}],
+      qs:[
+        {q:"Evaluați urgența situației. Ce acțiune luați în primele 30 de minute?",h:"URGENȚĂ MAXIMĂ. Evacuare imediată clădire. Izolare zonă. Oprire ventilare (răspândire fibre). Notificare DSP + Inspecție Muncă + primărie."},
+        {q:"Care este riscul specific al azbestului friabil față de cel încapsulat?",h:"Friabil → fibre aeropurtate permanent. Fibre <3µm → penetrare alveolară → mezotelium → mezoteliom malign (latență 20-40 ani). Fără prag sigur."},
+        {q:"Ce investigații de sănătate propuneți pentru cei 850 de elevi expuși 6 săptămâni?",h:"Dosar medical de monitorizare. Radiografie pulmonară baseline. Urmărire pe 40 de ani (latența mezoteliomului). Informare părinți + consimțământ."},
+        {q:"Cine are dreptul legal de a efectua lucrări de decontaminare azbest?",h:"Numai firme acreditate ANPM pentru lucrări cu azbest. Personal specializat cu EIP nivel 3 (combinaison, SCBA). Deșeuri categorie periculoasă."},
+        {q:"Ce dovezi documentare solicitați de la administrația școlii?",h:"Raportul de expertiză azbest anterior renovării (obligatoriu prin lege). Autorizația de demolare. Contractul cu firma de decontaminare. Registrul de evidență azbest."},
+        {q:"Formulați recomandările pentru autoritățile locale privind clădirile din aceeași perioadă.",h:"Inventariere obligatorie toate clădirile publice >1980. Expertiză azbest înainte orice renovare. Registru național clădiri cu azbest. Informare proprietari privați."},
+      ], conc:["Acțiunea imediată (primele 30 min)","Riscul principal pe termen lung","Condiția de reocupare a clădirii"] },
+
+    { id:"g6", emoji:"🌿", title:"COV și formaldehidă în grădiniță nou renovată", color:"#059669",
+      caz:[{l:"Locație",v:"Grădiniță, renovare completă finalizată acum 2 săptămâni"},{l:"Formaldehidă",v:"0,12 mg/m³ (norma OMS: 0,1 mg/m³)"},{l:"Benzen",v:"18 µg/m³ (norma UE: 5 µg/m³)"},{l:"Sursă probabilă",v:"vopsele, lacuri, mobilier nou"},{l:"Ventilare",v:"ferestre sigilate termic"},{l:"Copii",v:"120 copii 3-6 ani (populație vulnerabilă)"}],
+      qs:[
+        {q:"De ce copiii de 3-6 ani sunt mai vulnerabili la COV decât adulții?",h:"Frecvență respiratorie 2-3× mai mare → doză inhalată/kg mai mare. Sistem enzimatic de detoxifiere imatur. Timp petrecut indoor mai lung. Talie joasă → strat aer mai concentrat în COV grei."},
+        {q:"Calculați depășirea pentru formaldehidă și benzen față de normele aplicabile.",h:"HCHO: 0,12/0,1 = 1,2× depășire OMS. Benzen: 18/5 = 3,6× depășire norma UE. Benzen este carcinogen grupa 1 IARC — fără prag sigur."},
+        {q:"Autorizați deschiderea grădiniței sau impuneți amânarea?",h:"Amânare obligatorie până sub praguri. Benzen carcinogen fără prag = toleranță zero pentru copii. Ventiți 2 săptămâni intens (degasare materiale noi)."},
+        {q:"Ce protocol de ventilare impuneți pentru reducerea concentrațiilor?",h:"Ventilare intensivă 14 zile: ferestre deschise 8h/zi, temperatură ridicată 25-28°C (accelerează degasare). Remăsurare înainte deschidere."},
+        {q:"Ce verificări impuneți la contractele de renovare viitoare?",h:"Specificații: produse cu etichetă CE, conținut COV scăzut (categoria A+ conform standardului francez). Certificat analitic lot. Test aer înainte recepție."},
+        {q:"Redactați avizul sanitar: condiții pentru obținerea autorizației de funcționare.",h:"1. Ventilare 14 zile. 2. Remăsurare: HCHO <0,1 mg/m³ și benzen <5 µg/m³. 3. Dacă conforme → autorizație. 4. Monitorizare anuală ulterioară."},
+      ], conc:["Decizia privind deschiderea","Substanța cu risc maxim","Condiția de autorizare"] },
+  ],
+
+  lp2a: [
+    { id:"g1", emoji:"🚬", title:"Medic de familie — intervenție antifumat", color:"#7c3aed",
+      caz:[{l:"Pacient",v:"Bărbat 47 ani, fumător activ 25 ani"},{l:"Consum",v:"25 țigarete/zi"},{l:"Fagerstrom",v:"Test aplicat — răspunsuri: Q1=după 5 min (3p), Q2=da (1p), Q3=prima (1p), Q4=25 țig (2p), Q5=da (1p), Q6=da (1p)"},{l:"CO expirat",v:"28 ppm"},{l:"COHb%",v:"5,3%"},{l:"Comorbidități",v:"HTA gr.II, BPOC stadiu I (VEMS 72%)"}],
+      qs:[
+        {q:"Calculați scorul Fagerstrom și interpretați dependența.",h:"Scor: 3+1+1+2+1+1 = 9 puncte = dependență FOARTE PUTERNICĂ. Necesită farmacoterapie obligatorie + consiliere intensivă."},
+        {q:"Interpretați CO 28 ppm și COHb 5,3%. Ce led colorat arată Smokerlyzer-ul?",h:"28 ppm = LED roșu ×3 = Fumător !!. COHb 5,3% = afectare transport O2. Normal <1,74%. Explicați pacientului vizual impactul."},
+        {q:"Ce tratament farmacologic recomandați? Justificați alegerea față de celelalte opțiuni.",h:"Varenicline (Champix) prima linie — cel mai eficient (RR 2,24). Atenție: monitorizare psihiatrică. Sau NRT combinate (plasture + gumă). Bupropion alternativă dacă Varenicline contraindicat."},
+        {q:"HTA și BPOC schimbă recomandarea terapeutică? Explicați.",h:"HTA: NRT permis cu precauție (monitorizare TA). Varenicline: sigur cardiovascular (studiu EAGLES). BPOC: renunțarea la fumat = singura intervenție care încetinește progresia!"},
+        {q:"Aplicați VBA (Very Brief Advice). Scrieți exact ce spuneți pacientului în 30 de secunde.",h:"ASK: deja știm că fumează. ADVISE: 'Renunțarea la fumat este cel mai important lucru pentru sănătatea dvs. acum.' ACT: 'Vă refer la centrul Stop Fumat / inițiez tratament astăzi.'"},
+        {q:"Ce monitorizare planificați la 1, 3 și 6 luni? Ce indici urmăriți?",h:"1 lună: CO expirat, TA, aderență medicație. 3 luni: funcție pulmonară (VEMS), simptome. 6 luni: abstinență confirmată CO<7ppm, calitate viață, greutate."},
+      ], conc:["Scorul Fagerstrom calculat","Tratamentul ales și justificarea","Obiectivul la 6 luni"] },
+
+    { id:"g2", emoji:"🏭", title:"Fumat pasiv la locul de muncă — restaurant", color:"#dc2626",
+      caz:[{l:"Locație",v:"Restaurant, zona pentru fumători"},{l:"Personal expus",v:"8 ospătari, 6h/zi expunere"},{l:"PM2.5 zona fumători",v:"185 µg/m³"},{l:"PM2.5 zona nefumători",v:"38 µg/m³"},{l:"CO ospătar",v:"12 ppm după tură (norma nefumători: <6 ppm)"},{l:"Lege",v:"Legea 349/2015: spații închise 100% fum-free"}],
+      qs:[
+        {q:"Identificați neconformitățile legale. Angajatorul poate fi sancționat?",h:"Legea 349/2015 interzice fumatul în spații închise publice inclusiv restaurante. Zona 'fumători interior' este ilegală din 2016. Amendă 5.000-10.000 lei. DA, sancționat."},
+        {q:"Comparați PM2.5 din zona fumători cu norma OMS zilnică (15 µg/m³).",h:"185/15 = 12,3× depășire normă OMS! Zona nefumători: 38/15 = 2,5× tot depășit. Demonstrează că separarea fizică NU protejează."},
+        {q:"Interpretați CO 12 ppm al ospătarului. Ce înseamnă pentru sănătatea lui?",h:"12 ppm = LED roșu ×1 = Fumător activ (deși este nefumător!). Expunere cronică → risc cardiovascular, cancer pulmonar +20-30% (IARC Gr.1 fumat pasiv)."},
+        {q:"Ce drepturi legale au angajații și ce acțiuni pot întreprinde?",h:"Drept la muncă în mediu sigur (Legea 319/2006). Pot sesiza ITM, DSP. Angajatorul răspunde civil și penal. Pot refuza lucrul în zonă periculoasă fără sancțiuni."},
+        {q:"Ce măsuri tehnice ar putea reduce expunerea dacă zona fumători ar fi permisă (outdoor)?",h:"Mutare zonă fumători outdoor, minim 5m de uși/ferestre. Ventilare separată. Barieră fizică etanșă. (Dar legal în RO este interzis indoor oricum.)"},
+        {q:"Redactați procesul verbal de constatare și sancționare.",h:"Identificare: data, ora, locație, proprietar. Constatare: zonă fumători interior, PM2.5 185 µg/m³, CO personal crescut. Temei legal: art. 3 Legea 349/2015. Sancțiune: amendă 5.000 lei + obligație conformare imediată."},
+      ], conc:["Neconformitatea legală principală","Riscul demonstrat prin date","Sancțiunea aplicabilă"] },
+
+    { id:"g3", emoji:"🧫", title:"NTG crescut în cabinet stomatologic", color:"#0891b2",
+      caz:[{l:"Locație",v:"Cabinet stomatologic, 3 fotolii"},{l:"NTG 37°C/m³",v:"1.240 germeni/m³ (norma: <600)"},{l:"Streptococi",v:"68/m³ (norma: max 16)"},{l:"Stafilococi",v:"nedetectați"},{l:"Suprafețe",v:"NTG 8 UFC/cm² (norma: max 5)"},{l:"Protocol dezinfecție",v:"alcool 70% între pacienți"},{l:"Aerosoli",v:"turbina generează aerosoli permanent"}],
+      qs:[
+        {q:"Interpretați toate datele și identificați neconformitățile.",h:"NTG 1240 vs 600 = 2×. Streptococi 68 vs 16 = 4,25×. Suprafețe 8 vs 5 UFC/cm². Trei indicatori depășiți simultan = risc infecțios real."},
+        {q:"Care este sursa probabilă a streptococilor crescuți? Explicați mecanismul.",h:"Turbina stomatologică generează aerosoli cu picături Flügge din cavitatea orală → streptococi viridans și hemolitici aeropurtați → sedimentare pe suprafețe și inhalare personal."},
+        {q:"Alcoolul 70% este suficient pentru dezinfecția suprafețelor stomatologice? Argumentați.",h:"Insuficient pentru suprafețe poroase și instrumentar critic. Necesară dezinfecție niveluri: suprafețe = cloramină 1% sau glutaraldehidă. Instrumentar = autoclavare 134°C. Alcool 70% doar pe suprafețe mici, neted."},
+        {q:"Ce echipament de protecție respiratorie este obligatoriu pentru medicul stomatolog?",h:"Mască FFP2 (aerosoli sub 5µm din turbină). Vizieră sau ochelari de protecție. Nu mască chirurgicală (nu protejează aerosoli fini). Standard EN 149:2001."},
+        {q:"Ce modificări ale protocolului de dezinfecție impuneți?",h:"1. Pauză 15 min între pacienți (sedimentare aerosoli). 2. Purificator aer HEPA. 3. Cloramină 1% pentru suprafețe. 4. Autoclavare instrumentar. 5. Aparat autoclave verificat anual."},
+        {q:"Poate funcționa cabinetul? Ce termene impuneți pentru conformare?",h:"Da, poate funcționa cu restricții: max 2 fotolii active, pauze extinse. Termen remediere 14 zile. Reevaluare bacteriologică completă înainte ridicare restricții."},
+      ], conc:["Indicatorul cel mai îngrijorător","Sursa contaminării identificată","Condiția de funcționare normală"] },
+
+    { id:"g4", emoji:"🏥", title:"Infecție nosocomială — investigație focar", color:"#b91c1c",
+      caz:[{l:"Locație",v:"Secție chirurgie, spital regional"},{l:"Situație",v:"5 pacienți cu infecție plagă postoperatorie în 10 zile"},{l:"Agent",v:"Staphylococcus aureus meticilino-rezistent (MRSA)"},{l:"NTG aer sală operații",v:"420/m³ (norma <300)"},{l:"NTG mâini chirurgi",v:"32 UFC/mână (norma <15)"},{l:"HEPA filtru",v:"neverificat de 18 luni"}],
+      qs:[
+        {q:"Confirmați sau infirmați un focar nosocomial. Ce criterii folosiți?",h:"FOCAR CONFIRMAT: ≥2 cazuri cu același agent + legătură epidemiologică (aceeași sală, același chirurg, interval scurt). MRSA = agent de alarmă OMS. Anunț obligatoriu DSP."},
+        {q:"Trasați lanțul epidemiologic al transmiterii MRSA în acest context.",h:"Sursă: personal purtător MRSA (nazofaringe/mâini) sau pacient colonizat. Cale: mâini nespălate, aerosoli, instrumentar. Poartă de intrare: plagă chirurgicală. Gazdă susceptibilă: pacient postoperator imunosupresat."},
+        {q:"NTG mâini 32 UFC vs normă 15. Ce spune acest lucru despre tehnica de spălare?",h:"Tehnică insuficientă sau nesistematică. Posibil: timp scurt, omitere zone (degete, unghii, interdigital). Sau recontaminare după spălare (atingere robinet cu mâna). Necesară reauditare tehnică OMS 6 pași."},
+        {q:"HEPA filtru neverificat 18 luni — ce risc specific implică pentru sala de operații?",h:"Filtru înfundat/deteriorat → pierdere eficiență filtrare → germeni aeropurtați inclusiv MRSA în sala sterilă. Laminar flow compromis → depunere pe câmp operator."},
+        {q:"Ce investigații microbiologice ordonați pentru identificarea sursei?",h:"Tampoane nazale TOȚI chirurgii + anestezisti + instrumentiste. Culturi din toate plăgile. Tipizare moleculară PFGE/WGS pentru confirmare legătură clonală. Tampoane suprafețe + aer."},
+        {q:"Ce măsuri de control al focarului impuneți în primele 24 ore?",h:"1. Carantinare sală operații. 2. Izolare contact 5 pacienți MRSA. 3. Screening personal. 4. Dezinfecție terminală. 5. Decontaminare portători (mupirocin nazal). 6. Verificare și înlocuire HEPA."},
+      ], conc:["Confirmarea focarului (da/nu + criterii)","Sursa probabilă identificată","Prioritatea #1 în primele 24 ore"] },
+
+    { id:"g5", emoji:"🌬️", title:"Sindromul Sick Building — clădire de birouri", color:"#0ea5e9",
+      caz:[{l:"Locație",v:"Clădire birouri, 6 etaje, 280 angajați"},{l:"Simptome raportate",v:"65% angajați: cefalee, oboseală, ochi uscați, iritație nazală — simptome dispar weekend"},{l:"CO2",v:"2.400 ppm (norma: <1.000)"},{l:"Umiditate relativă",v:"22% (recomandat: 40-60%)"},{l:"COV total (TVOC)",v:"680 µg/m³ (norma: <300)"},{l:"Ventilare",v:"HVAC cu recirculare 90%, aport aer proaspăt minim"}],
+      qs:[
+        {q:"Stabiliți diagnosticul de Sick Building Syndrome. Ce criterii sunt îndeplinite?",h:"SBS = simptome >20% angajați + ameliorare la plecare din clădire + fără altă cauză identificată. Criterii îndeplinite: 65% simptomatici, ameliorare weekend, CO2/COV crescute."},
+        {q:"Calculați depășirile pentru CO2, UR și TVOC față de normele recomandate.",h:"CO2: 2400/1000 = 2,4×. UR: 22% vs 40-60% = sub limita inferioară. TVOC: 680/300 = 2,27×. Trei parametri simultan = certitudine SBS."},
+        {q:"De ce UR de 22% contribuie la simptome? Ce organe sunt afectate?",h:"Aer uscat → deshidratare mucoase nazale, oculare → iritație, creștere susceptibilitate infecții respiratorii. Mucoasa nazală = prima linie apărare împotriva agenților inhalați."},
+        {q:"Recircularea 90% a aerului — ce risc specific generează în contextul COVID/influenza?",h:"Recirculare mare = redistribuire aerosoli infecțioși în întreaga clădire. Super-spreading posibil. Norma post-COVID: minim 10 ACH cu aer proaspăt sau filtrare HEPA H13 în circuit recirculat."},
+        {q:"Ce modificări urgente ale sistemului HVAC recomandați?",h:"Creștere aport aer proaspăt la 30-40% (reducere recirculare). Adăugare umidificatoare (țintă UR 45%). Filtrare HEPA H13. Curățare canale HVAC (COV din depozite). Monitorizare CO2 continuă cu alarme."},
+        {q:"Angajatorul are obligații legale? Ce reglementări invocați?",h:"Da: HG 1091/2006 (locuri de muncă). Legea 319/2006 SSM. Normativ I5 HVAC. Directiva 89/654/CEE. Risc: răspundere pentru cheltuieli medicale angajați afectați."},
+      ], conc:["Diagnosticul stabilit și criteriile","Parametrul cel mai deviant","Modificarea HVAC prioritară"] },
+
+    { id:"g6", emoji:"🧪", title:"Dezinfecția suprafețelor — protocol greșit", color:"#7c3aed",
+      caz:[{l:"Locație",v:"Salon medical, 8 paturi"},{l:"Protocol actual",v:"ștergere cu alcool 70% o dată/zi"},{l:"NTG suprafețe",v:"18 UFC/cm² (norma max 5)"},{l:"Coliformi",v:"detectați pe bara patului (norma: 0)"},{l:"Frecvența curățare",v:"1×/zi dimineața"},{l:"Produsul folosit",v:"alcool izopropilic 70% — expirat de 4 luni"}],
+      qs:[
+        {q:"Identificați toate erorile din protocolul de dezinfecție actual.",h:"1. Frecvență insuficientă (1×/zi vs. după fiecare pacient). 2. Produs expirat = eficacitate redusă. 3. Alcool singur insuficient pentru coliformi. 4. Tehnica ștergere uscată vs. umedă cu timp de contact."},
+        {q:"Coliformi pe bara patului — ce sursa indică și ce risc generează?",h:"Coliformi = contaminare fecală (mâini personal nespălate sau pacienți). Risc: transmitere E. coli, Klebsiella, C. difficile la pacienți imunocompromiși. Risc infecție urinară, digestivă."},
+        {q:"Ce dezinfectant recomandați în locul alcoolului izopropilic? Justificați.",h:"Hipoclorit de sodiu 0,1% (1.000 ppm Cl activ) pentru suprafețe: spectru larg, activ vs. coliformi, C. difficile, SARS-CoV-2. Sau aldehide quaternare (Deconex). Alcool: ineficient pe materie organică."},
+        {q:"Stabiliți frecvența corectă de dezinfecție pentru un salon cu 8 paturi.",h:"Minim: dimineața (curățenie generală) + după fiecare externare (dezinfecție terminală) + după orice contaminare vizibilă. Mânerele ușilor, barele paturilor, telecomenzi: de 3×/zi."},
+        {q:"Ce tehnica corectă de ștergere dezinfectantă trebuie instruiți personalul?",h:"Suprafață umedă → timp contact 1-5 min → NU ștergeți imediat! Mișcări unidirectionale (nu circular — recontaminare). Mănuși de unică folosință. Schimb lavete la fiecare suprafață."},
+        {q:"Ce fișă de supraveghere implementați pentru monitorizarea eficacității dezinfecției?",h:"Registru: data/ora, produs, lot, concentrație, suprafața tratată, responsabil. Verificare bacteriologică lunară. Indicatori colorimetrici pe suprafețe (test ATP bioluminiscență). Audit trimestrial protocol."},
+      ], conc:["Eroarea principală identificată","Produsul dezinfectant recomandat","Frecvența optimă de dezinfecție"] },
+  ],
+
+  lp2b: [
+    { id:"g1", emoji:"💡", title:"Iluminat insuficient în sala de clasă", color:"#f59e0b",
+      caz:[{l:"Locație",v:"Clasă gimnaziu, 28 elevi"},{l:"Iluminanță medie",v:"180 lux (norma min: 300 lux)"},{l:"Uniformitate iluminat",v:"0,3 (norma min: 0,7)"},{l:"Ferestre",v:"orientate Nord, parțial obturate de copaci"},{l:"Vârsta elevilor",v:"11-14 ani"},{l:"Simptome raportate",v:"oboseală oculară, cefalee, dificultăți citit la 40% din elevi"}],
+      qs:[
+        {q:"Calculați deficitul de iluminanță față de normă. Ce risc ocular implică pe termen lung?",h:"Deficit: 300-180 = 120 lux = 40% sub normă. Risc: astenopie (oboseală oculară), miopie progresivă (stimul acomodare excesiv), cifo-scolioză posturală (aplecare spre foaie)."},
+        {q:"Ce înseamnă uniformitate 0,3 față de norma 0,7? Cum se manifestă practic?",h:"0,3 = zone foarte luminoase lângă ferestre și zone întunecate în fund clasă (raport 10:1). Ochiul se readaptează permanent → oboseală. Elevi din fund văd 3× mai puțin decât cei din față."},
+        {q:"Ce tip de sursă de lumină artificială recomandați pentru o sală de clasă?",h:"LED 4000K (alb neutru) cu CRI >90. Armături cu difuzor anti-orbire (UGR <19). Plasate perpendicular pe tablă și bănci. Dimmer pentru adaptare la lumina naturală."},
+        {q:"Orientarea Nordică a ferestrelor — avantaje și dezavantaje din perspectiva igienei vizuale.",h:"Avantaj: lumină difuză uniformă, fără umbre dure sau orbire directă (fără soare direct). Dezavantaj: iluminanță naturală mai mică, necesitate iluminat artificial mai intens. Orientarea optimă: Sud-Est."},
+        {q:"Propuneți măsuri de remediere tehnice și organizatorice.",h:"Tehnic: instalare corpuri LED suplimentare (țintă 400 lux), curățare geamuri, toaletare copaci. Organizatoric: rotire bănci semestrial, tabletă sau caiet A4 pentru elevi cu vedere slabă în fund."},
+        {q:"Ce reglementări legale invocați în raportul de inspecție?",h:"Ordinul MS 1955/1995 (igiena unităților de învățământ). NP 061/2002 (normativ iluminat interior). Ordinul MDRAP 4/2017. Legea 272/2004 (protecția copilului)."},
+      ], conc:["Deficitul calculat față de normă","Riscul principal pentru elevi","Măsura de remediere prioritară"] },
+
+    { id:"g2", emoji:"🔊", title:"Zgomot excesiv în cantina școlară", color:"#ef4444",
+      caz:[{l:"Locație",v:"Cantina școlară, 150 elevi simultan"},{l:"Nivel zgomot",v:"87 dB(A) în timpul servirii mesei"},{l:"Norma spații școlare",v:"max 55 dB(A)"},{l:"Timp expunere",v:"30 minute/zi (prânz) + 15 min (gustare)"},{l:"Materiale",v:"tavane și pereți din beton netratat, pardoseală gresie"},{l:"Simptome",v:"stres, agitație, dificultate comunicare verbală"}],
+      qs:[
+        {q:"Calculați depășirea față de normă în decibeli. Ce înseamnă practic 32 dB în plus?",h:"87-55 = 32 dB depășire. La scara logaritmică: fiecare 3dB = dublare energie sonoră. 32dB = de ~1000× mai mult decât norma. 87dB = nivel stradă aglomerată sau utilaj industrial."},
+        {q:"Care este mecanismul prin care zgomotul cronic afectează capacitatea de învățare?",h:"Zgomot >65 dB → activare cortizol (stres cronic) → afectare memorie de lucru (hipocamp). Distragere atenție → reducere capacitate de concentrare cu 30-40% studii UNESCO."},
+        {q:"Identificați sursele de zgomot și factorii de reverberație în această cantină.",h:"Surse: voci 150 elevi (efect cocktail-party), tacâmuri, cărucioare distribuire. Reverberație: beton + gresie = suprafețe dure reflectante. RT60 estimat >3 secunde (recomandat: <0,8s pentru spații școlare)."},
+        {q:"Ce materiale fonoabsorbante recomandați și unde le plasați?",h:"Tavan: plăci fonoabsorbante NRC >0,85 (vata minerală acoperită textil). Pereți laterali: panouri acustice. Pardoseală: covor anti-alunecare parțial. Perdele groase. Target: reducere 15-20 dB."},
+        {q:"Ce măsuri organizatorice reduceți zgomotul fără investiții majore?",h:"Serii mai mici (50 elevi/serie vs 150). Muzică de fond 60-65 dB (efect Lombard invers). Instruire elevi privind nivelul vocal. Pahare/tăvi din plastic vs metal."},
+        {q:"Ce act normativ reglementează nivelul de zgomot în unitățile de învățământ?",h:"Ordinul MS 1955/1995. STAS 6161/1-82 (acustică în construcții). Legea 121/2019 (zgomot ambiental). Directiva UE 2002/49/CE transpusă în HG 321/2005."},
+      ], conc:["Depășirea calculată și semnificația","Sursele principale de zgomot","Intervenția cu eficiența cea mai bună"] },
+
+    { id:"g3", emoji:"🌡️", title:"Microclimat necorespunzător — secție neonatologie", color:"#06b6d4",
+      caz:[{l:"Locație",v:"Secție neonatologie, 12 incubatoare"},{l:"Temperatura aer",v:"19°C (norma neonatologie: 24-26°C)"},{l:"Umiditate",v:"30% (norma: 50-70%)"},{l:"Viteza aer",v:"0,4 m/s (norma: max 0,1 m/s)"},{l:"Temperatura radiantă",v:"diferență pereți-aer 7°C (norma: max 4°C)"},{l:"Incidente",v:"creștere cazuri hipotermie neonatală în ultima lună"}],
+      qs:[
+        {q:"Evaluați fiecare parametru față de normele specifice neonatologiei. Câte neconformități?",h:"4 neconformități: T 19°C (sub 24°C), UR 30% (sub 50%), viteza 0,4 m/s (de 4× norma), diferență radiantă 7°C (de 1,75× norma). Toate 4 parametri simultan = risc major."},
+        {q:"De ce nou-născuții sunt vulnerabili la acești parametri față de adulți?",h:"Raport suprafață/volum corp mare → pierdere căldură convectivă mult mai rapidă. Absența țesut adipos brun funcțional la prematuri. Termoreglare imatură. Hipotermie la nou-născut = risc letal imediat."},
+        {q:"Calculați pierderea de căldură suplimentară cauzată de viteza curentului de 0,4 m/s.",h:"Temperatura echivalentă (windchill neonatal): T efect = T aer - 4°C × viteza. 19 - 4×0,4 = 17,4°C echivalent termic. Nou-născut 'simte' 17°C în loc de 19°C → hipotermie accelerată."},
+        {q:"Ce măsuri tehnice URGENTE propuneți în primele 2 ore?",h:"Reglare termostat la 25°C. Oprire ventilare directă spre incubatoare. Verificare și reglare umidificatoare (țintă 60%). Ecrane pentru reducere radiație rece de la pereți exteriori."},
+        {q:"Incubatoarele compensează parametrii necorespunzători ai salonului? Explicați.",h:"Parțial. Incubatorul controlează T și UR intern. Dar viteza curentului de 0,4 m/s poate afecta incubatoarele cu capac deschis (manevre medicale). Diferența radiantă acționează și asupra pereților incubatorului."},
+        {q:"Ce responsabilitate legală are managerul spitalului pentru aceste neconformități?",h:"Raspundere administrativă (Legea 95/2006 — calitatea asistenței medicale). Răspundere civilă dacă hipotermia cauzează daune. Raportare obligatorie DSP. Investigație DSP în termen de 24h."},
+      ], conc:["Numărul de neconformități identificate","Riscul imediat pentru pacienți","Măsura urgentă #1"] },
+
+    { id:"g4", emoji:"📏", title:"Sonometrie — zgomot ocupațional la tipografie", color:"#8b5cf6",
+      caz:[{l:"Locație",v:"Tipografie industrială, 25 muncitori"},{l:"Nivel zilnic echivalent",v:"LEX,8h = 89 dB(A)"},{l:"Nivel maxim impulsuri",v:"LCpeak = 138 dB(C)"},{l:"EIP auditiv",v:"dopuri de urechi ocazional, nicio instruire"},{l:"Audiogramă",v:"8 muncitori cu hipoacuzie medie (deficit 40-60 dB)"},{l:"Vechime expunere",v:"7-12 ani în aceeași secție"}],
+      qs:[
+        {q:"Comparați LEX,8h cu valorile de acțiune și limită conform HG 493/2006.",h:"Valoare declanșare inferioară: 80 dB(A). Valoare declanșare superioară: 85 dB(A). Valoare limită: 87 dB(A). 89 dB depășește LIMITA de 87 dB → angajatorul obligat la măsuri IMEDIATE."},
+        {q:"LCpeak 138 dB — ce risc specific implică și față de ce limită?",h:"Limita LCpeak: 140 dB(C). 138 dB = aproape de limita absolută. Impulsuri de 138 dB(C) cauzează traumă acustică acută dacă EIP absent. O singură expunere poate cauza hipoacuzie permanentă."},
+        {q:"Calculați nivelul de atenuare necesar al EIP pentru a aduce expunerea sub 87 dB(A).",h:"Necesar atenuare: 89 - 87 = 2 dB minim. Recomandat: reducere la 80 dB → atenuare 9 dB. Casti antifonice SNR >15 dB, dopuri SNR >20 dB. Alegeți EIP cu SNR adecvat."},
+        {q:"Hipoacuzia la 8 muncitori — este boală profesională declarabilă? Ce pași urmați?",h:"DA — Hipoacuzie profesională (perceptivă bilaterală >30dB) = boală profesională conform HG 1025/2003. Pași: declarare Medicina Muncii → DSP județean → ITM → INAM. Drept compensație."},
+        {q:"Ce ierarhie de măsuri de reducere a zgomotului la sursă propuneți?",h:"1. Înlocuire utilaje silențioase (izolare vibrații). 2. Cabine fonoizolante pentru utilaje zgomotoase. 3. Ecrane fonoabsorbante. 4. Rotație personal (reducere timp expunere). 5. EIP = ultima soluție."},
+        {q:"Ce program de supraveghere audiologică implementați?",h:"Audiogramă baseline la angajare. Audiogramă anuală pentru toți expuși >80 dB. Audiogramă semestrial dacă >85 dB. Acțiune dacă pierdere >25 dB la 4 kHz. Fișa de aptitudine: anual."},
+      ], conc:["Depășirile față de valorile legale","Diagnoza situației muncitorilor","Măsura tehnica prioritară"] },
+
+    { id:"g5", emoji:"🔦", title:"Iluminat în sala de operații — norme critice", color:"#0369a1",
+      caz:[{l:"Locație",v:"Sală operații, spital municipal"},{l:"Iluminanță câmp operator",v:"42.000 lux (norma: 50.000-100.000 lux)"},{l:"Iluminanță generală",v:"800 lux (norma: 1.000 lux)"},{l:"Temperatura culoare",v:"6.500K (norma: 4.000-5.000K)"},{l:"Redare culori (CRI)",v:"88 (norma: min 90 pentru chirurgie)"},{l:"Incidente",v:"2 erori de apreciere a profunzimii menționate de chirurgi"}],
+      qs:[
+        {q:"Evaluați toți parametrii de iluminat față de normele pentru sala de operații.",h:"4 neconformități: Câmp operator 42.000 sub 50.000 lux. Iluminanță generală 800 sub 1.000 lux. Temperatura culoare 6.500K prea rece (>5.000K). CRI 88 sub 90 minim."},
+        {q:"De ce CRI sub 90 este periculos într-o sală de operații?",h:"CRI = fidelitate redare culori. CRI 88 → distorsionare culorilor tisulare (roșu arterial vs venos, galben bilă, roz mucoasă). Erori identificare structuri anatomice → risc leziuni inadvertente."},
+        {q:"Ce explică erorile de apreciere a profunzimii menționate de chirurgi?",h:"Temperatura culoare 6.500K (albastru-alb) reduce percepția umbrelor și adâncimii (iluminat 'plat'). Optim: 4.000-4.500K (alb neutru-cald) pentru umbra naturală și contrastul tisular."},
+        {q:"Ce tip de sursă de lumina și ce corp de iluminat recomandați pentru câmpul operator?",h:"LED medical CRI >95, 4.000-5.000K, 50.000-100.000 lux reglabil, shadow-free (fără umbre din capetele chirurgilor). Certificate EN 60601-2-41 (dispozitiv medical). Nu halogen (căldură excesivă)."},
+        {q:"Iluminatul de urgență — ce prescripții specifice are sala de operații?",h:"Generator UPS cu comutare <0,5 secunde. Iluminanță urgență: minim 10% din iluminatul normal (5.000 lux). Autonomie: 3 ore minim. Testare lunară a sistemului UPS. Certificat conformitate anual."},
+        {q:"Cine are autoritatea de a certifica conformitatea iluminatului în săli de operații?",h:"DSP (verificare norme sanitare OMS 1955/1995). Verificator tehnic atestat MDLPA. Producătorul lampii chirurgicale (certif. EN 60601-2-41). Departamentul tehnic spital (registru verificări)."},
+      ], conc:["Parametrul cel mai periculos identificat","Explicația erorilor chirurgicale","Specificația tehnică a lămpii recomandate"] },
+
+    { id:"g6", emoji:"🔇", title:"Vibrații și zgomot — șofer profesionist", color:"#dc2626",
+      caz:[{l:"Pacient",v:"Șofer TIR, 48 ani, 20 ani în profesie"},{l:"Expunere vibrații corp întreg",v:"A(8) = 1,2 m/s² (norma limită: 1,15 m/s²)"},{l:"Zgomot cabină",v:"82 dB(A)"},{l:"Simptome",v:"lombalgie cronică, hernii discale L4-L5 și L5-S1, tinitus bilateral"},{l:"Vechime expunere",v:"20 ani × 8h/zi"}],
+      qs:[
+        {q:"Confirmați că lombalgiile și herniile discale au legătură cu expunerea profesională.",h:"DA. A(8) 1,2 m/s² depășește limita 1,15. Vibrații corp întreg: rezonanță la 4-8 Hz = coloana lombară. 20 ani × depășire = boală profesională probabilă. Criterii: expunere dovedită + afecțiune concordantă."},
+        {q:"Ce mecanism fiziopatologic explică hernia de disc prin vibrații corp întreg?",h:"Vibrații 4-8 Hz → rezonanță vertebrală → compresia repetitivă și decompresie rapidă a discului intervertebral → degenerare fibrocartilaj → reducere înălțime disc → hernie nucleu pulpos."},
+        {q:"Tinnitus bilateral — legătură cu zgomotul de 82 dB(A) în cabină?",h:"82 dB(A) < 87 dB (limita legală). Dar 20 ani × 8h/zi fără EIP = doză cumulată enormă. Tinnitus cronic = leziune cohleară ireversibilă. Posibil boală profesională dacă audiogramă confirmă hipoacuzie neurosenzorială."},
+        {q:"Ce modificări ergonomice ale cabinei TIR recomandați angajatorului?",h:"Scaun cu amortizare activă a vibrațiilor (ISO 7096). Volan reglabil. Suport lombar ergonomic. Pauze la 2h (10 min). Limitare la 8h/zi expunere vibrații. Verificare periodică stare drumuri și anvelope."},
+        {q:"Ce pași urmați pentru declararea bolii profesionale?",h:"Medic de medicina muncii: fișă BP0 → DSP județean → comisie de expertizare → certificate boală profesională → ITM (cercetare) → INAM (compensații). Angajatorul nu poate refuza declararea."},
+        {q:"Ce restricții de aptitudine profesională propuneți în fișa de medicina muncii?",h:"Restricție: max 4h/zi șofat TIR (reducere dozei vibrații). Interzis: utilaje cu vibrații >1,15 m/s². Obligatoriu: kinetoterapie, corsete lombare, reevaluare la 6 luni. Pensionare anticipată dacă incapacitate."},
+      ], conc:["Confirmarea legăturii profesionale (da/nu)","Mecanismul principal de lezare","Restricția de aptitudine propusă"] },
+  ],
+
+  lp3a: [
+    { id:"g1", emoji:"💧", title:"Apa potabilă — depășire nitrați în sat rural", color:"#0ea5e9",
+      caz:[{l:"Locație",v:"Sat rural, 340 de locuitori, fântâni individuale"},{l:"Nitrați măsurați",v:"87 mg/L (norma max: 50 mg/L)"},{l:"Nitrați naturali",v:"aprox. 5 mg/L (fond natural)"},{l:"Surse poluare",v:"ferme zootehnice la 200m, terenuri agricole cu îngrășăminte"},{l:"Populație vulnerabilă",v:"8 sugari sub 6 luni în localitate"}],
+      qs:[
+        {q:"Calculați depășirea față de normă și estimați contribuția surselor antropice.",h:"Depășire: 87/50 = 1,74×. Contribuție antropică: 87-5 = 82 mg/L din poluare. Fermele + agricultura = surse principale (levigare sol → pânza freatică)."},
+        {q:"De ce sugarii sub 6 luni sunt populația cea mai vulnerabilă la nitrați?",h:"Methemoglobinemie la sugar: bacterii intestinale reduc NO3 → NO2 → oxidare HbFe2+ → MetHb (nu transportă O2). Adulții au MetHb reductază matură. Sugarii nu. Risc letal la >10% MetHb."},
+        {q:"Ce măsuri de urgență implementați IMEDIAT pentru cei 8 sugari?",h:"Interdicție imediată consum apă fântână pentru sugari. Distribuire apă îmbuteliată gratuită. Informare mamelor + medici de familie. Monitorizare MetHb dacă sugari simptomatici (cianoză)."},
+        {q:"Cum investigați sursa exactă de poluare? Ce probe recoltați?",h:"Profile de nitrați la diverse adâncimi fântâni. Probe din fermele zootehnice (ape reziduale). Harta izopietă a pânzei freatice. Trasori izotopici (δ15N) pentru diferențierea surselor (animal vs. mineral)."},
+        {q:"Ce sistem de tratare al apei recomandați pentru comunitate pe termen lung?",h:"Osmoza inversă (RO) pentru nitrați — eficiență >95%. Sau schimbatori de ioni (selective pentru NO3). Evitare: fierberea NU reduce nitrații, îi concentrează! Rețea de apă potabilă = soluție durabilă."},
+        {q:"Ce notificări legale sunt obligatorii și cui le adresați?",h:"Notificare imediată: DSP județean, APM, Primărie, Ministerul Sănătății (dacă >100mg/L). Comunicat public. Plan de remediere cu termen. Verificare conformitate la 30 zile. HG 458/2002 (calitatea apei potabile)."},
+      ], conc:["Populația cea mai vulnerabilă și riscul specific","Măsura de urgență pentru sugari","Sistemul de tratare recomandat"] },
+
+    { id:"g2", emoji:"🏊", title:"Calitatea apei de îmbăiere — plajă lacustră", color:"#06b6d4",
+      caz:[{l:"Locație",v:"Lac de agrement, stațiune balneară"},{l:"E. coli",v:"850 UFC/100mL (norma excelentă: <100)"},{l:"Enterococi intestinali",v:"320 UFC/100mL (norma excelentă: <200)"},{l:"Turbiditate",v:"12 NTU (norma: <1 NTU vizibilitate)"},{l:"Sursă suspectă",v:"deversare canalizare parțial tratată la 500m amonte"},{l:"Sezon",v:"Iulie — vârf turistic, 2.000 îmbăietori/zi"}],
+      qs:[
+        {q:"Clasificați calitatea apei conform Directivei 2006/7/CE. Justificați.",h:"Clasa SLABĂ (necorespunzătoare): E.coli 850 > 900 (limita suficient), dar E. coli = 850 vs 100 (excelent) = 8,5×. Enterococi 320 > 200 = 1,6×. Ambii indicatori depășiți = clasificare 'insuficientă' sau 'slabă'."},
+        {q:"Ce boli se pot transmite prin îmbăiere în această apă? Enumerați și clasificați.",h:"Digestive: gastroenterite (E. coli, Salmonella, norovirus). ORL: otite externe, conjunctivite. Cutanate: foliculite (Pseudomonas). Neurologice: Naegleria fowleri (rar, mortal). Leptospiroză (contact mucoase)."},
+        {q:"Suspectați deversarea de canalizare — cum confirmați și ce probe recoltați?",h:"Profile E.coli aval/amonte de deversare. Markeri fecali umani: bacteriofagi F-specific, Bacteroides fragilis. Probe sediment. Inspecție conducte la fața locului. Notificare Apele Române."},
+        {q:"Ce decizie luați privind plaja? Cum comunicați publicului?",h:"Interzicere imediată îmbăiere. Panouri vizibile 'Îmbăierea interzisă — apă neconformă'. Comunicat DSP public. Notificare Primărie. Estimare termen rezolvare. Evitare panică vs. informare corectă."},
+        {q:"Ce măsuri preventive recomandați administrației stațiunii pe termen mediu?",h:"Canalizare cu tratare completă (nitrificare + dezinfecție). Monitorizare săptămânală în sezon. Plan de management calitate apă (Directiva 2006/7). Toalete ecologice pe plajă (reducere contaminare locală)."},
+        {q:"Ce reglementare românească transpune Directiva europeană pentru apa de îmbăiere?",h:"HG 88/2004 privind calitatea apelor de îmbăiere (transpune 76/160/CEE). Înlocuit de HG 546/2008 (transpune 2006/7/CE). Clasificare anuală: excelentă/bună/suficientă/slabă. Raportare EEA obligatorie."},
+      ], conc:["Clasificarea calității apei conform directivei","Decizia privind plaja","Sursa probabilă confirmată"] },
+
+    { id:"g3", emoji:"🧪", title:"Apa de robinet — pH și clor rezidual necorespunzător", color:"#0369a1",
+      caz:[{l:"Locație",v:"Rețea de distribuție, oraș mediu"},{l:"Clor rezidual liber",v:"0,05 mg/L (norma: 0,1-0,5 mg/L)"},{l:"pH",v:"8,9 (norma: 6,5-9,5)"},{l:"Turbiditate",v:"3,2 NTU (norma: max 1 NTU)"},{l:"Clor total",v:"0,12 mg/L"},{l:"Sesizări",v:"miros de mucegai și gust neplăcut la 120 de consumatori"}],
+      qs:[
+        {q:"Interpretați clorul rezidual liber 0,05 mg/L. Ce risc microbiologic implică?",h:"Sub norma 0,1 mg/L = dezinfecție insuficientă în rețea. Risc recontaminare bacteriană la distanță de stație. Formarea de biofilm în conducte. Posibil focar gastroenterite dacă E. coli prezent."},
+        {q:"pH 8,9 — de ce afectează eficacitatea clorului?",h:"La pH >8, clorul activ (HOCl) se disociază în OCl- (70% la pH 8,9) cu eficiență dezinfectantă de 70× mai mică decât HOCl. Necesitar: pH 7,0-7,5 pentru eficiență maximă clorare."},
+        {q:"Turbiditate 3,2 NTU — ce probleme specifice generează?",h:"Particulele suspendate protejează bacteriile de acțiunea clorului (shadowing). Turbiditate >1 NTU = indiciu contaminare sau tratare deficitară. Posibil: deteriorare filtru nisip sau coagulare insuficientă."},
+        {q:"Mirosul de mucegai la 120 consumatori — ce substanțe pot fi implicate?",h:"Geosmina și 2-MIB (produși de cianobacterii și actinomicete) — prag olfactiv extrem de scăzut (5 ng/L). Sau compuși organici clorați (trihalometane) formați prin reacție clor + materie organică."},
+        {q:"Ce investigații suplimentare ordonați la stația de tratare?",h:"Verificare doză clorare (ajustare la 0,3 mg/L liber rezidual). Determinare THM (trihalometane). Analiza microbiologică completă (E. coli, enterococi, Pseudomonas, Legionella). Control filtre și coagulare."},
+        {q:"Ce notificări și termene de remediere stabiliți?",h:"Informare imediată primărie + DSP (risc sănătate publică). Dacă E. coli prezent: alertă publică + apă îmbuteliată. Termen remediere: 24h (clor). 7 zile (pH). 30 zile (turbiditate structurală). Raport conform HG 458/2002."},
+      ], conc:["Parametrul cu risc microbiologic imediat","Cauza deficitului de dezinfecție","Termenul de remediere"] },
+
+    { id:"g4", emoji:"🌊", title:"Fluor în apa potabilă — zonă cu fluoroză", color:"#7c3aed",
+      caz:[{l:"Locație",v:"Comunitate rurală, 1.200 locuitori"},{l:"Fluor apa subterană",v:"2,8 mg/L (norma max: 1,5 mg/L)"},{l:"Prevalența fluorozei dentare",v:"67% la copii 8-12 ani"},{l:"Fluoroză osoasă",v:"3 cazuri confirmate adulți >40 ani"},{l:"Sursă",v:"geologie locală (fosforite) — fluorura naturală"}],
+      qs:[
+        {q:"Calculați depășirea fluorului și corelați cu prevalența fluorozei dentare.",h:"2,8/1,5 = 1,87× depășire. La 2,8 mg/L fluoroză dentară afectează >50% copii (confirmat: 67%). Fluoroză osoasă apare >3 mg/L — expunere cronică sau apa din mai multe surse."},
+        {q:"Descrieți mecanismul patogenetic al fluorozei dentare și osoase.",h:"Fluorura înlocuiește OH- în hidroxiapatita (fluorapatita) → cristale mai dure dar mai fragile. Dentar: hipomineralizare smalț (pete albe/maro, porozitate). Osos: osteoscleroza + calcificări ligamente → rigiditate articulară."},
+        {q:"Defluorarea — ce metode tehnice sunt fezabile pentru o comunitate rurală?",h:"Coagulare cu sulfat de aluminiu (Al(SO4)3) — eficiență 50-70%. Schimbători de ioni (selective fluor). Osmoza inversă — eficiență >95% dar costisitoare. Contactul cu os de animal calcinat (carbon osos)."},
+        {q:"Copiii expuși de la naștere până la 8 ani — ce urmărire stomatologică propuneți?",h:"Examinare stomatologică anuală. Indexul Dean pentru gradul fluorozei. Evitare paste de dinți cu fluor (aport suplimentar). NU pastile sau soluții fluorură (contraindicație absolută la >1,5 mg/L în apă)."},
+        {q:"Apa minerală comercializată local conține 0,3 mg/L fluor. O recomandați ca alternativă?",h:"DA — 0,3 mg/L e sub norma 1,5 mg/L și mult sub 2,8 mg/L local. Reduce fluoroza dacă înlocuiește apa de fântână. Atentie: soluție temporară, nu permanentă. Costul accesibilității pentru comunitate."},
+        {q:"Ce reglementări specifice privind fluorul în apa potabilă invocați?",h:"HG 458/2002 (calitatea apei potabile, transpune 98/83/CE): limita 1,5 mg/L. Ordinul MS 561/2010. WHO Guidelines 2017: 1,5 mg/L. Notificare obligatorie când >1,5 mg/L: nu se folosește pentru preparare hrană sugari."},
+      ], conc:["Corelația depășire fluor — prevalența fluorozei","Metoda de defluorare recomandată","Măsura imediată pentru copii"] },
+
+    { id:"g5", emoji:"⚗️", title:"Contaminare cu plumb — apă din conducte vechi", color:"#991b1b",
+      caz:[{l:"Locație",v:"Clădire veche (1952), apartamente etaj 4-6"},{l:"Plumb la robinet",v:"32 µg/L (norma max: 10 µg/L)"},{l:"Plumb la intrarea în clădire",v:"4 µg/L (conform)"},{l:"Conducte",v:"plumb (Pb) la instalația interioară"},{l:"Locuiesc",v:"3 copii sub 5 ani, 2 femei gravide"}],
+      qs:[
+        {q:"Identificați sursa contaminării și explicați de ce diferă valorile la intrare vs. robinet.",h:"Sursa: conducte interioare din Pb. La intrare 4 µg/L (conform — rețea externă OK). La robinet 32 µg/L = levigare Pb din conductele interioare (stagnare nocturnă, pH, temperatură). Contaminare locală."},
+        {q:"De ce copiii sub 5 ani și gravidele sunt populația de risc maxim?",h:"Copii: absorbție intestinală Pb de 40-50% (adulți: 5-15%). Bariera hematoencefalică imatură → neurotoxicitate. Nici un prag sigur (EFSA 2010). Gravide: Pb trece placenta, afectează neurodezv. fetală."},
+        {q:"Ce sfaturi PRACTICE dați familiilor care locuiesc în apartament mâine dimineață?",h:"Purjare 2 minute apă rece înainte consum (elimină apa stagnantă). Nu folosi apă fierbinte pentru băut/gătit (Pb mai solubil). Filtru NSF/ANSI 53 (certificat reducere Pb). Nu fierbeți — concentrați Pb."},
+        {q:"Ce investigare medicală recomandați copiilor și gravidelor?",h:"Plumburie (Pb sanguin): valori normale <5 µg/dL. >5 µg/dL = acțiune. >10 µg/dL = tratament chelator posibil. Neurodezvoltare copii: WPPSI, Denver. Gravide: ecografie fetală (restricție creștere)."},
+        {q:"Cine este responsabil legal și cine suportă costul înlocuirii conductelor?",h:"Proprietarul imobilului (persoana fizică sau asociația de proprietari). Dacă clădire de stat: autoritatea locală. Sprijin: Programul național de îmbunătățire calitate apă (fonduri UE). Termen: max 5 ani conform Directivei 98/83/CE rev."},
+        {q:"Ce plan de monitorizare implementați până la înlocuirea conductelor?",h:"Monitorizare Pb la robinet trimestrial. Informare scrisă rezidenți cu sfaturi practice. Distribuire filtre pentru familiile cu copii <5 ani și gravide. Reevaluare la 6 luni. Notificare DSP trimestrial."},
+      ], conc:["Sursa contaminării identificată","Sfatul practic pentru familii (mâine dimineață)","Termenul legal de înlocuire conducte"] },
+
+    { id:"g6", emoji:"🏭", title:"Poluare industrială a sursei de apă", color:"#0f766e",
+      caz:[{l:"Locație",v:"Sursă de apă — lac de acumulare"},{l:"Mangan",v:"0,21 mg/L (norma: 0,05 mg/L)"},{l:"Fier total",v:"0,38 mg/L (norma: 0,2 mg/L)"},{l:"Amoniu",v:"1,8 mg/L (norma: 0,5 mg/L)"},{l:"Sursa suspectă",v:"industrie metalurgică la 3 km amonte"},{l:"Tratare actuală",v:"coagulare + filtrare + clorare"}],
+      qs:[
+        {q:"Evaluați toate depășirile și clasificați gravitatea fiecăreia.",h:"Mn: 0,21/0,05 = 4,2×. Fe: 0,38/0,2 = 1,9×. Amoniu: 1,8/0,5 = 3,6×. Cea mai gravă: Mn (neurotoxic cronic + interferă dezinfecție). Amoniu: consumă clor → dezinfecție compromisă."},
+        {q:"De ce amoniul ridicat compromite eficiența clorării?",h:"Cl2 + NH4+ → cloramine (NH2Cl, NHCl2, NCl3). Cloraminele = dezinfectanți slabi (5-10× mai puțin eficienți decât HOCl). Necesară doză extra de clor pentru break-point chlorination."},
+        {q:"Ce risc neurologic implică expunerea cronică la mangan în apa potabilă?",h:"Mn >0,1 mg/L cronic → manganism (sindrom parkinsonian): tremor, rigiditate, tulburări cognitive. Copii: deficit QI, tulburări comportamentale la >0,1 mg/L (studii Canada/Bangladesh). IARC: posibil carcinogen."},
+        {q:"Tratarea actuală este suficientă pentru aceste concentrații? Ce adăugați?",h:"Insuficientă. Mangan: necesară oxidare cu KMnO4 sau ozon ÎNAINTEA filtrării (Mn solubil nu se reține pe filtru). Amoniu: nitrificare biologică sau break-point clorare. Fe: oxidare + filtrare = adecvat dar trebuie optimizat."},
+        {q:"Ce acțiuni legale inițiați față de industria metalurgică suspectă?",h:"Notificare Garda de Mediu (GNM) + APM + Apele Române. Recoltare probe la punctul de deversare industrială. Verificare autorizație de mediu + bilanț de mediu. Sesizare procuratură dacă poluare intenționată."},
+        {q:"Consumatorii trebuie informați? Ce sfaturi le dați?",h:"DA, obligatoriu (HG 458/2002). Informare dacă parametru depășit. Mesaj: 'Apa nu este recomandată pentru consum până la conformare.' Distribuire apă îmbuteliată sau puncte de distribuție. NU indicat consumul pentru copii și gravide."},
+      ], conc:["Parametrul cu risc maxim și motivul","Modificarea procesului de tratare necesară","Acțiunea legală față de industrie"] },
+  ],
+
+  lp3b: [
+    { id:"g1", emoji:"🦠", title:"Focar de boală diareică — apă de fântână", color:"#dc2626",
+      caz:[{l:"Locație",v:"Sat rural, 850 locuitori, fântâni individuale"},{l:"Îmbolnăviți",v:"34 cazuri diaree acută în 5 zile"},{l:"Agent suspectat",v:"E. coli enterotoxigenă (ETEC)"},{l:"E. coli total fântâni",v:"240 UFC/100mL (norma: 0)"},{l:"Enterococi",v:"85/100mL (norma: 0)"},{l:"Sursă suspectă",v:"inundație recentă, fântâni neprotejate"}],
+      qs:[
+        {q:"Confirmați focarul de boală hidric. Ce criterii sunt îndeplinite?",h:"Focar hidric: ≥2 cazuri cu aceeași simptomatologie + legătură temporală cu sursa apă + confirmare microbiologică apă + distribuție geografică concordantă cu rețeaua apă. Toate 4 criterii prezente = focar confirmat."},
+        {q:"Trasați ancheta epidemiologică: ce date colectați și de la cine?",h:"Cazuri: data debut, simptome, sursa apă consumată. Probe fecale: 10-15 cazuri (coproculturi). Probe apă: fântâni suspecte + alte surse. Harta cazurilor. Distribuție pe fântâni (care fântână = sursa?). Curve epidemice."},
+        {q:"Inundația explică contaminarea? Descrieți mecanismul.",h:"Inundație → intrare apă de suprafață cu E. coli în fântâni neprotejate (capac absent sau deteriorat). Diluat dar contaminat → concentrare după retragere apă. Fântâni fără betonare la bază = cale de intrare."},
+        {q:"Ce dezinfecție de urgență aplicați fântânilor contaminate?",h:"Hiperclorare: 50-100 mg/L clor activ (soluție hipoclorit 5-10%). Lăsare contact 24h. Pompare și spălare. Clor rezidual după tratament: 0,2-0,5 mg/L. Repetare după 7 zile. Verificare microbiologică înainte reintroducere consum."},
+        {q:"Ce sfaturi dați populației pe durata intervenției de urgență?",h:"Fierbere obligatorie 1 minut (distrug ETEC). Tablete de clorinare (distribuire DSP). Apă îmbuteliată pentru copii și bătrâni. Igiena mâinilor (săpun 20s). Izolarea bolnavilor (scaun = contagios)."},
+        {q:"Ce măsuri structurale pe termen lung propuneți autorităților locale?",h:"Captare fântâni cu betonare + capac etanș + margine protecție 50cm. Zonă de protecție sanitară 10m (fără WC, gunoi, animale). Rețea de apă centralizată = soluție definitivă. Educație sanitară anuală."},
+      ], conc:["Confirmarea focarului hidric","Dezinfecția de urgență aplicată","Măsura structurală pe termen lung"] },
+
+    { id:"g2", emoji:"💉", title:"Legionella în sistemul de apă caldă al hotelului", color:"#7c3aed",
+      caz:[{l:"Locație",v:"Hotel 4*, 150 camere, sistem termic central"},{l:"Situație",v:"3 oaspeți cu pneumonie atipică la 2-10 zile după sejur"},{l:"Agent confirmat",v:"Legionella pneumophila serogroup 1"},{l:"Temperatura apă caldă",v:"42°C (norma profilaxie: >60°C la boiler, >50°C la robinete)"},{l:"Stagnare",v:"48 de camere neocupate 3 săptămâni"},{l:"Aerosolizare",v:"sistem spa cu jacuzzi activ"}],
+      qs:[
+        {q:"Confirmați legătura dintre cazurile de pneumonie și hotel. Ce investigații diagnostice?",h:"Testul antigen urinar Legionella (rapid, 90% sensibilitate Sg1). Cultură sputăATF (laborator referință). Anticorpi serici (IFA) — perechi la 3-6 săptămâni. Tipizare moleculară (PFGE) pentru legătură cazuri-sursă."},
+        {q:"Temperatura 42°C a apei calde — de ce favorizează multiplicarea Legionella?",h:"Zona de risc Legionella: 20-45°C. Optim multiplicare: 35-40°C. <20°C = dormantă. >60°C = moartă în 2 minute. 42°C = temperatură ideală pentru multiplicare rapidă. Biofilm în instalații = rezervor permanent."},
+        {q:"Stagnarea 3 săptămâni în 48 de camere — ce risc specific generează?",h:"Stagnare → răcire apă din conducte locale spre T ambiantal (20-25°C) → multiplicare masivă Legionella în biofilm. Reocupare camere → purjare → aerosoli la duș → inhalare. Risc maxim la primele 10 minute."},
+        {q:"Sistați activitatea hotelului? Ce protocol de decontaminare aplicați?",h:"Sistare spa/jacuzzi IMEDIAT. Hotelul poate funcționa cu restricții. Protocol: suprahiperclorare (50 mg/L clor, 24h) SAU șoc termic (70°C, 30 min, purjare din toate punctele). Culturi de control după tratament."},
+        {q:"Jacuzzi activ — de ce este sursa cu risc maxim de aerosolizare?",h:"Jacuzzi = generator masiv de aerosoli fini (<5 µm) care pătrund în alveole. Temperatura optimă Legionella (36-40°C). Biofilm pe pereți și conducte. O singură sesiune de 15 minute = expunere majoră."},
+        {q:"Ce plan HACCP pentru controlul Legionella impuneți hotelului?",h:"Monitorizare T apă caldă: 60°C boiler, 50°C robinete. Purjare camere neocupate >1 săptămână. Curățare anuală sisteme răcire + spa. Cultură Legionella trimestrial. Registru documentare. Conform HG 1030/2009."},
+      ], conc:["Confirmarea sursei (da/nu)","Temperatura corectă de prevenire","Măsura imediată pentru spa"] },
+
+    { id:"g3", emoji:"🔬", title:"Criptosporidioză — piscină publică", color:"#0369a1",
+      caz:[{l:"Locație",v:"Piscină municipală, 500 îmbăietori/zi"},{l:"Situație",v:"127 cazuri diaree apoasă la îmbăietori în 10 zile"},{l:"Agent",v:"Cryptosporidium parvum (oociste detectate în apa piscinei)"},{l:"Clor rezidual",v:"0,5 mg/L (normă: 0,4-1,0 mg/L)"},{l:"pH",v:"7,2 (optim)"},{l:"Filtrare",v:"filter cu nisip, ciclu de backwash neefectuat 6 săptămâni"}],
+      qs:[
+        {q:"De ce Cryptosporidium rezistă la concentrația normală de clor din piscine?",h:"Criptosporidium = parazit cu oociste protejate de perete chitinos rezistent la clor. La 0,5 mg/L clor: E. coli moare în secunde, Criptosporidium supraviețuiește >10 zile. Necesită UV sau dioxid de clor pentru inactivare."},
+        {q:"Filtrarea fără backwash 6 săptămâni — ce consecințe are asupra calității apei?",h:"Filtrul înfundat → by-pass (apa trece nefiltrată). Biofilm masiv în filtru = rezervor Cryptosporidium și Giardia. Backwash insuficient = contaminare persistentă. Turbiditate crescută → ineficiență clor."},
+        {q:"Calculați rata de atac: 127 cazuri / estimat 5.000 expuși (10 zile). Interpretați.",h:"Rată atac: 127/5000 = 2,54%. Mare pentru o singură sursă = confirmare focar. Reproductibilitate: R0 >1. Distribuție temporală: vârf la 3-5 zile post-expunere (incubație Crypto: 2-10 zile)."},
+        {q:"Ce protocol de decontaminare aplicați pentru piscina contaminată cu Criptosporidium?",h:"Golire completă piscină. Curățare mecanică suprafețe. Umplere + tratament UV (40 mJ/cm²) SAU hiperclorare la 20 mg/L × 8h (CT=160 mg·min/L pentru 99,9% inactivare). Filtru: curățare sau înlocuire. Backwash complet."},
+        {q:"Ce investigații medicale pentru cei 127 de bolnavi? Tratament specific?",h:"Coproparazitologie: oociste Criptosporidium (colorație Ziehl-Neelsen modificată). Tratament: Nitazoxanid 500mg × 2/zi, 3 zile (imunocompetenți). Imunocompromiși: severă, necesită tratament antiretroviral dacă HIV+."},
+        {q:"Ce modificări tehnice impuneți piscinei pentru prevenirea recurenței?",h:"Instalare UV obligatoriu (HG 546/2008 piscine). Backwash filtru: minimum săptămânal. Monitorizare turbiditate continuă (<0,5 NTU). Interzicere scutece în piscine principale. Piscine speciale copii cu dezinfecție separată."},
+      ], conc:["Motivul rezistenței la clor","Modificarea tehnică obligatorie","Protocolul de decontaminare"] },
+
+    { id:"g4", emoji:"🌿", title:"Nitriți în apă — accident tehnologic la stație", color:"#16a34a",
+      caz:[{l:"Locație",v:"Stație de tratare apă, avarie pompe doze"},{l:"Nitrați inițiali",v:"45 mg/L"},{l:"Doze coagulant",v:"eroare: doză × 5 supradozare"},{l:"Nitriți post-accident",v:"0,8 mg/L (norma max: 0,5 mg/L)"},{l:"pH post-accident",v:"9,2 (urcare bruscă)"},{l:"Distribuție",v:"rețea livrată 3h înainte de detectare"}],
+      qs:[
+        {q:"Explicați cum a dus supradozarea coagulantului la creșterea nitriților.",h:"Coagulantul (sulfat de aluminiu) în exces acidifică apa → bacterii nitrificante inhibate → acumulare NH4+ → oxidare parțială → NO2-. SAU: contaminare încrucișată cu soluție nitrit din procese de curățare instalații."},
+        {q:"Apa cu 0,8 mg/L nitriți a fost deja distribuită 3 ore. Ce acțiuni luați IMEDIAT?",h:"1. Întrerupere distribuție. 2. Alertă urgentă DSP. 3. Comunicat public via radio/TV/SMS. 4. Interdicție consum (în special sugari + gravide). 5. Distribuire apă de urgență (cisterne/îmbuteliată)."},
+        {q:"Identificați populația cu risc major și explicați mecanismul de toxicitate.",h:"Sugari <6 luni: methemoglobinemie. NO2 → MetHb → cianoză → stop respirator la >30% MetHb. Gravide: MetHb fetală. Adulți imunocompromiși. Simptome: cianoză peribucală, oboseală extremă, 'copil albastru'."},
+        {q:"Ce tratament aplicați la stație pentru a reduce rapid nitriții?",h:"Corecție pH la 7-7,5 (acid sulfuric). Clorare punctuală (oxidare NO2 → NO3). Diluție prin amestecare cu apă conformă. Filtrare suplimentară cu carbon activ. Verificare analitică înainte reintroducere în rețea."},
+        {q:"Ce modificări procedurale implementați pentru prevenirea recurenței?",h:"Blocare automată distribuție la deviație parametri. Senzori in-line NO2/pH cu alarmă. Proceduri SOPs pentru dozare chimicale cu dublu control. Stocuri separate chimicale (prevenire confuzie). Instruire anuală personal."},
+        {q:"Ce răspundere legală are directorul stației de tratare?",h:"Răspundere administrativă (HG 458/2002). Răspundere penală dacă se dovedesc neglijență sau daune (art. 359 Cod penal — zădărnicirea combaterii bolilor). Răspundere civilă dacă apar cazuri medicale. Notificare obligatorie MS + DSP."},
+      ], conc:["Acțiunea imediată după detectare","Populația cu risc maxim","Modificarea de procedură pentru prevenire"] },
+
+    { id:"g5", emoji:"💊", title:"Microcontaminanți farmaceutici în râu", color:"#8b5cf6",
+      caz:[{l:"Locație",v:"Râu receptor — aval spital și stație epurare"},{l:"Diclofenac",v:"2,8 µg/L (norma orientativă EQS: 0,05 µg/L)"},{l:"Etinilestradiol (EE2)",v:"0,9 ng/L (EQS: 0,035 ng/L)"},{l:"Carbamazepina",v:"1,2 µg/L (persistentă)"},{l:"Sursă",v:"stație epurare nu elimină microcontaminanți"},{l:"Efecte observate",v:"pești cu intersex (feminizare masculi) 45%"}],
+      qs:[
+        {q:"Calculați factorii de depășire pentru fiecare contaminant față de normele EQS.",h:"Diclofenac: 2,8/0,05 = 56×. EE2: 0,9/0,035 = 25,7×. Ambii depășiți masiv. Carbamazepina: fără EQS stabilit dar persistent, bioaccumulare. EE2 = cel mai periculos endocrin disruptor."},
+        {q:"Ce mecanism explică feminizarea la 45% din peștii masculi?",h:"EE2 (estrogen sintetic din contraceptive) = endocrin disruptor potent. Se leagă de receptorii estrogenici la pești (ER-α, ER-β). Induce producere vitelogenină la masculi (proteină exclusiv femelă). Intersex = malformații gonadale."},
+        {q:"Stația de epurare clasică elimina acești compuși? De ce nu?",h:"Tratare convențională (decantare + filtrare biologică + clorare) elimină <20-40% din microcontaminanți. Compuși lipofili sau rezistenți degradare biologică. Soluții avansate: ozonare + carbon activ granular (GAC)."},
+        {q:"Apa din râu este folosită pentru irigații agricole. Ce risc generează pentru consumator?",h:"Acumulare în sol → preluare în plante (legume frunzoase). EE2 și carbamazepina = bioaccumulare în lanțul trofic. Efect endocrin la om la expunere cronică: risc cancere hormono-dependente (sân, prostată)."},
+        {q:"Ce măsuri preventive recomandați spitalului pentru reducerea emisiilor?",h:"Pre-tratare efluent spital înainte evacuare în canalizare (bioreaktor cu membrana MBR + UV). Protocol de eliminare medicamente expirate (NU la toaletă). Prescripție rațională (reducere consum = reducere emisii)."},
+        {q:"Ce reglementare europeană abordează microcontaminanții farmaceutici?",h:"Directiva 2013/39/UE (substanțe prioritare în apă) — EQS. Directiva 2020/2184 (apă potabilă) — include microcontaminanți. Regulamentul 2024 farmaceutice în mediu. Strategia Farmaceutică UE 2020."},
+      ], conc:["Contaminantul cu risc maxim și factorul de depășire","Mecanismul efectului ecotoxic","Tehnologia de tratare recomandată"] },
+
+    { id:"g6", emoji:"🏗️", title:"Dezinfecție cu clor — subproduse periculoase", color:"#dc2626",
+      caz:[{l:"Locație",v:"Stație tratare apă potabilă, oraș industrial"},{l:"Clor rezidual",v:"0,6 mg/L (normă: 0,1-0,5 mg/L) — ușor peste"},{l:"Trihalometane (THM)",v:"128 µg/L (norma max: 100 µg/L)"},{l:"Cloroform (principal THM)",v:"78% din THM total"},{l:"Materie organică naturală",v:"COT = 8,2 mg/L (crescut — apă din turbă)"},{l:"pH",v:"8,1 (alcalin — favorizează formare THM)"}],
+      qs:[
+        {q:"Explicați mecanismul formării THM și de ce pH 8,1 și COT 8,2 favorizează producerea lor.",h:"THM = reacție Cl2 + materie organică naturală (acizi humici/fulvici). La pH >7,5 predomină cloroformul. COT crescut = mai mult substrat pentru reacție. Temperatura >20°C și timp contact crescut = factor aditional."},
+        {q:"Cloroformul 78% din THM — ce risc specific implică pentru consumatorii cronici?",h:"Cloroform (CHCl3): IARC Grupa 2B (posibil carcinogen). Hepatotoxic + nefrotoxic cronic. Risc cancer hepatic și vezică urinară la expunere >10 ani. Inhalare duș = cale suplimentară (volatilizare)."},
+        {q:"Calculați excesul față de normă și estimați riscul de cancer pe 70 ani (model liniar).",h:"THM: 128/100 = 1,28× depășire. Risc incremental cancer: slope factor CHCl3 = 6,1×10-3 (mg/kg/zi). Doză: 2L/zi × 78µg/L / 70kg = 0,0022 mg/kg/zi. Risc = 0,0022 × 6,1×10-3 = 1,3×10-5/an (acceptabil <10-5)."},
+        {q:"Ce modificări ale procesului de tratare reduc THM fără a compromite dezinfecția?",h:"Reducere doză clor (menținând >0,1 mg/L rezidual). Reducere COT: coagulare optimizată + carbon activ granular (GAC). Coborâre pH la 7,0-7,5 înainte clorare. Ozonare ca dezinfecție primară (nu formează THM). Cloramine în loc de clor liber."},
+        {q:"Ce alternative la clorare există și ce avantaje/dezavantaje prezintă?",h:"Ozon: eficient vs. Crypto, nu THM, dar costisitor + formează bromate. UV: nu THM, eficient viral, dar fără rezidual în rețea. ClO2: eficient vs. biofilm, puțin THM, dar risc clorit. Combinație ozon + clor = standard modern."},
+        {q:"Consumatorii trebuie informați? Ce recomandări practice le dați?",h:"Informare obligatorie dacă THM >100 µg/L. Recomandări: filtrare carbon activ la robinet (reduce THM >90%). Aerare apă 30 min înainte consum (volatilizare cloroform). Ducșuri scurte cu ventilație (reducere inhalare). Apă rece filtrată > apă caldă."},
+      ], conc:["Cauza depășirii THM","Modificarea procesului prioritară","Recomandarea practică pentru consumatori"] },
+  ],
+
+  lp4a: [
+    { id:"g1", emoji:"📊", title:"Evaluarea stării de nutriție — pacient obez cu diabet", color:"#f59e0b",
+      caz:[{l:"Pacient",v:"Femeie 52 ani"},{l:"Înălțime/Greutate",v:"1,62m / 98 kg"},{l:"Circumferință abdominală",v:"107 cm"},{l:"Glicemie a jeun",v:"8,3 mmol/L"},{l:"HbA1c",v:"8,1%"},{l:"Colesterol total",v:"6,8 mmol/L"},{l:"HDL",v:"0,9 mmol/L"},{l:"Tensiune",v:"148/92 mmHg"}],
+      qs:[
+        {q:"Calculați IMC și clasificați stadiul obezității conform OMS.",h:"IMC = 98/(1,62²) = 98/2,624 = 37,3 kg/m². Obezitate gradul II (clasa II): IMC 35-39,9. Risc cardiovascular ÎNALT."},
+        {q:"Evaluați distribuția adipozității. Ce tip de obezitate este și ce risc implică?",h:"CA 107cm > 88cm (norma femei) = obezitate abdominală (viscerală). Grăsimea viscerală = metabolic activă → inflamație cronică → IR, DZ tip 2, risc CV. Mai periculoasă decât obezitatea gluteo-femurală."},
+        {q:"Calculați necesitatarul caloric de bază (Harris-Benedict) și pentru scădere în greutate.",h:"BMR (femei) = 655 + 9,6×98 + 1,8×162 - 4,7×52 = 655+940,8+291,6-244,4 = 1643 kcal/bază. Activitate sedentară × 1,2 = 1971 kcal/zi necesar. Deficit 500 kcal/zi = 1471 kcal → 0,5 kg/săptămână pierdere."},
+        {q:"HbA1c 8,1% — ce înseamnă și ce target terapeutic propuneți?",h:"HbA1c 8,1% = control glicemic insuficient (target DZ: <7%). Corespunde glicemie medie ~186 mg/dL. Obiectiv: reducere la <7% (sau <7,5% la vârstnici). Modificare dietă + metformin + activitate fizică."},
+        {q:"Elaborați un plan alimentar pe 3 zile cu 1471 kcal/zi, adaptat la DZ tip 2.",h:"Proteine: 20% = 294 kcal = 73g. Lipide: 30% = 441 kcal = 49g (nesaturate). Glucide: 50% = 736 kcal = 184g (IG scăzut). Excludere: zahăr simplu, alcool, grăsimi saturate. 5 mese mici vs 3 mari."},
+        {q:"Propuneți indicatori de monitorizare la 1, 3 și 6 luni.",h:"1 lună: greutate (-2-4 kg), glicemie a jeun, TA, aderență dieta. 3 luni: HbA1c (obiectiv <7,5%), lipide, CA. 6 luni: HbA1c <7%, greutate (-5-10%), calitate vieții (chestionar). Ajustare plan dacă obiective neatinse."},
+      ], conc:["IMC calculat și clasificarea","Riscul metabolic specific (tip distribuție)","Ținta HbA1c și strategia de scădere în greutate"] },
+
+    { id:"g2", emoji:"📐", title:"Malnutriție proteino-calorică — pacient vârstnic spitalizat", color:"#dc2626",
+      caz:[{l:"Pacient",v:"Bărbat 78 ani, spitalizat 14 zile"},{l:"IMC la internare",v:"17,2 kg/m²"},{l:"Pierdere ponderală",v:"8 kg în 3 luni (9,5% din greutatea inițială)"},{l:"Albumina serică",v:"2,6 g/dL (norma: 3,5-5,0)"},{l:"Forța musculară",v:"redusă (grip strength 14 kg — sub P25)"},{l:"Aport alimentar",v:"estimat 800 kcal/zi (din cauza anorexie + disfagie)"}],
+      qs:[
+        {q:"Stabiliți diagnosticul nutritional conform criteriilor GLIM (Global Leadership Initiative).",h:"GLIM: ≥1 criteriu fenotipic + ≥1 criteriu etiologic. Fenotipic: IMC 17,2 (<18,5) ✓, pierdere >5% în 3 luni ✓, reducere masă musculară ✓. Etiologic: aport <50% necesar >1 săptămână ✓. DIAGNOSTIC: Malnutriție severă."},
+        {q:"Albumina 2,6 g/dL — ce semnifică și ce alte markeri proteici utilizați?",h:"Albumina <3,5 = hipoproteinemie. Semiviatà 21 zile = marker nutrițional tardiv (reflectă săptămâni). Markeri mai rapizi: prealbumina (t1/2 2 zile), transferina (t1/2 8 zile), proteina C reactivă (stres inflamator scade albumina indiferent de nutriție)."},
+        {q:"Calculați necesarul caloric și proteic pentru acest pacient.",h:"Necesar kcal: 25-30 kcal/kg × estimat 50kg = 1250-1500 kcal/zi. Necesar proteine: 1,2-1,5 g/kg/zi (catabolism + vârstnic) = 60-75g/zi. Actual: 800 kcal + probabil 20-30g proteine = deficit sever."},
+        {q:"Disfagia limitează alimentația orală. Ce căi alternative de nutriție propuneți?",h:"Dacă disfagie parțială: modificare consistență (pastă, piure), produse hipercalorice orale (Ensure, Nutridrink 300 kcal/250mL). Dacă insuficient: sondă nazogastrică (NG) enteral. Dacă tract digestiv nefuncțional: nutriție parenterală centrală."},
+        {q:"Ce riscuri specifice implică reinițierea agresivă a nutriției? Cum le preveniți?",h:"Sindrom refeeding: hipofosforemie severă (la 12-72h renutrire) → insuficiență cardiacă + neurologică. Prevenire: monitorizare fosfor, K, Mg zilnic primele 5 zile. Creștere graduală aport (25% din necesar ziua 1, +25% zilnic). Tiamina 100mg/zi."},
+        {q:"Ce echipă multidisciplinară necesită managementul nutrițional al acestui pacient?",h:"Medic internist/geriatru (diagnostic). Dietetician (plan nutrițional + monitorizare). Logoped (evaluare + tratament disfagie). Kinetoterapeut (refacere masă musculară). Asistentă (administrare nutriție enterală + monitorizare toleranță)."},
+      ], conc:["Diagnosticul GLIM stabilit","Calea de nutriție aleasă și justificarea","Riscul principal de evitat la renutrire"] },
+
+    { id:"g3", emoji:"🍎", title:"Ancheta alimentară — evaluarea aportului populației", color:"#16a34a",
+      caz:[{l:"Studiu",v:"Anchetă nutrițională, 150 adulți 30-50 ani, urban"},{l:"Aport caloric mediu",v:"2.850 kcal/zi (femei: 2.100 recomandat, bărbați: 2.500)"},{l:"Proteine",v:"22% din total kcal"},{l:"Lipide",v:"42% din total kcal (rec: 25-35%)"},{l:"Glucide",v:"36% din total kcal (rec: 50-60%)"},{l:"Fibre",v:"12 g/zi (rec: 25-30 g/zi)"}],
+      qs:[
+        {q:"Calculați aportul real în grame pentru proteine, lipide și glucide la femei (2.850 kcal).",h:"Proteine: 22% × 2850 / 4 kcal/g = 156,75g (rec. 50-60g = EXCES). Lipide: 42% × 2850 / 9 = 133g (rec. 58-83g = exces 60%). Glucide: 36% × 2850 / 4 = 256g (rec. 262-375g = DEFICIT)."},
+        {q:"Identificați dezechilibrele față de recomandările actuale și consecințele lor.",h:"Hipercaloric (+36% față de necesar femei) → obezitate. Hiperprotein + hiperlipidic → risc renal, cardiovascular. Hipoglucidic (glucide rafinate probable) → fluctuații glicemice. Fibre 12 vs 25g = 50% deficit → constipație, risc cancer colon."},
+        {q:"Ce metode de anchetă alimentară ați utilizat? Avantaje și limite.",h:"Recall 24h: rapid, neinvaziv, limitat de memorie, o zi nu = obicei. FFQ (frecvența consumului): reflectă obiceiuri cronice dar estimare cantitativă slabă. Jurnal alimentar 7 zile: cel mai precis dar complet schimbă comportamentul (hawthorne)."},
+        {q:"Propuneți 5 recomandări nutriționale concrete pentru această populație.",h:"1. Reducere porție (nu dietă restrictivă). 2. Înlocuire grăsimi saturate cu ulei masline. 3. Creștere fibre: legume+fructe+leguminoase zilnic. 4. Înlocuire pâine albă cu integrală. 5. Reducere carne roșie la 2×/săptămână."},
+        {q:"Ce markeri biologici de monitorizare recomandați pentru un studiu longitudinal de 2 ani?",h:"Biochimici: lipide (LDL, HDL, TG), glicemie, HbA1c, PCR-hs (inflamație), homocisteină, vitamina D. Clinici: IMC, CA, TA, forța musculară. Nutriționali: albumina, feritina, B12, folat."},
+        {q:"Ce intervenție nutrițională la nivel de politică publică recomandați ministerului?",h:"Etichetare Nutri-Score obligatorie. Taxă zahăr/grăsimi saturate produse procesate. Subvenții legume/fructe în piețe. Educație nutrițională în școli (program OMS). Reformulare produse (reducere sare/zahăr cu industria)."},
+      ], conc:["Dezechilibrul macronutrient cel mai periculos","5 recomandări prioritare","Intervenția de politică publică"] },
+
+    { id:"g4", emoji:"🏃", title:"Evaluarea nutrițională a sportivului de performanță", color:"#059669",
+      caz:[{l:"Pacient",v:"Alergător maraton, 28 ani, 72 kg, 180 cm"},{l:"IMC",v:"22,2 kg/m²"},{l:"Masă grasă",v:"8% (DXA) — sub 10% la bărbat"},{l:"Aport caloric",v:"3.200 kcal/zi (antrenament intensiv 2h/zi)"},{l:"Feritina serică",v:"12 ng/mL (norma bărbați: 30-300 ng/mL)"},{l:"Hemoglobina",v:"12,8 g/dL (norma bărbați: 13,5-17,5)"}],
+      qs:[
+        {q:"Evaluați starea nutrițională a sportivului. Identificați deficiențele.",h:"IMC normal dar masă grasă 8% = la limita inferioară (risc dacă scade). Feritina 12 = deficit sever fier (norma >30). Hb 12,8 = anemie ușoară (norma >13,5). Probabil: deficit caloric relativ (RED-S syndrome)."},
+        {q:"Calculați necesarul caloric real pentru antrenament 2h/zi (MET maraton = 11).",h:"BMR = 10×72+6,25×180-5×28+5 = 1771 kcal. Factor activitate: 1,9 (atletism intensiv). Total: 1771×1,9 = 3365 kcal/zi. Sportivul consumă 3200 < 3365 = deficit 165 kcal/zi = RED-S incipient."},
+        {q:"Explicați mecanismul deficitului de fier la alergătorii de fond.",h:"3 mecanisme: 1. Hemoliză prin impact (foot-strike hemolysis) — lizare eritrocite la contact talpă-sol. 2. Pierderi GI (microhemoragii). 3. Aport insuficient (dieta hiperglucidică, fără carne). 4. Hepcidina crescută post-efort = absorbție Fe redusă 24h."},
+        {q:"Ce protocol de suplimentare cu fier recomandați? Cum monitorizați eficiența?",h:"Sulfat feros 200mg × 2/zi între mese (a jeun = +30% absorbție) + vitamina C 500mg concomitent. Evitare ceai/cafea 1h. Monitorizare: feritina la 4, 8, 12 săptămâni (target >30). Hb control lunar. Dacă feritina nu crește: investigare celiachie/sângerări oculte."},
+        {q:"Ce plan de hidratare elaborați pentru zi de competiție maraton (42km, 25°C)?",h:"Pre-competiție: 500mL apă cu 2h înainte. În cursă: 150-200mL la fiecare 15-20 min (stații apă). Băuturi izosmotice cu electroliți (Na 40-50mEq/L) dacă cursă >90 min. Post: 1,5L/kg pierdut (cântărire pre/post). Sodiu în alimentație post (prevenire hiponatremie)."},
+        {q:"Ce sfaturi dietetice specifice pentru creșterea absorbției fierului?",h:"Surse heme Fe (carne roșie, organe): 2-3×/săptămână (15-35% absorbție). Surse non-heme (leguminoase, spanac): combinate cu vitamina C. Evitare: ceai, cafea, calciu cu masa bogată în Fe. Gătire în vase fier (adăugare Fe elemental)."},
+      ], conc:["Diagnosticul nutrițional specific sportivului","Cauza deficitului de fier","Ținta feritinei la 3 luni"] },
+
+    { id:"g5", emoji:"👶", title:"Evaluarea creșterii și nutriției la sugar", color:"#0ea5e9",
+      caz:[{l:"Pacient",v:"Sugar 9 luni, băiat"},{l:"Greutate",v:"7,2 kg (P10 — sub P25 normal)"},{l:"Talie",v:"69 cm (P25)"},{l:"Alimentație",v:"formule de lapte 3 × 200mL/zi + diversificare neîncepută"},{l:"Vitamina D",v:"18 ng/mL (insuficiență: <20)"},{l:"Fier seric",v:"8 µmol/L (norma: 9-30)"},{l:"Semne clinice",v:"fontanelă anterioară larg deschisă, mușchi hipotoni"}],
+      qs:[
+        {q:"Evaluați creșterea ponderală față de curbele OMS. Există retard de creștere?",h:"P10 greutate la 9 luni normal este ~8,2 kg (mediana). 7,2 kg = sub P10 = subponderal. Curba ponderală sub P10 = risc falimentul creșterii (failure to thrive). Necesară analiză tendință (velocitate creștere)."},
+        {q:"Ce indică fontanela larg deschisă la 9 luni + hipotonie + vitamina D 18 ng/mL?",h:"Rahitism carențial: triada: fontanela larg deschisă (întârziere osificare), hipotonie musculară, vitamina D insuficientă. Confirmare: radiografie mâini (metafize în formă de cupă), fosfataza alcalină crescută, Ca/P scăzute."},
+        {q:"Diversificarea neîncepută la 9 luni — ce consecințe nutritionale implică?",h:"Pierderea ferestrei de diversificare (4-6 luni optim). Deficit Fe: formulele acoperă nevoile, dar diversificarea adaugă Fe heme. Risc alergie alimentară crescut dacă diversificare întârziată >12 luni. Deficit Zn, Cu, vitamine liposolubile."},
+        {q:"Calculați necesarul de vitamina D și fier pentru acest sugar.",h:"Vit D: 400-1000 UI/zi preventiv (1500-2000 UI/zi terapeutic în rahitism). Fier: 11 mg/zi (9-12 luni). Formulele conțin ~0,7 mg Fe/100mL × 600mL = 4,2mg/zi = INSUFICIENT (necesar 11mg). Necesară suplimentare."},
+        {q:"Elaborați un plan de diversificare alimentară urgent pentru 9-12 luni.",h:"Startul: papă de cereale cu fier (orez, porumb). Legume pasate: morcov, cartofi, dovleac. Carne pasată (sursă Fe heme): vițel, pui → 2-3×/săptămână. Fructe pasate. Ou (gălbenuș). Evitare: sare, zahăr, miere, lapte vaci <1 an, pește ≤12 luni."},
+        {q:"Când trimiteți sugarul la specialist și care? Ce consultații sunt necesare?",h:"Pediatru urgentă (rahitism + subponderal). Dietetician pediatric (plan alimentar). Nefrolog dacă Ca urinar crescut (supradozare Vit D). Reevaluare antropometrică la 2, 4, 8 săptămâni. Dacă greutate nu crește: investigare cauze organice (celiachie, intoleranță lapte)."},
+      ], conc:["Diagnosticul nutrițional principal","Suplimentarea urgentă necesară","Primul aliment de diversificare recomandat"] },
+
+    { id:"g6", emoji:"🏥", title:"Screeningul nutrițional în spital — MNA", color:"#7c3aed",
+      caz:[{l:"Secție",v:"Medicină internă, 24 de paturi"},{l:"Screening NRS-2002",v:"12/24 pacienți cu scor ≥3 (risc nutrițional)"},{l:"Screening MNA (vârstnici)",v:"8/10 vârstnici: 'la risc' sau 'malnutrit'"},{l:"Dietetician",v:"1 la 400 paturi (sub norma OMS: 1/100)"},{l:"Protocol nutrițional",v:"absent — fiecare medic decide individual"},{l:"Cost estimat malnutriție",v:"+35% durată spitalizare, +25% complicații"}],
+      qs:[
+        {q:"Interpretați prevalența de 50% risc nutrițional în secție. Este normală?",h:"50% risc = valoare tipică secții medicale adulți (studii europene: 30-50%). Ridicată în geriatrie, oncologie, chirurgie. Confirmă că malnutriția este frecventă dar subdiagnosticată fără screening sistematic."},
+        {q:"Calculați impactul economic al malnutriției pentru o secție de 24 paturi cu DMS 7 zile.",h:"Malnutriți: 12 pacienți × (+35% DMS) = 12 × 7 × 0,35 = 29,4 zile-pat extra/ciclu de pacienți. Cost zi spitalizare estimat ~500 lei → 14.700 lei extra/ciclu. Prevenție (suport nutrițional) = cost mult mai mic."},
+        {q:"Ce protocol de nutriție clinică implementați pentru secție?",h:"1. Screening NRS-2002 la toți pacienții în primele 24h. 2. Evaluare completă dacă scor ≥3 (dietetician sau medic antrenat). 3. Plan nutrițional individualizat. 4. Monitorizare săptămânală greutate + albumina. 5. Suport nutrițional: oral → enteral → parenteral."},
+        {q:"Norma OMS 1 dietetician/100 paturi — ce consecințe are subfinanțarea cu 1/400?",h:"1 dietetician pentru 400 paturi = acoperire insuficientă. Consecințe: screening fără follow-up, malnutriție nedetectată, prescrieri nutriționale inadecvate, complicații evitabile, costuri crescute pe termen lung."},
+        {q:"Ce rol are medicul de gardă în gestionarea nutriției pacientului spitalizat?",h:"Completare screening la internare. Prescrierea suportului nutrițional de urgență (dacă dietetician indisponibil). Monitorizare aport + toleranță. Notificare dietetician dacă scor ≥3. Educarea rezidentilor privind nutriția clinică."},
+        {q:"Ce indicatori de calitate pentru nutriția clinică monitorizați la nivel de secție?",h:"% pacienți cu screening la 24h. % pacienți cu plan nutrițional documentat. Rata malnutriție la externare vs. internare. DMS malnutriți vs. non-malnutriți. Rata complicații infecțioase (corelate cu starea nutrițională). Raportat trimestrial."},
+      ], conc:["Prevalența confirmată și semnificația","Costul economic estimat al malnutriției","Prioritatea #1 pentru implementare protocol"] },
+  ],
+
 };
 
 const FS = {
@@ -2957,7 +3366,7 @@ function FisaPreviewPanel({labId}) {
 // ════════════════════════════════════════════════════════════
 function FiseGrupTab({selLab}) {
   const labId=selLab?.id||"lp1a";
-  const hasFisa=labId==="lp1a"||labId==="lp6b"||labId==="lp6a";
+  const hasFisa=["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp6a","lp6b"].includes(labId);
   const fisaInfo=FISE_LABS[labId];
   return (
     <div>
