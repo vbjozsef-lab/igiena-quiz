@@ -3231,7 +3231,7 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 // FISA PREVIEW PANEL — teacher sees group worksheets
 // ════════════════════════════════════════════════════════════
 function FisaPreviewPanel({labId}) {
-  const hasFisa = labId==="lp1a"||labId==="lp6b"||labId==="lp6a";
+  const hasFisa = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp6a","lp6b"].includes(labId);
   const fise = hasFisa ? (FISE_DATA[labId]||[]) : [];
   const [selFisa, setSelFisa] = useState(null);
   const [expandedQ, setExpandedQ] = useState(null);
@@ -3242,7 +3242,7 @@ function FisaPreviewPanel({labId}) {
     <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",padding:"48px 24px",textAlign:"center"}}>
       <div style={{fontSize:40,marginBottom:10,opacity:.3}}>📋</div>
       <p style={{color:"#94a3b8",fontSize:14,fontWeight:600}}>Nu există fișe de grup pentru {labId?.toUpperCase()}</p>
-      <p style={{color:"#cbd5e1",fontSize:12,marginTop:4}}>Disponibil: LP1A, LP6A, LP6B</p>
+      <p style={{color:"#cbd5e1",fontSize:12,marginTop:4}}>Disponibil: LP1A, LP1B, LP2A, LP2B, LP3A, LP3B, LP4A, LP6A, LP6B</p>
     </div>
   );
 
