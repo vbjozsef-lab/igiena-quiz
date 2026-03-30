@@ -1797,6 +1797,24 @@ function saveQuizEdits(edits) {
   try { localStorage.setItem("igiena_quiz_edits", JSON.stringify(edits)); } catch(e) {}
 }
 // Apply stored edits on top of base questions for a specific lab+module
+function loadFisaEdits() {
+  try {
+    const saved = localStorage.getItem("igiena_fisa_edits");
+    return saved ? JSON.parse(saved) : {};
+  } catch(e) { return {}; }
+}
+function saveFisaEdits(edits) {
+  try { localStorage.setItem("igiena_fisa_edits", JSON.stringify(edits)); } catch(e) {}
+}
+// Apply stored fisa edits on top of base data
+function applyFisaEdits(labId, fisaId, baseFisa) {
+  const edits = loadFisaEdits();
+  const key = labId + ":" + fisaId;
+  const override = edits[key];
+  if (!override) return baseFisa;
+  return {...baseFisa, ...override};
+}
+
 function applyQuizEdits(labId, modId, baseQs) {
   const edits = loadQuizEdits();
   const key = labId + ":" + modId;
@@ -2836,7 +2854,12 @@ const FS = {
 // ════════════════════════════════════════════════════════════
 function FisaGrupScreen({session, student, onBack}) {
   const labId = session?.labId || "lp1a";
-  const allFise = FISE_DATA[labId] || FISE_DATA.lp1a;
+  const allFise = (FISE_DATA[labId] || FISE_DATA.lp1a).map(f => {
+    const key = labId + ":" + f.id;
+    const ov = loadFisaEdits()[key];
+    if (!ov) return f;
+    return {...f, ...ov, caz:ov.caz||f.caz, qs:ov.qs||f.qs, conc:ov.conc||f.conc};
+  });
   const [selectedFisa, setSelectedFisa] = useState(null);
   const [answers, setAnswers] = useState({});
   const [concluzii, setConcluzii] = useState({});
@@ -3524,48 +3547,225 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 // FISA PREVIEW PANEL — teacher sees group worksheets
 // ════════════════════════════════════════════════════════════
 function FisaPreviewPanel({labId}) {
-  const hasFisa = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp4b","lp5a","lp5b","lp6a","lp6b"].includes(labId);
-  const fise = hasFisa ? (FISE_DATA[labId]||[]) : [];
-  const [selFisa, setSelFisa] = useState(null);
+  const ALL_LABS = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp4b","lp5a","lp5b","lp6a","lp6b"];
+  const hasFisa = ALL_LABS.includes(labId);
+  const [fisaEdits, setFisaEdits] = useState(()=>loadFisaEdits());
+  const [selFisaId, setSelFisaId] = useState(null);
+  const [subTab, setSubTab] = useState("preview"); // preview | edit
   const [expandedQ, setExpandedQ] = useState(null);
+  const [editingQ, setEditingQ] = useState(null);
+  const [newQDraft, setNewQDraft] = useState(null);
+  const [editingCase, setEditingCase] = useState(false);
+  const [editingMeta, setEditingMeta] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
 
-  React.useEffect(()=>{ setSelFisa(null); setExpandedQ(null); }, [labId]);
+  React.useEffect(()=>{ setSelFisaId(null); setExpandedQ(null); setEditingQ(null); setNewQDraft(null); setEditingCase(false); }, [labId]);
+
+  const baseFise = hasFisa ? (FISE_DATA[labId]||[]) : [];
+
+  // Get active fisa (with edits applied)
+  const getActiveFisa = (f) => {
+    const key = labId+":"+f.id;
+    const ov = fisaEdits[key];
+    if (!ov) return f;
+    return {...f, ...ov,
+      caz: ov.caz || f.caz,
+      qs:  ov.qs  || f.qs,
+      conc:ov.conc|| f.conc,
+    };
+  };
+
+  const activeFise = baseFise.map(getActiveFisa);
+  const selFisa = selFisaId ? activeFise.find(f=>f.id===selFisaId) : null;
+  const baseFisa = selFisaId ? baseFise.find(f=>f.id===selFisaId) : null;
+  const edKey = labId+":"+selFisaId;
+  const hasEdits = selFisaId && !!fisaEdits[edKey];
+
+  const persist = (key, newData) => {
+    const ne = {...fisaEdits, [key]: newData};
+    setFisaEdits(ne);
+    saveFisaEdits(ne);
+    setSaveMsg("✓ Salvat");
+    setTimeout(()=>setSaveMsg(""), 2000);
+  };
+
+  const resetFisa = () => {
+    if (!confirm("Resetați la fișa originală?")) return;
+    const ne = {...fisaEdits};
+    delete ne[edKey];
+    setFisaEdits(ne);
+    saveFisaEdits(ne);
+    setSaveMsg("✓ Resetat");
+    setTimeout(()=>setSaveMsg(""), 2000);
+    setEditingQ(null); setNewQDraft(null); setEditingCase(false); setEditingMeta(false);
+  };
+
+  const saveQ = (idx, updated) => {
+    const qs = [...selFisa.qs];
+    qs[idx] = updated;
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), qs});
+    setEditingQ(null);
+  };
+
+  const deleteQ = (idx) => {
+    if (!confirm("Ștergeți această întrebare?")) return;
+    const qs = selFisa.qs.filter((_,i)=>i!==idx);
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), qs});
+    setExpandedQ(null);
+  };
+
+  const addQ = (q) => {
+    const qs = [...selFisa.qs, q];
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), qs});
+    setNewQDraft(null);
+  };
+
+  const moveQ = (idx, dir) => {
+    const qs = [...selFisa.qs];
+    const t = idx+dir;
+    if (t<0||t>=qs.length) return;
+    [qs[idx],qs[t]]=[qs[t],qs[idx]];
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), qs});
+  };
+
+  const saveMeta = (title, emoji, color) => {
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), title, emoji, color});
+    setEditingMeta(false);
+  };
+
+  const saveCaz = (newCaz) => {
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), caz: newCaz});
+    setEditingCase(false);
+  };
+
+  const saveConc = (newConc) => {
+    persist(edKey, {...(fisaEdits[edKey]||baseFisa), conc: newConc});
+  };
+
+  // ── Q edit form (reused for quiz editor) ──────────────
+  const QForm = ({initial, isNew, onSave, onCancel}) => {
+    const [q, setQ] = useState(initial?.q||"");
+    const [h, setH] = useState(initial?.h||"");
+    const valid = q.trim().length > 3;
+    return (
+      <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:8}}>
+        <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>
+          {isNew?"➕ Întrebare nouă":"✏️ Editare întrebare"}
+        </div>
+        <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Întrebarea *</label>
+        <textarea value={q} onChange={e=>setQ(e.target.value)} rows={2}
+          style={{width:"100%",padding:"9px 12px",border:"1.5px solid #c7d2fe",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:10,outline:"none"}}
+          placeholder="Scrieți întrebarea..."/>
+        <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Indiciu / Răspuns așteptat</label>
+        <textarea value={h} onChange={e=>setH(e.target.value)} rows={2}
+          style={{width:"100%",padding:"9px 12px",border:"1.5px solid #e0e7ff",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:12,outline:"none"}}
+          placeholder="Indiciu pentru evaluare (vizibil doar profesorului)..."/>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={()=>onSave({q:q.trim(),h:h.trim()})} disabled={!valid}
+            style={{flex:1,padding:"10px",background:valid?"linear-gradient(135deg,#6366f1,#8b5cf6)":"#e0e7ff",color:valid?"#fff":"#94a3b8",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:valid?"pointer":"not-allowed"}}>
+            {isNew?"➕ Adaugă":"💾 Salvează"}
+          </button>
+          <button onClick={onCancel}
+            style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+            Anulează
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // ── Caz edit form ──────────────────────────────────────
+  const CazForm = ({initial, onSave, onCancel}) => {
+    const [rows, setRows] = useState(initial.map(r=>({l:r.l,v:r.v})));
+    return (
+      <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:10}}>
+        <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>✏️ Editare caz</div>
+        {rows.map((row,i)=>(
+          <div key={i} style={{display:"flex",gap:8,marginBottom:7,alignItems:"center"}}>
+            <input value={row.l} onChange={e=>{const r=[...rows];r[i]={...r[i],l:e.target.value};setRows(r);}}
+              style={{flex:"0 0 140px",padding:"8px 10px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:12,outline:"none"}}
+              placeholder="Etichetă (ex: Temperatura)"/>
+            <input value={row.v} onChange={e=>{const r=[...rows];r[i]={...r[i],v:e.target.value};setRows(r);}}
+              style={{flex:1,padding:"8px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:12,outline:"none"}}
+              placeholder="Valoare (ex: 24,8°C)"/>
+            <button onClick={()=>setRows(rows.filter((_,j)=>j!==i))}
+              style={{padding:"6px 10px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:13,cursor:"pointer",flexShrink:0}}>✕</button>
+          </div>
+        ))}
+        <button onClick={()=>setRows([...rows,{l:"",v:""}])}
+          style={{width:"100%",padding:"8px",background:"#EEF2FF",border:"1.5px dashed #a5b4fc",borderRadius:8,color:"#6366f1",fontSize:12,fontWeight:700,cursor:"pointer",marginBottom:10}}>
+          + Adaugă rând
+        </button>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={()=>onSave(rows.filter(r=>r.l||r.v))}
+            style={{flex:1,padding:"10px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+            💾 Salvează cazul
+          </button>
+          <button onClick={onCancel}
+            style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+            Anulează
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   if (!hasFisa) return (
     <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",padding:"48px 24px",textAlign:"center"}}>
       <div style={{fontSize:40,marginBottom:10,opacity:.3}}>📋</div>
-      <p style={{color:"#94a3b8",fontSize:14,fontWeight:600}}>Nu există fișe de grup pentru {labId?.toUpperCase()}</p>
-      <p style={{color:"#cbd5e1",fontSize:12,marginTop:4}}>Disponibil: LP1A, LP1B, LP2A, LP2B, LP3A, LP3B, LP4A, LP6A, LP6B</p>
+      <p style={{color:"#94a3b8",fontSize:14,fontWeight:600}}>Nu există fișe pentru {labId?.toUpperCase()}</p>
     </div>
   );
 
   return (
-    <div style={{display:"grid",gridTemplateColumns:"240px 1fr",gap:14,alignItems:"start"}}>
-      {/* Left: fise list */}
-      <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",overflow:"hidden",boxShadow:"0 2px 8px rgba(99,102,241,0.05)"}}>
-        <div style={{padding:"10px 14px",borderBottom:"1px solid #e0e7ff",background:"#F8FAFF"}}>
-          <div style={{fontSize:11,fontWeight:700,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em"}}>Fișe — {labId?.toUpperCase()}</div>
-          <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>{fise.length} grupe</div>
-        </div>
-        {fise.map((f,i)=>{
-          const active = selFisa?.id===f.id;
-          return (
-            <button key={f.id} onClick={()=>{setSelFisa(f);setExpandedQ(null);}}
-              style={{width:"100%",textAlign:"left",padding:"10px 14px",border:"none",borderBottom:"1px solid #f1f5f9",
-                background:active?"#EEF2FF":"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:18}}>{f.emoji}</span>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:12,fontWeight:active?700:500,color:active?"#6366f1":"#1e293b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Grupa {i+1}</div>
-                <div style={{fontSize:10,color:active?"#818cf8":"#94a3b8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginTop:1}}>{f.title}</div>
-              </div>
-              {active && <span style={{color:"#6366f1",fontSize:12}}>›</span>}
+    <div>
+      {/* Sub-tabs + save msg */}
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14,flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:4,background:"#fff",padding:3,borderRadius:10,border:"1px solid #e0e7ff"}}>
+          {[{id:"preview",label:"👁️ Previzualizare"},{id:"edit",label:"✏️ Editor Fișe"}].map(t=>(
+            <button key={t.id} onClick={()=>{setSubTab(t.id);setEditingQ(null);setNewQDraft(null);setEditingCase(false);setEditingMeta(false);}}
+              style={{padding:"7px 16px",borderRadius:8,border:"none",cursor:"pointer",fontSize:13,fontWeight:subTab===t.id?700:400,
+                background:subTab===t.id?"#EEF2FF":"transparent",color:subTab===t.id?"#6366f1":"#64748b"}}>
+              {t.label}
             </button>
-          );
-        })}
+          ))}
+        </div>
+        {saveMsg && <span style={{fontSize:13,color:"#16a34a",fontWeight:700,background:"#f0fdf4",padding:"5px 12px",borderRadius:8,border:"1px solid #bbf7d0"}}>{saveMsg}</span>}
+        {hasEdits && subTab==="edit" && (
+          <button onClick={resetFisa} style={{padding:"6px 14px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:12,fontWeight:700,cursor:"pointer",marginLeft:"auto"}}>
+            ↺ Reset fișă
+          </button>
+        )}
       </div>
 
-      {/* Right: fisa detail */}
-      <div>
+      <div style={{display:"grid",gridTemplateColumns:"200px 1fr",gap:14,alignItems:"start"}}>
+        {/* Fise list */}
+        <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",overflow:"hidden",boxShadow:"0 2px 8px rgba(99,102,241,0.05)"}}>
+          <div style={{padding:"10px 14px",borderBottom:"1px solid #e0e7ff",background:"#F8FAFF"}}>
+            <div style={{fontSize:11,fontWeight:700,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em"}}>Fișe — {labId?.toUpperCase()}</div>
+          </div>
+          {activeFise.map((f,i)=>{
+            const active = selFisaId===f.id;
+            const edited = !!fisaEdits[labId+":"+f.id];
+            return (
+              <button key={f.id} onClick={()=>{setSelFisaId(f.id);setExpandedQ(null);setEditingQ(null);setNewQDraft(null);setEditingCase(false);setEditingMeta(false);}}
+                style={{width:"100%",textAlign:"left",padding:"10px 12px",border:"none",borderBottom:"1px solid #f1f5f9",
+                  background:active?"#EEF2FF":"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:17}}>{f.emoji}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:12,fontWeight:active?700:500,color:active?"#6366f1":"#1e293b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Grupa {i+1}</div>
+                  <div style={{fontSize:10,color:active?"#818cf8":"#94a3b8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginTop:1,display:"flex",gap:4,alignItems:"center"}}>
+                    {f.qs.length}Q
+                    {edited && <span style={{color:"#f59e0b",background:"#fffbeb",borderRadius:5,padding:"0 4px",fontSize:9}}>✎</span>}
+                  </div>
+                </div>
+                {active && <span style={{color:"#6366f1",fontSize:12}}>›</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right panel */}
         {!selFisa ? (
           <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",padding:"50px 24px",textAlign:"center"}}>
             <div style={{fontSize:44,marginBottom:10,opacity:.25}}>👈</div>
@@ -3574,58 +3774,136 @@ function FisaPreviewPanel({labId}) {
         ) : (
           <div>
             {/* Fisa header */}
-            <div style={{background:"#fff",borderRadius:14,border:`2px solid ${selFisa.color}33`,overflow:"hidden",marginBottom:10,boxShadow:"0 2px 12px rgba(0,0,0,0.05)"}}>
-              <div style={{background:selFisa.color,padding:"14px 18px",display:"flex",alignItems:"center",gap:12}}>
-                <span style={{fontSize:26}}>{selFisa.emoji}</span>
-                <div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,.75)",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em"}}>
-                    Fișă Grupă {fise.indexOf(selFisa)+1}
+            <div style={{background:"#fff",borderRadius:14,border:`2px solid ${selFisa.color}33`,overflow:"hidden",marginBottom:10,boxShadow:"0 2px 12px rgba(0,0,0,.04)"}}>
+              <div style={{background:selFisa.color,padding:"12px 16px",display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:24}}>{selFisa.emoji}</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,.75)",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em"}}>
+                    Fișă Grupă {activeFise.indexOf(selFisa)+1}
+                    {hasEdits && <span style={{marginLeft:8,background:"rgba(255,255,255,.25)",borderRadius:8,padding:"1px 6px",fontSize:9}}>EDITAT</span>}
                   </div>
-                  <div style={{fontSize:16,fontWeight:800,color:"#fff"}}>{selFisa.title}</div>
+                  <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>{selFisa.title}</div>
                 </div>
+                {subTab==="edit" && (
+                  <button onClick={()=>setEditingMeta(!editingMeta)}
+                    style={{padding:"5px 12px",background:"rgba(255,255,255,.2)",border:"1px solid rgba(255,255,255,.4)",borderRadius:8,color:"#fff",fontSize:12,cursor:"pointer",fontWeight:600}}>
+                    ✏️ Titlu
+                  </button>
+                )}
               </div>
 
+              {/* Meta edit form */}
+              {editingMeta && subTab==="edit" && (()=>{
+                const [t,setT]=React.useState(selFisa.title);
+                const [e,setE]=React.useState(selFisa.emoji);
+                return (
+                  <div style={{padding:"14px 16px",background:"#F8FAFF",borderTop:"1px solid #e0e7ff"}}>
+                    <div style={{display:"flex",gap:8,marginBottom:8}}>
+                      <input value={e} onChange={ev=>setE(ev.target.value)}
+                        style={{width:60,padding:"8px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:18,textAlign:"center",outline:"none"}}
+                        placeholder="emoji"/>
+                      <input value={t} onChange={ev=>setT(ev.target.value)}
+                        style={{flex:1,padding:"8px 12px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:13,outline:"none"}}
+                        placeholder="Titlu fișă..."/>
+                    </div>
+                    <div style={{display:"flex",gap:8}}>
+                      <button onClick={()=>saveMeta(t.trim(),e.trim(),selFisa.color)}
+                        style={{flex:1,padding:"9px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+                        💾 Salvează
+                      </button>
+                      <button onClick={()=>setEditingMeta(false)}
+                        style={{padding:"9px 14px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+                        Anulează
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Caz */}
-              <div style={{padding:"16px 18px"}}>
-                <div style={{fontSize:11,fontWeight:700,color:selFisa.color,textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>📁 Cazul prezentat</div>
-                <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                  {selFisa.caz.map((item,i)=>(
-                    item.v ? (
-                      <div key={i} style={{display:"flex",gap:10,padding:"6px 10px",background:i%2===0?"#F8FAFF":"#fff",borderRadius:7}}>
-                        <span style={{fontSize:12,color:"#64748b",minWidth:150,flexShrink:0}}>{item.l}:</span>
-                        <span style={{fontSize:12,fontWeight:700,color:"#1e293b",fontFamily:"monospace"}}>{item.v}</span>
-                      </div>
-                    ) : (
-                      <div key={i} style={{fontSize:12,color:"#94a3b8",fontStyle:"italic",padding:"2px 10px"}}>{item.l}</div>
-                    )
-                  ))}
+              <div style={{padding:"14px 16px"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                  <div style={{fontSize:11,fontWeight:700,color:selFisa.color,textTransform:"uppercase",letterSpacing:".08em"}}>📁 Cazul prezentat</div>
+                  {subTab==="edit" && !editingCase && (
+                    <button onClick={()=>setEditingCase(true)}
+                      style={{padding:"4px 10px",background:"#EEF2FF",border:"1px solid #c7d2fe",borderRadius:7,color:"#6366f1",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                      ✏️ Editează cazul
+                    </button>
+                  )}
                 </div>
+                {editingCase && subTab==="edit" ? (
+                  <CazForm initial={selFisa.caz} onSave={saveCaz} onCancel={()=>setEditingCase(false)}/>
+                ) : (
+                  <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                    {selFisa.caz.map((item,i)=>(
+                      item.v ? (
+                        <div key={i} style={{display:"flex",gap:10,padding:"5px 8px",background:i%2===0?"#F8FAFF":"#fff",borderRadius:6}}>
+                          <span style={{fontSize:12,color:"#64748b",minWidth:140,flexShrink:0}}>{item.l}:</span>
+                          <span style={{fontSize:12,fontWeight:700,color:"#1e293b",fontFamily:"monospace"}}>{item.v}</span>
+                        </div>
+                      ) : <div key={i} style={{fontSize:11,color:"#94a3b8",fontStyle:"italic",padding:"2px 8px"}}>{item.l}</div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Questions */}
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#1e1b4b",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
-                📝 Întrebările fișei ({selFisa.qs.length})
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#1e1b4b",textTransform:"uppercase",letterSpacing:".1em"}}>
+                  📝 Întrebările fișei ({selFisa.qs.length})
+                </div>
+                {subTab==="edit" && !newQDraft && (
+                  <button onClick={()=>setNewQDraft({q:"",h:""})}
+                    style={{padding:"6px 14px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}}>
+                    ➕ Întrebare nouă
+                  </button>
+                )}
               </div>
+
+              {subTab==="edit" && newQDraft && (
+                <QForm initial={newQDraft} isNew={true} onSave={addQ} onCancel={()=>setNewQDraft(null)}/>
+              )}
+
               {selFisa.qs.map((q,i)=>{
                 const open=expandedQ===i;
+                const isEditing=editingQ===i && subTab==="edit";
+
+                if (isEditing) return (
+                  <QForm key={i} initial={q} isNew={false} onSave={(upd)=>saveQ(i,upd)} onCancel={()=>setEditingQ(null)}/>
+                );
+
                 return (
                   <div key={i} style={{background:"#fff",borderRadius:11,border:`1.5px solid ${open?selFisa.color+"66":"#e0e7ff"}`,marginBottom:7,overflow:"hidden"}}>
-                    <button onClick={()=>setExpandedQ(open?null:i)}
-                      style={{width:"100%",textAlign:"left",padding:"12px 14px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:10}}>
-                      <span style={{background:open?selFisa.color:"#EEF2FF",color:open?"#fff":selFisa.color,fontSize:11,fontWeight:800,padding:"2px 8px",borderRadius:16,flexShrink:0,marginTop:1}}>
-                        Î{i+1}
-                      </span>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.5}}>{q.q}</div>
-                        {!open && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
-                      </div>
-                      <span style={{color:"#c7d2fe",fontSize:14,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform .2s"}}>›</span>
-                    </button>
+                    <div style={{display:"flex",alignItems:"stretch"}}>
+                      <button onClick={()=>setExpandedQ(open?null:i)}
+                        style={{flex:1,textAlign:"left",padding:"11px 12px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:9}}>
+                        <span style={{background:open?selFisa.color:"#EEF2FF",color:open?"#fff":selFisa.color,fontSize:11,fontWeight:800,padding:"2px 8px",borderRadius:14,flexShrink:0,marginTop:2}}>
+                          Î{i+1}
+                        </span>
+                        <div style={{flex:1}}>
+                          <div style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.5}}>{q.q}</div>
+                          {!open && subTab==="preview" && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
+                        </div>
+                        <span style={{color:"#c7d2fe",fontSize:13,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform .2s"}}>›</span>
+                      </button>
+                      {subTab==="edit" && (
+                        <div style={{display:"flex",flexDirection:"column",borderLeft:"1px solid #f1f5f9",padding:"4px 3px",gap:1,justifyContent:"center"}}>
+                          <button onClick={()=>moveQ(i,-1)} disabled={i===0}
+                            style={{padding:"3px 7px",background:"none",border:"none",cursor:i===0?"not-allowed":"pointer",color:i===0?"#e0e7ff":"#94a3b8",fontSize:12}}>↑</button>
+                          <button onClick={()=>moveQ(i,1)} disabled={i===selFisa.qs.length-1}
+                            style={{padding:"3px 7px",background:"none",border:"none",cursor:i===selFisa.qs.length-1?"not-allowed":"pointer",color:i===selFisa.qs.length-1?"#e0e7ff":"#94a3b8",fontSize:12}}>↓</button>
+                          <button onClick={()=>setEditingQ(i)}
+                            style={{padding:"3px 7px",background:"none",border:"none",cursor:"pointer",color:"#6366f1",fontSize:11}}>✏️</button>
+                          <button onClick={()=>deleteQ(i)}
+                            style={{padding:"3px 7px",background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:11}}>🗑️</button>
+                        </div>
+                      )}
+                    </div>
                     {open && (
-                      <div style={{padding:"0 14px 14px",borderTop:"1px solid #f1f5f9"}}>
-                        <div style={{marginTop:10,padding:"10px 14px",background:"#F8FAFF",border:"1.5px solid #e0e7ff",borderRadius:9,fontSize:13,color:"#1e293b",lineHeight:1.6}}>
+                      <div style={{padding:"0 12px 12px",borderTop:"1px solid #f1f5f9"}}>
+                        <div style={{marginTop:10,padding:"10px 12px",background:"#F8FAFF",border:"1.5px solid #e0e7ff",borderRadius:9,fontSize:13,color:"#1e293b",lineHeight:1.6}}>
                           <strong style={{color:selFisa.color}}>💡 Indiciu/Răspuns așteptat:</strong> {q.h}
                         </div>
                       </div>
@@ -3636,12 +3914,26 @@ function FisaPreviewPanel({labId}) {
             </div>
 
             {/* Conclusions */}
-            <div style={{background:"#F0FDF4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"14px 16px"}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>✅ Concluzia grupei — câmpuri</div>
-              <div className="fisa-conc-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            <div style={{background:"#F0FDF4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"12px 14px"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".1em"}}>✅ Concluzia grupei — câmpuri ({selFisa.conc.length})</div>
+                {subTab==="edit" && (
+                  <button onClick={()=>{
+                    const label = prompt("Adaugă câmp concluzie:");
+                    if (label?.trim()) saveConc([...selFisa.conc, label.trim()]);
+                  }} style={{padding:"4px 10px",background:"#dcfce7",border:"1px solid #86efac",borderRadius:7,color:"#16a34a",fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                    + Adaugă
+                  </button>
+                )}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7}}>
                 {selFisa.conc.map((label,i)=>(
-                  <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 12px",border:"1px solid #bbf7d0",fontSize:12,color:"#166534",fontWeight:600}}>
-                    {i+1}. {label}
+                  <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #bbf7d0",fontSize:12,color:"#166534",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}}>
+                    <span>{i+1}. {label}</span>
+                    {subTab==="edit" && (
+                      <button onClick={()=>saveConc(selFisa.conc.filter((_,j)=>j!==i))}
+                        style={{background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:13,flexShrink:0,padding:0}}>✕</button>
+                    )}
                   </div>
                 ))}
               </div>
