@@ -3685,6 +3685,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
   const [editingCase, setEditingCase] = useState(false);
   const [editingMeta, setEditingMeta] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+  const [subTab, setSubTab] = useState(mode||"preview");
 
   React.useEffect(()=>{ setSelFisaId(null); setExpandedQ(null); setEditingQ(null); setNewQDraft(null); setEditingCase(false); setEditingMeta(false); }, [labId]);
 
