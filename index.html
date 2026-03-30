@@ -49,12 +49,22 @@
   .spin{animation:spin 1s linear infinite;display:inline-block}
   #qr-canvas canvas,#qr-canvas img{width:200px!important;height:200px!important}
 
-  /* ── AdminPanel nav — horizontal scroll on mobile ── */
+  /* ── AdminPanel nav ── */
   .admin-nav-tabs{
     display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;
-    scrollbar-width:none;-ms-overflow-style:none;flex-shrink:0;
+    scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0;
   }
   .admin-nav-tabs::-webkit-scrollbar{display:none}
+  .hide-mobile{display:inline}
+  .show-desktop{display:none}
+  @media(min-width:640px){
+    .hide-mobile{display:inline}
+    .show-desktop{display:inline !important}
+    .admin-nav-tabs button{padding:5px 14px !important}
+  }
+  @media(max-width:639px){
+    .hide-mobile{display:none !important}
+  }
 
   /* ── HomePage — two column → single column ── */
   .home-layout{display:flex;min-height:100vh;overflow:hidden;position:relative}
@@ -2379,55 +2389,51 @@ function AdminPanel({onBack, teacherName}) {
       <div style={{position:"fixed",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(99,102,241,0.07),transparent 70%)",top:-200,left:-200,pointerEvents:"none",zIndex:0}}/>
       <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",background:"radial-gradient(circle,rgba(139,92,246,0.05),transparent 70%)",bottom:-100,right:-100,pointerEvents:"none",zIndex:0}}/>
 
-      {/* TOP NAV */}
-      <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(240,244,255,0.9)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(99,102,241,0.12)",padding:"0 24px"}}>
-        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",gap:0,height:60}}>
+      {/* ── TOP NAV ── */}
+      <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(240,244,255,0.95)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(99,102,241,0.12)",padding:"0 12px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",height:52,gap:8}}>
 
           {/* Logo */}
-          <div style={{display:"flex",alignItems:"center",gap:10,marginRight:32}}>
-            <div style={{width:34,height:34,background:"linear-gradient(135deg,#6366f1,#8b5cf6)",borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>🧬</div>
-            <span style={{fontSize:14,fontWeight:800,color:"#1e1b4b",letterSpacing:"-.01em"}}>Igienă</span>
-            <span style={{fontSize:11,color:"#6366f1",fontWeight:600,marginLeft:2}}>· UMFST</span>
+          <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+            <div style={{width:30,height:30,background:"linear-gradient(135deg,#6366f1,#8b5cf6)",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>🧬</div>
+            <span style={{fontSize:13,fontWeight:800,color:"#1e1b4b",letterSpacing:"-.01em",whiteSpace:"nowrap"}} className="hide-mobile">Igienă · UMFST</span>
           </div>
 
           {/* Nav tabs */}
           <div className="admin-nav-tabs" style={{flex:1}}>
             {[
-              {id:"qr",      icon:"📱", label:"Generează QR"},
-              {id:"preview", icon:"👁️", label:"Previzualizare Quiz"},
-              {id:"results", icon:"📊", label:"Rezultate"},
-              {id:"prezentari",icon:"📽️",label:"Prezentări"},
-              {id:"fisiere", icon:"📁", label:"Fișiere"},
-              {id:"nomenclator",icon:"🗂️",label:"Nomenclator"},
+              {id:"qr",          icon:"📱", label:"QR"},
+              {id:"preview",     icon:"👁️", label:"Quiz"},
+              {id:"results",     icon:"📊", label:"Rezultate"},
+              {id:"prezentari",  icon:"📽️", label:"Prezentări"},
+              {id:"fisiere",     icon:"📁", label:"Fișiere"},
+              {id:"nomenclator", icon:"🗂️", label:"Nomenclator"},
             ].map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)}
                 style={{
-                  display:"flex",alignItems:"center",gap:6,
-                  padding:"6px 14px",borderRadius:8,border:"none",cursor:"pointer",
-                  fontSize:13,fontWeight:tab===t.id?700:400,
+                  display:"flex",alignItems:"center",gap:5,flexShrink:0,
+                  padding:"5px 10px",borderRadius:8,border:"none",cursor:"pointer",
+                  fontSize:12,fontWeight:tab===t.id?700:400,
                   background:tab===t.id?"#EEF2FF":"transparent",
                   color:tab===t.id?"#6366f1":"#64748b",
-                  transition:"all .15s",
                   borderBottom:tab===t.id?"2px solid #6366f1":"2px solid transparent",
+                  WebkitTapHighlightColor:"transparent",whiteSpace:"nowrap",
                 }}>
-                <span style={{fontSize:14}}>{t.icon}</span>
-                <span style={{display:"none",display:"block"}}>{t.label}</span>
+                <span style={{fontSize:15}}>{t.icon}</span>
+                <span style={{display:"none"}} className="show-desktop">{t.label}</span>
               </button>
             ))}
           </div>
 
-          {/* User badge + logout */}
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
+          {/* User + logout */}
+          <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
             {teacherName && (
-              <div style={{display:"flex",alignItems:"center",gap:8,background:"#EEF2FF",border:"1px solid #c7d2fe",borderRadius:20,padding:"6px 14px 6px 8px"}}>
-                <div style={{width:26,height:26,background:"linear-gradient(135deg,#6366f1,#8b5cf6)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"white",fontWeight:700}}>
-                  {teacherName.split(" ").map(w=>w[0]).join("").slice(0,2)}
-                </div>
-                <span style={{fontSize:13,color:"#6366f1",fontWeight:700}}>{teacherName.split(" ")[0]}</span>
+              <div style={{width:28,height:28,background:"linear-gradient(135deg,#6366f1,#8b5cf6)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"white",fontWeight:700,flexShrink:0}} title={teacherName}>
+                {teacherName.split(" ").map(w=>w[0]).join("").slice(0,2)}
               </div>
             )}
             <button onClick={onBack}
-              style={{padding:"7px 14px",background:"#fff",border:"1px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:13,cursor:"pointer",fontWeight:500}}>
+              style={{padding:"6px 10px",background:"#fff",border:"1px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:12,cursor:"pointer",fontWeight:500,flexShrink:0,WebkitTapHighlightColor:"transparent",whiteSpace:"nowrap"}}>
               Ieși
             </button>
           </div>
@@ -3197,7 +3203,7 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 
   const [selModId, setSelModId] = useState(null);
   const [search, setSearch] = useState("");
-  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise
+  // mode prop controls preview/edit — no internal state needed | fise
   const [quizEdits, setQuizEdits] = useState(()=>loadQuizEdits());
 
   // Edit state
@@ -3345,9 +3351,10 @@ function QuizPreviewTab({selLab, onSelectLab}) {
       {/* Sub-tabs */}
       <div style={{display:"flex",gap:4,marginBottom:16,background:"#fff",padding:4,borderRadius:12,border:"1px solid #e0e7ff",width:"fit-content"}}>
         {[
-          {id:"preview",label:"👁️ Previzualizare"},
-          {id:"edit",   label:"✏️ Editor Quiz"},
-          {id:"fise",   label:"📋 Fișe de Grup"},
+          {id:"preview",     label:"👁️ Previzualizare"},
+          {id:"edit",        label:"✏️ Editor Quiz"},
+          {id:"fise_preview",label:"📋 Fișe — Previzualizare"},
+          {id:"fise_edit",   label:"✏️ Editor Fișe"},
         ].map(t=>(
           <button key={t.id} onClick={()=>setSubTab(t.id)}
             style={{padding:"8px 18px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:subTab===t.id?700:400,
@@ -3378,9 +3385,9 @@ function QuizPreviewTab({selLab, onSelectLab}) {
         })}
       </div>
 
-      {/* ── FISE SUB-TAB ── */}
-      {subTab==="fise" && (
-        <FisaPreviewPanel labId={selLab?.id}/>
+      {/* ── FISE SUB-TABS ── */}
+      {(subTab==="fise_preview"||subTab==="fise_edit") && (
+        <FisaPreviewPanel labId={selLab?.id} mode={subTab==="fise_edit"?"edit":"preview"}/>
       )}
 
       {/* ── PREVIEW + EDIT sub-tabs: two-column layout ── */}
@@ -3546,12 +3553,11 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 // ════════════════════════════════════════════════════════════
 // FISA PREVIEW PANEL — teacher sees group worksheets
 // ════════════════════════════════════════════════════════════
-function FisaPreviewPanel({labId}) {
+function FisaPreviewPanel({labId, mode="preview"}) {
   const ALL_LABS = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp4b","lp5a","lp5b","lp6a","lp6b"];
   const hasFisa = ALL_LABS.includes(labId);
   const [fisaEdits, setFisaEdits] = useState(()=>loadFisaEdits());
   const [selFisaId, setSelFisaId] = useState(null);
-  const [subTab, setSubTab] = useState("preview"); // preview | edit
   const [expandedQ, setExpandedQ] = useState(null);
   const [editingQ, setEditingQ] = useState(null);
   const [newQDraft, setNewQDraft] = useState(null);
@@ -3559,7 +3565,7 @@ function FisaPreviewPanel({labId}) {
   const [editingMeta, setEditingMeta] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
 
-  React.useEffect(()=>{ setSelFisaId(null); setExpandedQ(null); setEditingQ(null); setNewQDraft(null); setEditingCase(false); }, [labId]);
+  React.useEffect(()=>{ setSelFisaId(null); setExpandedQ(null); setEditingQ(null); setNewQDraft(null); setEditingCase(false); setEditingMeta(false); }, [labId]);
 
   const baseFise = hasFisa ? (FISE_DATA[labId]||[]) : [];
 
@@ -3731,7 +3737,7 @@ function FisaPreviewPanel({labId}) {
           ))}
         </div>
         {saveMsg && <span style={{fontSize:13,color:"#16a34a",fontWeight:700,background:"#f0fdf4",padding:"5px 12px",borderRadius:8,border:"1px solid #bbf7d0"}}>{saveMsg}</span>}
-        {hasEdits && subTab==="edit" && (
+        {hasEdits && mode==="edit" && (
           <button onClick={resetFisa} style={{padding:"6px 14px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:12,fontWeight:700,cursor:"pointer",marginLeft:"auto"}}>
             ↺ Reset fișă
           </button>
@@ -3784,7 +3790,7 @@ function FisaPreviewPanel({labId}) {
                   </div>
                   <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>{selFisa.title}</div>
                 </div>
-                {subTab==="edit" && (
+                {mode==="edit" && (
                   <button onClick={()=>setEditingMeta(!editingMeta)}
                     style={{padding:"5px 12px",background:"rgba(255,255,255,.2)",border:"1px solid rgba(255,255,255,.4)",borderRadius:8,color:"#fff",fontSize:12,cursor:"pointer",fontWeight:600}}>
                     ✏️ Titlu
@@ -3793,7 +3799,7 @@ function FisaPreviewPanel({labId}) {
               </div>
 
               {/* Meta edit form */}
-              {editingMeta && subTab==="edit" && (()=>{
+              {editingMeta && mode==="edit" && (()=>{
                 const [t,setT]=React.useState(selFisa.title);
                 const [e,setE]=React.useState(selFisa.emoji);
                 return (
@@ -3824,14 +3830,14 @@ function FisaPreviewPanel({labId}) {
               <div style={{padding:"14px 16px"}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
                   <div style={{fontSize:11,fontWeight:700,color:selFisa.color,textTransform:"uppercase",letterSpacing:".08em"}}>📁 Cazul prezentat</div>
-                  {subTab==="edit" && !editingCase && (
+                  {mode==="edit" && !editingCase && (
                     <button onClick={()=>setEditingCase(true)}
                       style={{padding:"4px 10px",background:"#EEF2FF",border:"1px solid #c7d2fe",borderRadius:7,color:"#6366f1",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                       ✏️ Editează cazul
                     </button>
                   )}
                 </div>
-                {editingCase && subTab==="edit" ? (
+                {editingCase && mode==="edit" ? (
                   <CazForm initial={selFisa.caz} onSave={saveCaz} onCancel={()=>setEditingCase(false)}/>
                 ) : (
                   <div style={{display:"flex",flexDirection:"column",gap:4}}>
@@ -3854,7 +3860,7 @@ function FisaPreviewPanel({labId}) {
                 <div style={{fontSize:11,fontWeight:700,color:"#1e1b4b",textTransform:"uppercase",letterSpacing:".1em"}}>
                   📝 Întrebările fișei ({selFisa.qs.length})
                 </div>
-                {subTab==="edit" && !newQDraft && (
+                {mode==="edit" && !newQDraft && (
                   <button onClick={()=>setNewQDraft({q:"",h:""})}
                     style={{padding:"6px 14px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}}>
                     ➕ Întrebare nouă
@@ -3862,13 +3868,13 @@ function FisaPreviewPanel({labId}) {
                 )}
               </div>
 
-              {subTab==="edit" && newQDraft && (
+              {mode==="edit" && newQDraft && (
                 <QForm initial={newQDraft} isNew={true} onSave={addQ} onCancel={()=>setNewQDraft(null)}/>
               )}
 
               {selFisa.qs.map((q,i)=>{
                 const open=expandedQ===i;
-                const isEditing=editingQ===i && subTab==="edit";
+                const isEditing=editingQ===i && mode==="edit";
 
                 if (isEditing) return (
                   <QForm key={i} initial={q} isNew={false} onSave={(upd)=>saveQ(i,upd)} onCancel={()=>setEditingQ(null)}/>
@@ -3884,11 +3890,11 @@ function FisaPreviewPanel({labId}) {
                         </span>
                         <div style={{flex:1}}>
                           <div style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.5}}>{q.q}</div>
-                          {!open && subTab==="preview" && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
+                          {!open && mode==="preview" && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
                         </div>
                         <span style={{color:"#c7d2fe",fontSize:13,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform .2s"}}>›</span>
                       </button>
-                      {subTab==="edit" && (
+                      {mode==="edit" && (
                         <div style={{display:"flex",flexDirection:"column",borderLeft:"1px solid #f1f5f9",padding:"4px 3px",gap:1,justifyContent:"center"}}>
                           <button onClick={()=>moveQ(i,-1)} disabled={i===0}
                             style={{padding:"3px 7px",background:"none",border:"none",cursor:i===0?"not-allowed":"pointer",color:i===0?"#e0e7ff":"#94a3b8",fontSize:12}}>↑</button>
@@ -3917,7 +3923,7 @@ function FisaPreviewPanel({labId}) {
             <div style={{background:"#F0FDF4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                 <div style={{fontSize:11,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".1em"}}>✅ Concluzia grupei — câmpuri ({selFisa.conc.length})</div>
-                {subTab==="edit" && (
+                {mode==="edit" && (
                   <button onClick={()=>{
                     const label = prompt("Adaugă câmp concluzie:");
                     if (label?.trim()) saveConc([...selFisa.conc, label.trim()]);
@@ -3930,7 +3936,7 @@ function FisaPreviewPanel({labId}) {
                 {selFisa.conc.map((label,i)=>(
                   <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #bbf7d0",fontSize:12,color:"#166534",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}}>
                     <span>{i+1}. {label}</span>
-                    {subTab==="edit" && (
+                    {mode==="edit" && (
                       <button onClick={()=>saveConc(selFisa.conc.filter((_,j)=>j!==i))}
                         style={{background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:13,flexShrink:0,padding:0}}>✕</button>
                     )}
