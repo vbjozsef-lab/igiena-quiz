@@ -13,15 +13,89 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans','Segoe UI',system-ui,sans-serif;background:#F0F4FF;background:#f0f9f4;min-height:100vh}
+  body{font-family:'DM Sans','Segoe UI',system-ui,sans-serif;background:#F0F4FF;min-height:100vh;-webkit-tap-highlight-color:transparent}
   input,select,button,textarea{font-family:inherit}
-  input:focus,select:focus{outline:2px solid #10b981;outline-offset:1px}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f0f9f4}::-webkit-scrollbar-thumb{background:#a8d5be;border-radius:3px}
+
+  /* ── Input/select — mobile visible, dark-mode safe ── */
+  input,select,textarea{
+    -webkit-appearance:none;appearance:none;
+    background:#fff !important;
+    color:#1e293b !important;
+    border:1.5px solid #c7d2fe !important;
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:16px !important; /* 16px prevents iOS zoom */
+    width:100%;
+    box-sizing:border-box;
+    -webkit-text-fill-color:#1e293b !important;
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:none;
+    border-color:#6366f1 !important;
+    box-shadow:0 0 0 3px rgba(99,102,241,0.15);
+  }
+  input::placeholder,textarea::placeholder{color:#94a3b8 !important;-webkit-text-fill-color:#94a3b8 !important}
+  select option{background:#fff;color:#1e293b}
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:#f0f4ff}
+  ::-webkit-scrollbar-thumb{background:#c7d2fe;border-radius:3px}
+
+  /* ── Animations ── */
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
   @keyframes spin{to{transform:rotate(360deg)}}
   .pulse{animation:pulse 2s infinite}
   .spin{animation:spin 1s linear infinite;display:inline-block}
-  #qr-canvas canvas, #qr-canvas img{width:200px!important;height:200px!important}
+  #qr-canvas canvas,#qr-canvas img{width:200px!important;height:200px!important}
+
+  /* ── AdminPanel nav — horizontal scroll on mobile ── */
+  .admin-nav-tabs{
+    display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;flex-shrink:0;
+  }
+  .admin-nav-tabs::-webkit-scrollbar{display:none}
+
+  /* ── HomePage — two column → single column ── */
+  .home-layout{display:flex;min-height:100vh;overflow:hidden;position:relative}
+  .home-left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:60px 56px;border-right:1px solid rgba(99,102,241,0.1)}
+  .home-right{width:480px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 48px}
+
+  @media(max-width:768px){
+    .home-layout{flex-direction:column}
+    .home-left{display:none} /* hide branding on mobile — just show login */
+    .home-right{width:100%;padding:24px 20px;min-height:100vh;justify-content:flex-start;padding-top:48px}
+    .home-mobile-logo{display:flex !important}
+  }
+  .home-mobile-logo{display:none}
+
+  /* ── AdminPanel content — padding on mobile ── */
+  .admin-content{max-width:1100px;margin:0 auto;padding:28px 24px;position:relative;z-index:1}
+  @media(max-width:640px){
+    .admin-content{padding:16px 12px}
+  }
+
+  /* ── QR tab grid — stack on mobile ── */
+  .qr-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){
+    .qr-grid{grid-template-columns:1fr}
+  }
+
+  /* ── Results table — horizontal scroll ── */
+  .results-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid #e0e7ff;background:#fff;box-shadow:0 4px 16px rgba(99,102,241,0.06)}
+  .results-table-wrap table{min-width:900px}
+
+  /* ── Student screens — full mobile ── */
+  .student-card{background:#fff;border:1px solid #e0e7ff;border-radius:20px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(99,102,241,0.1)}
+  @media(max-width:480px){
+    .student-card{border-radius:16px;padding:24px 20px;box-shadow:none;border:none;max-width:100%}
+  }
+
+  /* ── Fisa screens ── */
+  @media(max-width:640px){
+    .fisa-grid-3{grid-template-columns:repeat(2,1fr) !important}
+    .fisa-conc-grid{grid-template-columns:1fr !important}
+  }
 </style>
 </head>
 <body>
@@ -1983,9 +2057,9 @@ const getBaseURL = () => window.location.href.split("?")[0].split("#")[0];
 const S = {
   page:  {minHeight:"100vh",background:"#F0F4FF",display:"flex",alignItems:"center",justifyContent:"center",padding:"20px 16px"},
   card:  {background:"#fff",border:"1px solid #e0e7ff",borderRadius:20,padding:"32px 28px",width:"100%",maxWidth:440,boxShadow:"0 4px 24px rgba(99,102,241,0.08)"},
-  label: {display:"block",fontSize:11,color:"#6366f1",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:6,fontWeight:700},
-  input: {width:"100%",background:"#f8faff",border:"1.5px solid #e0e7ff",borderRadius:10,padding:"12px 16px",color:"#1e293b",fontSize:14,boxSizing:"border-box",outline:"none"},
-  btnG:  {width:"100%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:10,padding:"14px",fontSize:15,fontWeight:700,cursor:"pointer",letterSpacing:".02em"},
+  label: {display:"block",fontSize:12,color:"#6366f1",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8,fontWeight:700,userSelect:"none"},
+  input: {width:"100%",borderRadius:10,padding:"14px 16px",fontSize:16,boxSizing:"border-box"},
+  btnG:  {width:"100%",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:12,padding:"16px",fontSize:16,fontWeight:700,cursor:"pointer",letterSpacing:".02em",WebkitTapHighlightColor:"transparent"},
   btnW:  {width:"100%",background:"#f8faff",border:"1.5px solid #e0e7ff",color:"#6366f1",borderRadius:10,padding:"12px",fontSize:14,cursor:"pointer"},
   chip:  {padding:"4px 12px",borderRadius:20,fontSize:12,fontWeight:600},
   alink: {background:"none",border:"none",color:"#6366f1",fontSize:13,cursor:"pointer",textDecoration:"none",padding:0},
@@ -2015,7 +2089,7 @@ function HomePage({onAdminLogin, onJoinToken}) {
   const readyLabs = LABS.filter(l=>l.ready);
 
   return (
-    <div style={{minHeight:"100vh",background:"linear-gradient(150deg,#F0F4FF 0%,#EEF2FF 40%,#F5F3FF 100%)",display:"flex",overflow:"hidden",position:"relative",fontFamily:"'DM Sans','Segoe UI',system-ui,sans-serif"}}>
+    <div className="home-layout" style={{background:"linear-gradient(150deg,#F0F4FF 0%,#EEF2FF 40%,#F5F3FF 100%)",fontFamily:"'DM Sans','Segoe UI',system-ui,sans-serif"}}>
 
       {/* Soft blobs */}
       <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(99,102,241,0.1),transparent 70%)",top:-180,left:-180,pointerEvents:"none"}}/>
@@ -2023,7 +2097,7 @@ function HomePage({onAdminLogin, onJoinToken}) {
       <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(16,185,129,0.07),transparent 70%)",bottom:0,left:200,pointerEvents:"none"}}/>
 
       {/* LEFT PANEL */}
-      <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"60px 56px",position:"relative",borderRight:"1px solid rgba(99,102,241,0.1)"}}>
+      <div className="home-left" style={{position:"relative"}}>
 
         {/* Logo */}
         <div style={{marginBottom:44}}>
@@ -2081,10 +2155,19 @@ function HomePage({onAdminLogin, onJoinToken}) {
       </div>
 
       {/* RIGHT PANEL — Login */}
-      <div style={{width:480,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",padding:"60px 48px",position:"relative"}}>
+      <div className="home-right" style={{position:"relative"}}>
         <div style={{width:"100%",maxWidth:360}}>
 
           {/* Card */}
+          {/* Mobile logo — shown only on mobile */}
+          <div className="home-mobile-logo" style={{alignItems:"center",gap:12,marginBottom:28}}>
+            <div style={{width:44,height:44,background:"linear-gradient(135deg,#6366f1,#8b5cf6)",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 6px 20px rgba(99,102,241,0.3)"}}>🧬</div>
+            <div>
+              <div style={{fontSize:18,fontWeight:900,color:"#1e1b4b",letterSpacing:"-.02em"}}>Igienă · UMFST</div>
+              <div style={{fontSize:11,color:"#6366f1",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase"}}>Platformă Practică</div>
+            </div>
+          </div>
+
           <div style={{background:"#fff",borderRadius:24,padding:"36px 32px",boxShadow:"0 8px 48px rgba(99,102,241,0.12)",border:"1px solid #e0e7ff"}}>
 
             <div style={{marginBottom:28}}>
@@ -2290,14 +2373,13 @@ function AdminPanel({onBack, teacherName}) {
           </div>
 
           {/* Nav tabs */}
-          <div style={{display:"flex",gap:2,flex:1}}>
+          <div className="admin-nav-tabs" style={{flex:1}}>
             {[
               {id:"qr",      icon:"📱", label:"Generează QR"},
               {id:"preview", icon:"👁️", label:"Previzualizare Quiz"},
               {id:"results", icon:"📊", label:"Rezultate"},
               {id:"prezentari",icon:"📽️",label:"Prezentări"},
               {id:"fisiere", icon:"📁", label:"Fișiere"},
-              {id:"fisegrup",icon:"📋", label:"Fișe Grup"},
               {id:"nomenclator",icon:"🗂️",label:"Nomenclator"},
             ].map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)}
@@ -2334,11 +2416,11 @@ function AdminPanel({onBack, teacherName}) {
         </div>
       </div>
 
-      <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 24px",position:"relative",zIndex:1}}>
+      <div className="admin-content" style={{zIndex:1}}>
 
         {/* ── QR TAB ── */}
         {tab==="qr" && (
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+          <div className="qr-grid">
             {/* left: generator */}
             <div style={{background:"#fff",borderRadius:16,padding:24,border:"1px solid #e0e7ff",boxShadow:"0 4px 24px rgba(99,102,241,0.06)"}}>
               <h3 style={{color:"#1e1b4b",fontSize:16,margin:"0 0 20px",fontWeight:700}}>⚙️ Configurare sesiune</h3>
@@ -2622,9 +2704,6 @@ function AdminPanel({onBack, teacherName}) {
           <FileManager teacherName={teacherName} selLab={selLab} />
         )}
 
-        {tab==="fisegrup" && (
-          <FiseGrupTab selLab={selLab} />
-        )}
 
         {tab==="nomenclator" && (
           <NomenclatorEditor nomenclator={nomenclator} onChange={n=>{setNomenclator(n);saveNomenclator(n);}} />
@@ -2780,7 +2859,7 @@ function FisaGrupScreen({session, student, onBack}) {
           <strong>📌 Instrucțiune generală:</strong> Fiecare grupă primește un caz clinic/situațional. Citiți cu atenție cazul prezentat, analizați-l împreună, apoi răspundeți la întrebările aferente. La final, prezentați concluziile în <strong>maximum 2 minute</strong>.
         </div>
         <h3 style={{color:"#0d2040",fontSize:16,margin:"0 0 14px",fontWeight:700}}>Selectați fișa grupei voastre:</h3>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+        <div className="fisa-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
           {allFise.map((f,i) => (
             <button key={f.id} onClick={()=>{setSelectedFisa(f);setPhase("case");}}
               style={{padding:"14px 8px",borderRadius:12,border:"2px solid "+f.color+"44",background:f.color+"18",
@@ -2928,7 +3007,7 @@ function FisaGrupScreen({session, student, onBack}) {
         {/* Concluzie */}
         <div style={{background:"#f0fdf4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"16px 18px",marginTop:4}}>
           <div style={{fontSize:12,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".06em",marginBottom:10}}>✅ Concluzia grupei</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          <div className="fisa-conc-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             {f.conc.map((label,i)=>(
               <div key={i}>
                 <div style={{fontSize:12,fontWeight:600,color:"#4a9a6a",marginBottom:3}}>{label}:</div>
@@ -3559,7 +3638,7 @@ function FisaPreviewPanel({labId}) {
             {/* Conclusions */}
             <div style={{background:"#F0FDF4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"14px 16px"}}>
               <div style={{fontSize:11,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>✅ Concluzia grupei — câmpuri</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              <div className="fisa-conc-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {selFisa.conc.map((label,i)=>(
                   <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 12px",border:"1px solid #bbf7d0",fontSize:12,color:"#166534",fontWeight:600}}>
                     {i+1}. {label}
@@ -3588,7 +3667,7 @@ function FiseGrupTab({selLab}) {
       <p style={{color:"#4a9a6a",fontSize:13,margin:"0 0 20px"}}>Activitate practică — studenții completează pe telefon, evaluate cu AI, trimise automat în Rezultate.</p>
       <div style={{background:"#eff6ff",border:"1.5px solid #bfdbfe",borderRadius:12,padding:"14px 18px",marginBottom:16}}>
         <h4 style={{color:"#1e40af",fontSize:13,fontWeight:700,margin:"0 0 10px"}}>⚙️ Cum funcționează — 3 pași</h4>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+        <div className="fisa-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
           {[["1️⃣","Mergeți la","📱 Generează QR"],["2️⃣","Alegeți tipul","📋 Fișă de grup"],["3️⃣","Studenții scanează","aleg grupa și completează"]].map(([n,t,s],i)=>(
             <div key={i} style={{background:"white",borderRadius:9,padding:"14px 10px",textAlign:"center",border:"1px solid #dbeafe"}}>
               <div style={{fontSize:26,marginBottom:6}}>{n}</div>
@@ -3766,7 +3845,7 @@ function StudentLogin({session, onLogin}) {
 
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(150deg,#F0F4FF,#F5F3FF)",padding:"24px 16px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{background:"#fff",border:"1px solid #e0e7ff",borderRadius:20,padding:"32px 28px",width:"100%",maxWidth:420,boxShadow:"0 4px 24px rgba(99,102,241,0.1)"}}>
+      <div className="student-card">
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:36}}>{lab.icon||"🧪"}</div>
           <h2 style={{color:"#0a2a18",fontSize:20,margin:"8px 0 4px"}}>{lab.code} — {lab.title}</h2>
