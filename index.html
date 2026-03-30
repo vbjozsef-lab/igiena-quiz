@@ -3203,7 +3203,7 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 
   const [selModId, setSelModId] = useState(null);
   const [search, setSearch] = useState("");
-  // mode prop controls preview/edit — no internal state needed | fise
+  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise_preview | fise_edit
   const [quizEdits, setQuizEdits] = useState(()=>loadQuizEdits());
 
   // Edit state
