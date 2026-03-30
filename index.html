@@ -3553,6 +3553,33 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 // ════════════════════════════════════════════════════════════
 // FISA PREVIEW PANEL — teacher sees group worksheets
 // ════════════════════════════════════════════════════════════
+function MetaEditForm({title, emoji, color, onSave, onCancel}) {
+  const [t, setT] = useState(title);
+  const [e, setE] = useState(emoji);
+  return (
+    <div style={{padding:"14px 16px",background:"#F8FAFF",borderTop:"1px solid #e0e7ff"}}>
+      <div style={{display:"flex",gap:8,marginBottom:8}}>
+        <input value={e} onChange={ev=>setE(ev.target.value)}
+          style={{width:60,padding:"8px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:18,textAlign:"center",outline:"none"}}
+          placeholder="emoji"/>
+        <input value={t} onChange={ev=>setT(ev.target.value)}
+          style={{flex:1,padding:"8px 12px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:13,outline:"none"}}
+          placeholder="Titlu fișă..."/>
+      </div>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onSave(t.trim(),e.trim())}
+          style={{flex:1,padding:"9px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+          💾 Salvează
+        </button>
+        <button onClick={onCancel}
+          style={{padding:"9px 14px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+          Anulează
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FisaPreviewPanel({labId, mode="preview"}) {
   const ALL_LABS = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp4b","lp5a","lp5b","lp6a","lp6b"];
   const hasFisa = ALL_LABS.includes(labId);
@@ -3737,7 +3764,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
           ))}
         </div>
         {saveMsg && <span style={{fontSize:13,color:"#16a34a",fontWeight:700,background:"#f0fdf4",padding:"5px 12px",borderRadius:8,border:"1px solid #bbf7d0"}}>{saveMsg}</span>}
-        {hasEdits && mode==="edit" && (
+        {hasEdits && subTab==="edit" && (
           <button onClick={resetFisa} style={{padding:"6px 14px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:12,fontWeight:700,cursor:"pointer",marginLeft:"auto"}}>
             ↺ Reset fișă
           </button>
@@ -3790,7 +3817,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                   </div>
                   <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>{selFisa.title}</div>
                 </div>
-                {mode==="edit" && (
+                {subTab==="edit" && (
                   <button onClick={()=>setEditingMeta(!editingMeta)}
                     style={{padding:"5px 12px",background:"rgba(255,255,255,.2)",border:"1px solid rgba(255,255,255,.4)",borderRadius:8,color:"#fff",fontSize:12,cursor:"pointer",fontWeight:600}}>
                     ✏️ Titlu
@@ -3799,45 +3826,28 @@ function FisaPreviewPanel({labId, mode="preview"}) {
               </div>
 
               {/* Meta edit form */}
-              {editingMeta && mode==="edit" && (()=>{
-                const [t,setT]=React.useState(selFisa.title);
-                const [e,setE]=React.useState(selFisa.emoji);
-                return (
-                  <div style={{padding:"14px 16px",background:"#F8FAFF",borderTop:"1px solid #e0e7ff"}}>
-                    <div style={{display:"flex",gap:8,marginBottom:8}}>
-                      <input value={e} onChange={ev=>setE(ev.target.value)}
-                        style={{width:60,padding:"8px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:18,textAlign:"center",outline:"none"}}
-                        placeholder="emoji"/>
-                      <input value={t} onChange={ev=>setT(ev.target.value)}
-                        style={{flex:1,padding:"8px 12px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:13,outline:"none"}}
-                        placeholder="Titlu fișă..."/>
-                    </div>
-                    <div style={{display:"flex",gap:8}}>
-                      <button onClick={()=>saveMeta(t.trim(),e.trim(),selFisa.color)}
-                        style={{flex:1,padding:"9px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:13,cursor:"pointer"}}>
-                        💾 Salvează
-                      </button>
-                      <button onClick={()=>setEditingMeta(false)}
-                        style={{padding:"9px 14px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:13,cursor:"pointer"}}>
-                        Anulează
-                      </button>
-                    </div>
-                  </div>
-                );
-              })()}
+              {editingMeta && subTab==="edit" && (
+                <MetaEditForm
+                  title={selFisa.title}
+                  emoji={selFisa.emoji}
+                  color={selFisa.color}
+                  onSave={(t,e)=>saveMeta(t,e,selFisa.color)}
+                  onCancel={()=>setEditingMeta(false)}
+                />
+              )}
 
               {/* Caz */}
               <div style={{padding:"14px 16px"}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
                   <div style={{fontSize:11,fontWeight:700,color:selFisa.color,textTransform:"uppercase",letterSpacing:".08em"}}>📁 Cazul prezentat</div>
-                  {mode==="edit" && !editingCase && (
+                  {subTab==="edit" && !editingCase && (
                     <button onClick={()=>setEditingCase(true)}
                       style={{padding:"4px 10px",background:"#EEF2FF",border:"1px solid #c7d2fe",borderRadius:7,color:"#6366f1",fontSize:11,fontWeight:700,cursor:"pointer"}}>
                       ✏️ Editează cazul
                     </button>
                   )}
                 </div>
-                {editingCase && mode==="edit" ? (
+                {editingCase && subTab==="edit" ? (
                   <CazForm initial={selFisa.caz} onSave={saveCaz} onCancel={()=>setEditingCase(false)}/>
                 ) : (
                   <div style={{display:"flex",flexDirection:"column",gap:4}}>
@@ -3860,7 +3870,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                 <div style={{fontSize:11,fontWeight:700,color:"#1e1b4b",textTransform:"uppercase",letterSpacing:".1em"}}>
                   📝 Întrebările fișei ({selFisa.qs.length})
                 </div>
-                {mode==="edit" && !newQDraft && (
+                {subTab==="edit" && !newQDraft && (
                   <button onClick={()=>setNewQDraft({q:"",h:""})}
                     style={{padding:"6px 14px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontWeight:700,cursor:"pointer"}}>
                     ➕ Întrebare nouă
@@ -3868,13 +3878,13 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                 )}
               </div>
 
-              {mode==="edit" && newQDraft && (
+              {subTab==="edit" && newQDraft && (
                 <QForm initial={newQDraft} isNew={true} onSave={addQ} onCancel={()=>setNewQDraft(null)}/>
               )}
 
               {selFisa.qs.map((q,i)=>{
                 const open=expandedQ===i;
-                const isEditing=editingQ===i && mode==="edit";
+                const isEditing=editingQ===i && subTab==="edit";
 
                 if (isEditing) return (
                   <QForm key={i} initial={q} isNew={false} onSave={(upd)=>saveQ(i,upd)} onCancel={()=>setEditingQ(null)}/>
@@ -3890,11 +3900,11 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                         </span>
                         <div style={{flex:1}}>
                           <div style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.5}}>{q.q}</div>
-                          {!open && mode==="preview" && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
+                          {!open && subTab==="preview" && <div style={{fontSize:11,color:"#94a3b8",marginTop:3}}>💡 {q.h}</div>}
                         </div>
                         <span style={{color:"#c7d2fe",fontSize:13,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform .2s"}}>›</span>
                       </button>
-                      {mode==="edit" && (
+                      {subTab==="edit" && (
                         <div style={{display:"flex",flexDirection:"column",borderLeft:"1px solid #f1f5f9",padding:"4px 3px",gap:1,justifyContent:"center"}}>
                           <button onClick={()=>moveQ(i,-1)} disabled={i===0}
                             style={{padding:"3px 7px",background:"none",border:"none",cursor:i===0?"not-allowed":"pointer",color:i===0?"#e0e7ff":"#94a3b8",fontSize:12}}>↑</button>
@@ -3923,7 +3933,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
             <div style={{background:"#F0FDF4",border:"1.5px solid #bbf7d0",borderRadius:12,padding:"12px 14px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                 <div style={{fontSize:11,fontWeight:700,color:"#16a34a",textTransform:"uppercase",letterSpacing:".1em"}}>✅ Concluzia grupei — câmpuri ({selFisa.conc.length})</div>
-                {mode==="edit" && (
+                {subTab==="edit" && (
                   <button onClick={()=>{
                     const label = prompt("Adaugă câmp concluzie:");
                     if (label?.trim()) saveConc([...selFisa.conc, label.trim()]);
@@ -3936,7 +3946,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                 {selFisa.conc.map((label,i)=>(
                   <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #bbf7d0",fontSize:12,color:"#166534",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",gap:6}}>
                     <span>{i+1}. {label}</span>
-                    {mode==="edit" && (
+                    {subTab==="edit" && (
                       <button onClick={()=>saveConc(selFisa.conc.filter((_,j)=>j!==i))}
                         style={{background:"none",border:"none",cursor:"pointer",color:"#dc2626",fontSize:13,flexShrink:0,padding:0}}>✕</button>
                     )}
