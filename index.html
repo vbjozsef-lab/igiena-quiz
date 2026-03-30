@@ -3580,6 +3580,100 @@ function MetaEditForm({title, emoji, color, onSave, onCancel}) {
   );
 }
 
+// ── Fisa sub-components (must be top-level, not inside FisaPreviewPanel) ──
+function FisaQForm({initial, isNew, onSave, onCancel}) {
+  const [q, setQ] = useState(initial?.q||"");
+  const [h, setH] = useState(initial?.h||"");
+  const valid = q.trim().length > 3;
+  return (
+    <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>
+        {isNew?"➕ Întrebare nouă":"✏️ Editare întrebare"}
+      </div>
+      <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Întrebarea *</label>
+      <textarea value={q} onChange={e=>setQ(e.target.value)} rows={2}
+        style={{width:"100%",padding:"9px 12px",border:"1.5px solid #c7d2fe",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:10,outline:"none"}}
+        placeholder="Scrieți întrebarea..."/>
+      <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Indiciu / Răspuns așteptat</label>
+      <textarea value={h} onChange={e=>setH(e.target.value)} rows={2}
+        style={{width:"100%",padding:"9px 12px",border:"1.5px solid #e0e7ff",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:12,outline:"none"}}
+        placeholder="Indiciu pentru evaluare (vizibil doar profesorului)..."/>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onSave({q:q.trim(),h:h.trim()})} disabled={!valid}
+          style={{flex:1,padding:"10px",background:valid?"linear-gradient(135deg,#6366f1,#8b5cf6)":"#e0e7ff",color:valid?"#fff":"#94a3b8",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:valid?"pointer":"not-allowed"}}>
+          {isNew?"➕ Adaugă":"💾 Salvează"}
+        </button>
+        <button onClick={onCancel}
+          style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+          Anulează
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FisaCazForm({initial, onSave, onCancel}) {
+  const [rows, setRows] = useState(initial.map(r=>({l:r.l,v:r.v})));
+  return (
+    <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:10}}>
+      <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>✏️ Editare caz</div>
+      {rows.map((row,i)=>(
+        <div key={i} style={{display:"flex",gap:8,marginBottom:7,alignItems:"center"}}>
+          <input value={row.l} onChange={e=>{const r=[...rows];r[i]={...r[i],l:e.target.value};setRows(r);}}
+            style={{flex:"0 0 140px",padding:"8px 10px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:12,outline:"none"}}
+            placeholder="Etichetă"/>
+          <input value={row.v} onChange={e=>{const r=[...rows];r[i]={...r[i],v:e.target.value};setRows(r);}}
+            style={{flex:1,padding:"8px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:12,outline:"none"}}
+            placeholder="Valoare"/>
+          <button onClick={()=>setRows(rows.filter((_,j)=>j!==i))}
+            style={{padding:"6px 10px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:13,cursor:"pointer",flexShrink:0}}>✕</button>
+        </div>
+      ))}
+      <button onClick={()=>setRows([...rows,{l:"",v:""}])}
+        style={{width:"100%",padding:"8px",background:"#EEF2FF",border:"1.5px dashed #a5b4fc",borderRadius:8,color:"#6366f1",fontSize:12,fontWeight:700,cursor:"pointer",marginBottom:10}}>
+        + Adaugă rând
+      </button>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onSave(rows.filter(r=>r.l||r.v))}
+          style={{flex:1,padding:"10px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+          💾 Salvează cazul
+        </button>
+        <button onClick={onCancel}
+          style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+          Anulează
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FisaMetaForm({title, emoji, onSave, onCancel}) {
+  const [t, setT] = useState(title);
+  const [e, setE] = useState(emoji);
+  return (
+    <div style={{padding:"14px 16px",background:"#F8FAFF",borderTop:"1px solid #e0e7ff"}}>
+      <div style={{display:"flex",gap:8,marginBottom:8}}>
+        <input value={e} onChange={ev=>setE(ev.target.value)}
+          style={{width:60,padding:"8px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:18,textAlign:"center",outline:"none"}}
+          placeholder="emoji"/>
+        <input value={t} onChange={ev=>setT(ev.target.value)}
+          style={{flex:1,padding:"8px 12px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:13,outline:"none"}}
+          placeholder="Titlu fișă..."/>
+      </div>
+      <div style={{display:"flex",gap:8}}>
+        <button onClick={()=>onSave(t.trim(),e.trim())}
+          style={{flex:1,padding:"9px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+          💾 Salvează
+        </button>
+        <button onClick={onCancel}
+          style={{padding:"9px 14px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:8,color:"#64748b",fontSize:13,cursor:"pointer"}}>
+          Anulează
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FisaPreviewPanel({labId, mode="preview"}) {
   const ALL_LABS = ["lp1a","lp1b","lp2a","lp2b","lp3a","lp3b","lp4a","lp4b","lp5a","lp5b","lp6a","lp6b"];
   const hasFisa = ALL_LABS.includes(labId);
@@ -3675,73 +3769,6 @@ function FisaPreviewPanel({labId, mode="preview"}) {
     persist(edKey, {...(fisaEdits[edKey]||baseFisa), conc: newConc});
   };
 
-  // ── Q edit form (reused for quiz editor) ──────────────
-  const QForm = ({initial, isNew, onSave, onCancel}) => {
-    const [q, setQ] = useState(initial?.q||"");
-    const [h, setH] = useState(initial?.h||"");
-    const valid = q.trim().length > 3;
-    return (
-      <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:8}}>
-        <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>
-          {isNew?"➕ Întrebare nouă":"✏️ Editare întrebare"}
-        </div>
-        <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Întrebarea *</label>
-        <textarea value={q} onChange={e=>setQ(e.target.value)} rows={2}
-          style={{width:"100%",padding:"9px 12px",border:"1.5px solid #c7d2fe",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:10,outline:"none"}}
-          placeholder="Scrieți întrebarea..."/>
-        <label style={{fontSize:11,fontWeight:700,color:"#6366f1",display:"block",marginBottom:4}}>Indiciu / Răspuns așteptat</label>
-        <textarea value={h} onChange={e=>setH(e.target.value)} rows={2}
-          style={{width:"100%",padding:"9px 12px",border:"1.5px solid #e0e7ff",borderRadius:9,fontSize:13,resize:"vertical",boxSizing:"border-box",marginBottom:12,outline:"none"}}
-          placeholder="Indiciu pentru evaluare (vizibil doar profesorului)..."/>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={()=>onSave({q:q.trim(),h:h.trim()})} disabled={!valid}
-            style={{flex:1,padding:"10px",background:valid?"linear-gradient(135deg,#6366f1,#8b5cf6)":"#e0e7ff",color:valid?"#fff":"#94a3b8",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:valid?"pointer":"not-allowed"}}>
-            {isNew?"➕ Adaugă":"💾 Salvează"}
-          </button>
-          <button onClick={onCancel}
-            style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
-            Anulează
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // ── Caz edit form ──────────────────────────────────────
-  const CazForm = ({initial, onSave, onCancel}) => {
-    const [rows, setRows] = useState(initial.map(r=>({l:r.l,v:r.v})));
-    return (
-      <div style={{background:"#F8FAFF",border:"2px solid #a5b4fc",borderRadius:12,padding:"16px",marginBottom:10}}>
-        <div style={{fontSize:11,fontWeight:800,color:"#6366f1",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>✏️ Editare caz</div>
-        {rows.map((row,i)=>(
-          <div key={i} style={{display:"flex",gap:8,marginBottom:7,alignItems:"center"}}>
-            <input value={row.l} onChange={e=>{const r=[...rows];r[i]={...r[i],l:e.target.value};setRows(r);}}
-              style={{flex:"0 0 140px",padding:"8px 10px",border:"1.5px solid #c7d2fe",borderRadius:8,fontSize:12,outline:"none"}}
-              placeholder="Etichetă (ex: Temperatura)"/>
-            <input value={row.v} onChange={e=>{const r=[...rows];r[i]={...r[i],v:e.target.value};setRows(r);}}
-              style={{flex:1,padding:"8px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:12,outline:"none"}}
-              placeholder="Valoare (ex: 24,8°C)"/>
-            <button onClick={()=>setRows(rows.filter((_,j)=>j!==i))}
-              style={{padding:"6px 10px",background:"#fef2f2",border:"1px solid #fca5a5",borderRadius:8,color:"#dc2626",fontSize:13,cursor:"pointer",flexShrink:0}}>✕</button>
-          </div>
-        ))}
-        <button onClick={()=>setRows([...rows,{l:"",v:""}])}
-          style={{width:"100%",padding:"8px",background:"#EEF2FF",border:"1.5px dashed #a5b4fc",borderRadius:8,color:"#6366f1",fontSize:12,fontWeight:700,cursor:"pointer",marginBottom:10}}>
-          + Adaugă rând
-        </button>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={()=>onSave(rows.filter(r=>r.l||r.v))}
-            style={{flex:1,padding:"10px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:"pointer"}}>
-            💾 Salvează cazul
-          </button>
-          <button onClick={onCancel}
-            style={{padding:"10px 16px",background:"#fff",border:"1.5px solid #e0e7ff",borderRadius:9,color:"#64748b",fontSize:13,cursor:"pointer"}}>
-            Anulează
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   if (!hasFisa) return (
     <div style={{background:"#fff",borderRadius:14,border:"1px solid #e0e7ff",padding:"48px 24px",textAlign:"center"}}>
@@ -3827,7 +3854,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
 
               {/* Meta edit form */}
               {editingMeta && subTab==="edit" && (
-                <MetaEditForm
+                <FisaMetaForm
                   title={selFisa.title}
                   emoji={selFisa.emoji}
                   color={selFisa.color}
@@ -3848,7 +3875,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                   )}
                 </div>
                 {editingCase && subTab==="edit" ? (
-                  <CazForm initial={selFisa.caz} onSave={saveCaz} onCancel={()=>setEditingCase(false)}/>
+                  <FisaCazForm initial={selFisa.caz} onSave={saveCaz} onCancel={()=>setEditingCase(false)}/>
                 ) : (
                   <div style={{display:"flex",flexDirection:"column",gap:4}}>
                     {selFisa.caz.map((item,i)=>(
@@ -3879,7 +3906,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
               </div>
 
               {subTab==="edit" && newQDraft && (
-                <QForm initial={newQDraft} isNew={true} onSave={addQ} onCancel={()=>setNewQDraft(null)}/>
+                <FisaQForm initial={newQDraft} isNew={true} onSave={addQ} onCancel={()=>setNewQDraft(null)}/>
               )}
 
               {selFisa.qs.map((q,i)=>{
@@ -3887,7 +3914,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                 const isEditing=editingQ===i && subTab==="edit";
 
                 if (isEditing) return (
-                  <QForm key={i} initial={q} isNew={false} onSave={(upd)=>saveQ(i,upd)} onCancel={()=>setEditingQ(null)}/>
+                  <FisaQForm key={i} initial={q} isNew={false} onSave={(upd)=>saveQ(i,upd)} onCancel={()=>setEditingQ(null)}/>
                 );
 
                 return (
