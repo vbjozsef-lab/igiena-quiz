@@ -3203,8 +3203,7 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 
   const [selModId, setSelModId] = useState(null);
   const [search, setSearch] = useState("");
-  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise
-  const [fisaSubTab, setFisaSubTab] = useState("preview"); // preview | edit (for fise)
+  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise_preview | fise_edit
   const [quizEdits, setQuizEdits] = useState(()=>loadQuizEdits());
 
   // Edit state
@@ -3352,9 +3351,10 @@ function QuizPreviewTab({selLab, onSelectLab}) {
       {/* Sub-tabs */}
       <div style={{display:"flex",gap:4,marginBottom:16,background:"#fff",padding:4,borderRadius:12,border:"1px solid #e0e7ff",width:"fit-content"}}>
         {[
-          {id:"preview", label:"👁️ Previzualizare Quiz"},
-          {id:"edit",    label:"✏️ Editor Quiz"},
-          {id:"fise",    label:"📋 Fișe de Grup"},
+          {id:"preview",      label:"👁️ Previzualizare Quiz"},
+          {id:"edit",         label:"✏️ Editor Quiz"},
+          {id:"fise_preview", label:"📋 Previzualizare Fișe de Grup"},
+          {id:"fise_edit",    label:"✏️ Editor Fișe"},
         ].map(t=>(
           <button key={t.id} onClick={()=>setSubTab(t.id)}
             style={{padding:"8px 18px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:subTab===t.id?700:400,
@@ -3386,22 +3386,8 @@ function QuizPreviewTab({selLab, onSelectLab}) {
       </div>
 
       {/* ── FISE SUB-TABS ── */}
-      {subTab==="fise" && (
-        <div>
-          {/* Fise mode toggle */}
-          <div style={{display:"flex",gap:4,marginBottom:14,background:"#fff",padding:3,borderRadius:10,border:"1px solid #e0e7ff",width:"fit-content"}}>
-            {[{id:"preview",label:"👁️ Previzualizare"},{id:"edit",label:"✏️ Editor Fișe"}].map(t=>(
-              <button key={t.id} onClick={()=>setFisaSubTab(t.id)}
-                style={{padding:"7px 18px",borderRadius:8,border:"none",cursor:"pointer",fontSize:13,
-                  fontWeight:fisaSubTab===t.id?700:400,
-                  background:fisaSubTab===t.id?"#EEF2FF":"transparent",
-                  color:fisaSubTab===t.id?"#6366f1":"#64748b",transition:"all .15s"}}>
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <FisaPreviewPanel labId={selLab?.id} mode={fisaSubTab}/>
-        </div>
+      {(subTab==="fise_preview"||subTab==="fise_edit") && (
+        <FisaPreviewPanel labId={selLab?.id} mode={subTab==="fise_edit"?"edit":"preview"}/>
       )}
 
       {/* ── PREVIEW + EDIT sub-tabs: two-column layout ── */}
