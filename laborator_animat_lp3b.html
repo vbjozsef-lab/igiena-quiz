@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP3B – Analiza Microbiologică a Apei</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root{--bg:#0d1117;--panel:#161b22;--border:#21262d;--blue:#58a6ff;--amber:#f0b429;--green:#3fb950;--red:#f85149;--purple:#a371f7;--teal:#39d353;--cyan:#76e3ea;--text:#c9d1d9;--muted:#6e7681;--white:#f0f6fc;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+  header{padding:1.5rem 2.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;background:linear-gradient(135deg,#0a1a0a 60%,#0d1a0d);}
+  .header-icon{font-size:2.2rem;}
+  header h1{font-size:1.4rem;font-weight:800;color:var(--white);}
+  header p{font-size:.82rem;color:var(--muted);margin-top:.2rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:150px;padding:.85rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  nav button.active{color:var(--white);border-bottom-color:var(--green);}
+  .panel{display:none;padding:2rem 2.5rem;max-width:1050px;margin:0 auto;}.panel.active{display:block;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;margin-bottom:1.5rem;}
+  .card h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .card p,.card li{font-size:.9rem;color:var(--text);line-height:1.75;}
+  .card ul{padding-left:1.4rem;margin-top:.5rem;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;gap:.5rem;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:90px;cursor:pointer;}
+  .step-dot .circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;border:2px solid var(--border);background:var(--panel);transition:all .3s;}
+  .step-dot.done .circle{border-color:var(--green);background:rgba(63,185,80,.1);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(240,180,41,.12);box-shadow:0 0 18px rgba(240,180,41,.3);transform:scale(1.12);}
+  .step-dot .lbl{font-size:.63rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:88px;line-height:1.3;}
+  .step-dot.done .lbl{color:var(--green);}.step-dot.active .lbl{color:var(--amber);font-weight:700;}
+  .step-conn{flex:0 0 14px;height:2px;margin-top:22px;background:var(--border);transition:background .4s;}.step-conn.done{background:var(--green);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;min-height:320px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.hl{border-color:var(--green);box-shadow:0 0 30px rgba(63,185,80,.07);}
+  .stage-vis{flex:0 0 260px;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.3rem;}
+  .badge{display:inline-block;background:rgba(63,185,80,.12);color:var(--green);font-size:.68rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.7rem;}
+  .stage-info p{font-size:.88rem;color:var(--text);line-height:1.75;margin-bottom:.4rem;}
+  .note{font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.75rem 1.1rem;border-radius:9px;font-size:.88rem;font-weight:700;margin-top:.8rem;animation:fs .35s ease;}
+  .rb-bad{background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.25);}
+  .rb-warn{background:rgba(240,180,41,.1);color:var(--amber);border:1px solid rgba(240,180,41,.25);}
+  .rb-ok{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.25);}
+  @keyframes fs{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:.8rem;margin-top:1.5rem;align-items:center;flex-wrap:wrap;}
+  .btn{padding:.6rem 1.3rem;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;}
+  .btn-p{background:var(--green);color:#0d1117;}.btn-p:hover{filter:brightness(1.1);}
+  .btn-p:disabled{opacity:.3;cursor:default;}
+  .btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-s:hover{color:var(--text);}
+  .btn-r{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-r:hover{color:var(--red);border-color:var(--red);}
+  .sc{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);}
+  .vis-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-align:center;padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .pulse{animation:pg 1.5s ease-in-out infinite;}
+  @keyframes pg{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 5px currentColor);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-vis{flex:none;width:100%;}.panel{padding:1.2rem 1rem;}header{padding:1rem;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-icon">🦠</div>
+  <div>
+    <h1>LP3B – Analiza Microbiologică a Apei</h1>
+    <p>NTG · Coliformi · Testul de prezumție și confirmare · Dezinfecție</p>
+  </div>
+</header>
+<nav>
+  <button class="active" onclick="show(0)">🦠 Microflora Apei</button>
+  <button onclick="show(1)">🧫 NTG la 37°C</button>
+  <button onclick="show(2)">🔬 Germeni Coliformi</button>
+  <button onclick="show(3)">✅ Testul de Confirmare</button>
+  <button onclick="show(4)">💧 Dezinfecția Apei</button>
+</nav>
+<div id="panels">
+
+<div class="panel active" id="p0">
+<div class="card"><h2>🦠 Microflora Apei</h2>
+<p>Apa conține microflora proprie (germeni saprofiți care participă la autoepurare) și microflora de impurificare (din ape reziduale, dejecții umane și animale — saprofite, condiționat patogene sau patogene).</p>
+</div>
+<div id="pipe0"></div>
+<div class="stage-card" id="sc0"><div class="stage-vis" id="sv0"></div><div class="stage-info" id="si0"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(0)" id="b0p">← Înapoi</button>
+  <span class="sc" id="ct0">1 / 4</span>
+  <button class="btn btn-p" onclick="next(0)" id="b0n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(0)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p1">
+<div class="card"><h2>🧫 Numărul Total de Germeni (NTG) la 37°C</h2>
+<p>NTG la 37°C estimează probabilitatea contaminării cu germeni patogeni de origine umană/animală. 1 germen → 1 colonie; numărarea coloniilor = numărul germenilor.</p>
+</div>
+<div id="pipe1"></div>
+<div class="stage-card" id="sc1"><div class="stage-vis" id="sv1"></div><div class="stage-info" id="si1"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(1)" id="b1p">← Înapoi</button>
+  <span class="sc" id="ct1">1 / 5</span>
+  <button class="btn btn-p" onclick="next(1)" id="b1n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(1)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p2">
+<div class="card"><h2>🔬 Germenii Coliformi — Indicele Coli</h2>
+<p>Germenii coliformi (E. coli și specii înrudite) sunt indicatori ai contaminării fecale. Prezența lor în apă semnifică posibilitatea prezenței agenților patogeni enterici.</p>
+</div>
+<div id="pipe2"></div>
+<div class="stage-card" id="sc2"><div class="stage-vis" id="sv2"></div><div class="stage-info" id="si2"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(2)" id="b2p">← Înapoi</button>
+  <span class="sc" id="ct2">1 / 4</span>
+  <button class="btn btn-p" onclick="next(2)" id="b2n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(2)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p3">
+<div class="card"><h2>✅ Testul de Confirmare pe Mediu EMB</h2>
+<p>Mediul EMB (eozină + albastru de metilen + bulion) permite confirmarea că germenii care au fermentat lactoza sunt coliformi adevărați și nu alte specii bacteriene.</p>
+</div>
+<div class="card">
+  <ul>
+    <li><strong>Din fiecare tub pozitiv</strong> (testul de prezumție) → o picătură pe sector cutie Petri cu EMB</li>
+    <li><strong>Incubare:</strong> 37°C, 24 ore</li>
+    <li><strong>Colonii caracteristice:</strong> rotunde, bombate, cu luciu verde metalic (E. coli)</li>
+    <li><strong>Luciu verde metalic =</strong> confirmare coliformi fecali</li>
+    <li><strong>Colonii fără luciu =</strong> coliformi totali (nu fecali)</li>
+  </ul>
+  <div class="result-box rb-ok" style="margin-top:1rem">✅ Norma OG 7/2023: Coliformi totali = 0/100mL · E. coli = 0/100mL</div>
+</div>
+</div>
+
+<div class="panel" id="p4">
+<div class="card"><h2>💧 Dezinfecția Apei</h2>
+<p>Dezinfecția elimină sau inactivează microorganismele patogene din apă. Clorarea este metoda cea mai utilizată la scară largă.</p>
+</div>
+<div class="card">
+  <ul>
+    <li><strong>Clorare:</strong> Cl₂ + H₂O → HCl + HOCl. HOCl (acid hipocloros) = dezinfectant activ. Clor rezidual liber norma: 0,1–0,5 mg/L</li>
+    <li><strong>Ozonare:</strong> mai puternică, nu formează cloramine, dar fără rezidual în rețea</li>
+    <li><strong>UV:</strong> eficientă vs. Cryptosporidium și Giardia, fără rezidual</li>
+    <li><strong>Factori care reduc eficacitatea clorării:</strong> pH > 8, turbiditate crescută, temperatură scăzută, materie organică</li>
+    <li><strong>Subproduse clorare (THM):</strong> norma trihalometane ≤ 100 µg/L</li>
+  </ul>
+  <div class="result-box rb-warn" style="margin-top:1rem">⚠️ Clor rezidual < 0,1 mg/L = risc recontaminare în rețea. Clor > 0,5 mg/L = gust neplăcut + subproduse THM crescute</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const DATA={
+  0:[{icon:"🦠",lbl:"Microfl.",steps:[
+    {title:"Tipuri de Microflora",badge:"CLASIFICARE",
+     text:"Microflora proprie: bacterii de putrefacție, ciuperci, protozoare — naturale în apă, contribuie la autoepurare. Microflora de impurificare: provine din dejecții, ape uzate — include Salmonella, Shigella, V. cholerae, E. coli patogenă.",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <circle cx="80" cy="95" r="55" fill="#3fb95012" stroke="#3fb950" stroke-width="1.5"/>
+       <text x="80" y="75" text-anchor="middle" font-size="11" fill="#3fb950" font-family="Inter" font-weight="700">Microflora</text>
+       <text x="80" y="90" text-anchor="middle" font-size="10" fill="#3fb950" font-family="Inter">PROPRIE</text>
+       <text x="80" y="108" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Bacterii de</text>
+       <text x="80" y="120" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">putrefacție</text>
+       <circle cx="165" cy="95" r="55" fill="#f8514912" stroke="#f85149" stroke-width="1.5"/>
+       <text x="165" y="75" text-anchor="middle" font-size="11" fill="#f85149" font-family="Inter" font-weight="700">Microflora</text>
+       <text x="165" y="90" text-anchor="middle" font-size="10" fill="#f85149" font-family="Inter">IMPURIFICARE</text>
+       <text x="165" y="108" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Salmonella,</text>
+       <text x="165" y="120" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">E. coli pat.</text></svg>`,res:null},
+    {title:"Boli Transmise prin Apă",badge:"EPIDEMIOLOGIE",
+     text:"Principalii agenți cauzali ai epidemiilor hidrice: vibrionul holerei, Shigella dysenteriae, Salmonella typhi, E. coli enterotoxigenă, Cryptosporidium, Giardia, hepatita A.",
+     note:"Epidemii hidrice: debut exploziv, număr mare de cazuri, legătură comună cu sursa de apă",
+     svg:`<svg width="240" height="190" viewBox="0 0 240 190">
+       ${[["🦠","Vibrio cholerae","Holeră",30,35],["🧫","Salmonella typhi","Febra tifoidă",130,35],["🔬","E. coli ETEC","Diaree acută",30,95],["🦠","Cryptosporidium","Criptosporidioză",130,95],["🧬","Hepatita A","Hepatita A",80,155]].map(([e,l,b,x,y])=>`
+       <rect x="${x}" y="${y}" width="95" height="48" fill="#f8514910" stroke="#f85149" stroke-width="1" rx="8"/>
+       <text x="${x+10}" y="${y+18}" font-size="14">${e}</text>
+       <text x="${x+30}" y="${y+18}" font-size="9" fill="#f85149" font-family="Inter" font-weight="700">${l}</text>
+       <text x="${x+30}" y="${y+32}" font-size="8" fill="#6e7681" font-family="Inter">${b}</text>`).join('')}</svg>`,res:null},
+    {title:"Tipuri de Analize Microbiologice",badge:"CATEGORII",
+     text:"Analize curente (periodice, obligatorii): NTG la 37°C + nr. coliformi. Analize complementare (când curente repetate neadecvate): NTG 22°C + enterococi. Analize speciale: identificare agenți patogeni specifici.",
+     note:"Frecvența analizelor depinde de tipul sursei și populației deservite",
+     svg:null,res:{type:"ok",text:"✅ NTG 37°C + Coliformi = analizele de bază obligatorii în orice rețea de apă potabilă"}},
+    {title:"Importanța Controlului Microbiologic",badge:"SĂNĂTATE PUBLICĂ",
+     text:"Controlul microbiologic sistematic al apei a redus dramatic incidența bolilor hidrice. Principiul precauției: apa se dezinfectează preventiv, nu doar când există dovezi de contaminare.",
+     note:"OMS estimează că 2 miliarde de persoane beau apă contaminată fecal la nivel mondial",
+     svg:null,res:{type:"warn",text:"⚠️ O singură analiză negativă nu garantează siguranța — este necesară monitorizarea continuă"}}
+  ]}],
+  1:[{icon:"🧫",lbl:"NTG",steps:[
+    {title:"Prepararea Diluțiilor",badge:"PASUL 1",
+     text:"Se recoltează proba, se agită pentru omogenizare. Se prepară diluții zecimale: 1/10 și 1/100 în apă sterilă (eprubete și pipete sterile obligatoriu!).",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <rect x="20" y="40" width="30" height="100" fill="#76e3ea22" stroke="#76e3ea" stroke-width="1.5" rx="3"/>
+       <text x="35" y="155" text-anchor="middle" font-size="8" fill="#76e3ea" font-family="Inter">PROBĂ</text>
+       <text x="35" y="165" text-anchor="middle" font-size="8" fill="#76e3ea" font-family="JetBrains Mono">1/1</text>
+       <line x1="50" y1="90" x2="75" y2="90" stroke="#6e7681" stroke-width="1.5" marker-end="url(#arr)"/>
+       <rect x="75" y="55" width="25" height="80" fill="#76e3ea18" stroke="#76e3ea" stroke-width="1.5" rx="3"/>
+       <text x="87" y="150" text-anchor="middle" font-size="8" fill="#6e7681" font-family="JetBrains Mono">1/10</text>
+       <line x1="100" y1="95" x2="125" y2="95" stroke="#6e7681" stroke-width="1.5"/>
+       <rect x="125" y="68" width="20" height="62" fill="#76e3ea0e" stroke="#76e3ea" stroke-width="1" rx="3"/>
+       <text x="135" y="145" text-anchor="middle" font-size="7" fill="#6e7681" font-family="JetBrains Mono">1/100</text>
+       <text x="120" y="185" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Diluții zecimale succesive</text></svg>`,res:null},
+    {title:"Însămânțarea în Cutii Petri",badge:"PASUL 2",
+     text:"Se pipetează 1 ml probă (steril) în câte 2 cutii Petri cu geloză nutritivă topită și răcită la 45°C. Se amestecă ușor. Se lasă să se solidifice. Se incubează la 37°C.",
+     note:"Temperatura gelozei la 45°C = critică: prea fierbinte ucide bacteriile, prea rece solidifică prematur",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <ellipse cx="120" cy="110" rx="90" ry="55" fill="#3fb95012" stroke="#3fb950" stroke-width="1.5"/>
+       <ellipse cx="120" cy="108" rx="90" ry="52" fill="#3fb95008" stroke="#3fb950" stroke-width="0.5"/>
+       <text x="120" y="90" text-anchor="middle" font-size="10" fill="#3fb950" font-family="Inter">Geloză nutritivă</text>
+       <text x="120" y="108" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">45°C → solidificare</text>
+       <circle cx="80" cy="115" r="4" fill="#f0b429" class="pulse"/>
+       <circle cx="110" cy="120" r="3" fill="#f0b429" class="pulse"/>
+       <circle cx="140" cy="108" r="4" fill="#f0b429" class="pulse"/>
+       <circle cx="158" cy="120" r="3" fill="#f0b429" class="pulse"/>
+       <text x="120" y="175" text-anchor="middle" font-size="9" fill="#f0b429" font-family="Inter">1 germen → 1 colonie (după 24h)</text>
+       <text x="120" y="190" text-anchor="middle" font-size="8" fill="#6e7681" font-family="JetBrains Mono">37°C / 24h (necentrifugată)</text></svg>`,res:null},
+    {title:"Numărarea Coloniilor",badge:"PASUL 3",
+     text:"Se numără coloniile crescute. NTG/ml = n × d / N, unde n = nr. colonii, d = gradul de diluție, N = nr. cutii Petri. Se iau în calcul cutiile cu 15–300 colonii.",
+     note:"Sub 15 colonii = prea diluată. Peste 300 = nu se poate număra corect",
+     svg:`<svg width="240" height="180" viewBox="0 0 240 180">
+       <ellipse cx="120" cy="90" rx="90" ry="55" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+       ${Array.from({length:28},(_,i)=>{const a=Math.random()*Math.PI*2;const r=Math.random()*60;const x=120+r*Math.cos(a);const y=90+r*0.6*Math.sin(a);return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(2+Math.random()*2).toFixed(1)}" fill="#3fb950" opacity="${(0.5+Math.random()*0.5).toFixed(2)}"/>`}).join('')}
+       <text x="120" y="165" text-anchor="middle" font-size="9" fill="#3fb950" font-family="JetBrains Mono">28 colonii × 1 × ½ = NTG 56/ml</text></svg>`,res:null},
+    {title:"Norme NTG",badge:"OG 7/2023",
+     text:"Apa potabilă dezinfectată (clorinată) și apă îmbuteliată: NTG la 37°C ≤ 20/ml. NTG la 22°C (bacterii din mediu, nu fecale): ≤ 100/ml.",
+     note:"Depășirea normei nu implică automat risc pentru sănătate — se corelează cu indicatorii fecali",
+     svg:`<svg width="240" height="150" viewBox="0 0 240 150">
+       ${[["37°C / 24h","≤ 20 UFC/mL","Bacterii umane/animale","#f85149",15],["22°C / 72h","≤ 100 UFC/mL","Bacterii de mediu","#f0b429",70],["Coliformi","0 UFC/100mL","Contaminare fecală","#3fb950",125]].map(([t,v,d,c,y])=>`
+       <rect x="15" y="${y}" width="210" height="35" fill="${c}10" stroke="${c}" stroke-width="1" rx="7"/>
+       <text x="25" y="${y+22}" font-size="10" fill="${c}" font-family="JetBrains Mono" font-weight="700">${t}</text>
+       <text x="160" y="${y+22}" text-anchor="end" font-size="11" fill="${c}" font-family="JetBrains Mono" font-weight="700">${v}</text>`).join('')}
+     </svg>`,res:null},
+    {title:"Concluzie NTG",badge:"INTERPRETARE",
+     text:"NTG crescut singur = semnalare. NTG crescut + coliformi prezenți = contaminare fecală confirmată → risc pentru sănătate publică → investigare sursă, dezinfecție de urgență.",
+     svg:null,res:{type:"ok",text:"✅ Formula: NTG/ml = nr.colonii × gradul diluție / nr.cutii Petri"}}
+  ]}],
+  2:[{icon:"🔬",lbl:"Colifor.",steps:[
+    {title:"De ce Germeni Coliformi?",badge:"SEMNIFICAȚIE",
+     text:"Germenii coliformi sunt bacterii Gram-negative care fermentează lactoza cu producere de gaze la 37°C. Sunt prezenți în proporție de 70-80% în flora intestinală normală umană și animală → indicatori de poluare fecală.",
+     note:"Nu sunt direct patogeni, dar prezența lor indică posibilitatea prezenței agenților patogeni enterici",
+     svg:null,res:{type:"warn",text:"⚠️ Prezența E. coli = contaminare fecală recentă = risc pathogeni enterici"}},
+    {title:"Testul de Prezumție",badge:"PASUL 1",
+     text:"Însămânțare în tuburi cu bulion lactozat. Eprubete Durham pentru captarea gazelor. Incubare la 37°C. Citire la 24h și 48h. Tub pozitiv = gaz + aciditate (mediu galben).",
+     note:"Tuburi Durham = tuburi mici inversate în interiorul tubului mare — captează bulele de gaz CO₂",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       ${["NEGATIV\n(limpede)","POZITIV\n(tulbure+gaz)","POZITIV\n(acid)"].map((l,i)=>`
+       <rect x="${30+i*70}" y="30" width="45" height="110" fill="${i===0?"#3fb95008":"#f0b42912"}" stroke="${i===0?"#3fb950":"#f0b429"}" stroke-width="1.5" rx="4"/>
+       <rect x="${42+i*70}" y="45" width="20" height="30" fill="${i===0?"transparent":"rgba(240,180,41,.3)"}" stroke="${i===0?"#21262d":"#f0b429"}" stroke-width="1" rx="2"/>
+       ${i>0?`<circle cx="${52+i*70}" cy="52" r="4" fill="#f0b429" opacity=".6"/>`:''}`).join('')}
+       <text x="120" y="165" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Test prezumție: bulion lactozat + Durham</text></svg>`,res:null},
+    {title:"Interpretare Testul de Prezumție",badge:"CITIRE",
+     text:"Tub pozitiv la 24h: gaz în durham + tulburare + aciditate. Tub pozitiv la 48h: idem (unele tulpini fermentează mai lent). Tuburile pozitive → testul de confirmare.",
+     note:"Rezultat negativ la 48h = absența coliformilor în volumul testat",
+     svg:null,res:{type:"ok",text:"✅ Tuburile pozitive la prezumție → obligatoriu confirmare pe mediu EMB"}},
+    {title:"Indice Coli",badge:"CALCUL",
+     text:"Se determină numărul de germeni coliformi la 100 ml apă (MPN = Most Probable Number), folosind tabele statistice Mackrady. Norma: 0 coliformi/100 mL pentru apă potabilă.",
+     note:"Metoda MPN are incertitudine ±25% — pentru precizie mai mare se folosesc metode membranelor filtrante",
+     svg:null,res:{type:"ok",text:"✅ Norma OG 7/2023: Coliformi totali = 0/100mL · E. coli = 0/100mL"}}
+  ]}]
+};
+
+const state={cur:[0,0,0,0]};
+function render(t){
+  const d=DATA[t];if(!d||!d[0])return;
+  const s=d[0].steps,i=state.cur[t];
+  document.getElementById('pipe'+t).innerHTML='<div class="pipeline">'+s.map((st,j)=>{
+    const c=j<i?'done':j===i?'active':'';
+    return `<div class="step-dot ${c}" onclick="goTo(${t},${j})"><div class="circle">${d[0].icon}</div><div class="lbl">${d[0].lbl}</div></div>${j<s.length-1?`<div class="step-conn ${j<i?'done':''}"></div>`:''}`
+  }).join('')+'</div>';
+  const st=s[i];
+  document.getElementById('sc'+t).className='stage-card'+(i===s.length-1?' hl':'');
+  document.getElementById('sv'+t).innerHTML=(st.svg||`<svg width="240" height="180" viewBox="0 0 240 180"><text x="120" y="100" text-anchor="middle" font-size="60" opacity=".3">${d[0].icon}</text></svg>`)+'<div class="vis-lbl">'+d[0].lbl+'</div>';
+  let h=`<div class="badge">${st.badge}</div><h2>${st.title}</h2><p>${st.text}</p>`;
+  if(st.note)h+=`<div class="note">📌 ${st.note}</div>`;
+  if(st.res)h+=`<div class="result-box rb-${st.res.type==='ok'?'ok':st.res.type==='warn'?'warn':'bad'}">${st.res.text}</div>`;
+  document.getElementById('si'+t).innerHTML=h;
+  document.getElementById('ct'+t).textContent=(i+1)+' / '+s.length;
+  document.getElementById('b'+t+'p').disabled=i===0;
+  document.getElementById('b'+t+'n').disabled=i===s.length-1;
+}
+function next(t){if(state.cur[t]<DATA[t][0].steps.length-1){state.cur[t]++;render(t);}}
+function prev(t){if(state.cur[t]>0){state.cur[t]--;render(t);}}
+function reset(t){state.cur[t]=0;render(t);}
+function goTo(t,i){state.cur[t]=i;render(t);}
+function show(i){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('nav button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  if(i<3&&!document.getElementById('pipe'+i).innerHTML)render(i);
+}
+[0,1,2].forEach(render);
+</script>
+</body>
+</html>

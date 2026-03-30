@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP3A – Igiena Apei: Proprietăți Fizico-Chimice</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root{--bg:#0d1117;--panel:#161b22;--border:#21262d;--blue:#58a6ff;--amber:#f0b429;--green:#3fb950;--red:#f85149;--purple:#a371f7;--teal:#39d353;--cyan:#76e3ea;--text:#c9d1d9;--muted:#6e7681;--white:#f0f6fc;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+  header{padding:1.5rem 2.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;background:linear-gradient(135deg,#0a1628 60%,#0d1a2e);}
+  .header-icon{font-size:2.2rem;}
+  header h1{font-size:1.4rem;font-weight:800;color:var(--white);}
+  header p{font-size:.82rem;color:var(--muted);margin-top:.2rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:150px;padding:.85rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  nav button:hover{color:var(--text);}nav button.active{color:var(--white);border-bottom-color:var(--cyan);}
+  .panel{display:none;padding:2rem 2.5rem;max-width:1050px;margin:0 auto;}.panel.active{display:block;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;margin-bottom:1.5rem;}
+  .card h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .card p,.card li{font-size:.9rem;color:var(--text);line-height:1.75;}
+  .card ul{padding-left:1.4rem;margin-top:.5rem;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;gap:.5rem;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:90px;cursor:pointer;}
+  .step-dot .circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;border:2px solid var(--border);background:var(--panel);transition:all .3s;}
+  .step-dot.done .circle{border-color:var(--cyan);background:rgba(118,227,234,.1);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(240,180,41,.12);box-shadow:0 0 18px rgba(240,180,41,.3);transform:scale(1.12);}
+  .step-dot .lbl{font-size:.63rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:88px;line-height:1.3;}
+  .step-dot.done .lbl{color:var(--cyan);}.step-dot.active .lbl{color:var(--amber);font-weight:700;}
+  .step-conn{flex:0 0 14px;height:2px;margin-top:22px;background:var(--border);transition:background .4s;}.step-conn.done{background:var(--cyan);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;min-height:320px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.hl{border-color:var(--cyan);box-shadow:0 0 30px rgba(118,227,234,.07);}
+  .stage-vis{flex:0 0 260px;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.3rem;}
+  .badge{display:inline-block;background:rgba(118,227,234,.12);color:var(--cyan);font-size:.68rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.7rem;}
+  .stage-info p{font-size:.88rem;color:var(--text);line-height:1.75;margin-bottom:.4rem;}
+  .note{font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.75rem 1.1rem;border-radius:9px;font-size:.88rem;font-weight:700;margin-top:.8rem;animation:fs .35s ease;}
+  .rb-bad{background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.25);}
+  .rb-warn{background:rgba(240,180,41,.1);color:var(--amber);border:1px solid rgba(240,180,41,.25);}
+  .rb-ok{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.25);}
+  @keyframes fs{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:.8rem;margin-top:1.5rem;align-items:center;flex-wrap:wrap;}
+  .btn{padding:.6rem 1.3rem;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;}
+  .btn-p{background:var(--cyan);color:#0d1117;}.btn-p:hover{filter:brightness(1.1);}
+  .btn-p:disabled{opacity:.3;cursor:default;}
+  .btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-s:hover{color:var(--text);}
+  .btn-r{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-r:hover{color:var(--red);border-color:var(--red);}
+  .sc{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);}
+  .vis-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-align:center;padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .pulse{animation:pg 1.5s ease-in-out infinite;}
+  @keyframes pg{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 5px currentColor);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-vis{flex:none;width:100%;}.panel{padding:1.2rem 1rem;}header{padding:1rem;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-icon">💧</div>
+  <div>
+    <h1>LP3A – Igiena Apei: Proprietăți Fizico-Chimice</h1>
+    <p>Turbiditate · pH · Cloruri · Duritate · Nitrați · Interpretare norme OG 7/2023</p>
+  </div>
+</header>
+<nav id="nav">
+  <button class="active" onclick="show(0)">🔬 Proprietăți Organoleptice</button>
+  <button onclick="show(1)">💧 Turbiditate</button>
+  <button onclick="show(2)">⚗️ pH</button>
+  <button onclick="show(3)">🧂 Cloruri &amp; Duritate</button>
+  <button onclick="show(4)">🌿 Nitrați</button>
+</nav>
+<div id="panels">
+
+<div class="panel active" id="p0">
+<div class="card"><h2>🔬 Proprietăți Organoleptice și Fizice</h2>
+<p>Controlul igienico-sanitar al apei include: ancheta sanitară a sursei, recoltare probe, analize fizico-chimice, microbiologice, biologice și controlul dezinfecției.</p>
+</div>
+<div id="pipe0"></div>
+<div class="stage-card" id="sc0"><div class="stage-vis" id="sv0"></div><div class="stage-info" id="si0"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(0)" id="b0p">← Înapoi</button>
+  <span class="sc" id="ct0">1 / 4</span>
+  <button class="btn btn-p" onclick="next(0)" id="b0n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(0)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p1">
+<div class="card"><h2>💧 Determinarea Turbidității</h2>
+<p>Turbiditatea reflectă prezența substanțelor insolubile în apă. Influențează decisiv procesul de tratare și eficacitatea dezinfecției cu clor.</p>
+</div>
+<div id="pipe1"></div>
+<div class="stage-card" id="sc1"><div class="stage-vis" id="sv1"></div><div class="stage-info" id="si1"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(1)" id="b1p">← Înapoi</button>
+  <span class="sc" id="ct1">1 / 4</span>
+  <button class="btn btn-p" onclick="next(1)" id="b1n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(1)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p2">
+<div class="card"><h2>⚗️ Concentrația Ionilor de Hidrogen (pH)</h2>
+<p>pH-ul influențează negativ activitatea biologică din apă (autoepurarea), eficacitatea clorării și corozivitatea apei față de rețeaua de distribuție.</p>
+</div>
+<div id="pipe2"></div>
+<div class="stage-card" id="sc2"><div class="stage-vis" id="sv2"></div><div class="stage-info" id="si2"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(2)" id="b2p">← Înapoi</button>
+  <span class="sc" id="ct2">1 / 4</span>
+  <button class="btn btn-p" onclick="next(2)" id="b2n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(2)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p3">
+<div class="card"><h2>🧂 Cloruri și Duritate</h2>
+<p>Clorurile și duritatea sunt indicatori chimici importanți ai calității apei. Variațiile lor bruște pot semnala poluarea sursei.</p>
+</div>
+<div id="pipe3"></div>
+<div class="stage-card" id="sc3"><div class="stage-vis" id="sv3"></div><div class="stage-info" id="si3"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(3)" id="b3p">← Înapoi</button>
+  <span class="sc" id="ct3">1 / 3</span>
+  <button class="btn btn-p" onclick="next(3)" id="b3n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(3)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p4">
+<div class="card"><h2>🌿 Nitrați și Nitriți în Apă</h2>
+<p>Nitrații (NO₃⁻) provin din îngrășăminte și materie organică. Nitriții (NO₂⁻) sunt mai toxici și indică poluare mai recentă. Riscul major: methemoglobinemia la sugari.</p>
+</div>
+<div class="card">
+  <ul>
+    <li><strong>Norma nitrați (OG 7/2023):</strong> max. 50 mg NO₃⁻/L</li>
+    <li><strong>Norma nitriți:</strong> max. 0,5 mg NO₂⁻/L</li>
+    <li><strong>Surse:</strong> îngrășăminte azotate, dejecții animale, ape uzate</li>
+    <li><strong>Methemoglobinemia:</strong> NO₃ → NO₂ (bacterii intestinale la sugar) → MetHb → "copilul albastru"</li>
+    <li><strong>Atenție:</strong> fierberea NU reduce nitrații — îi concentrează!</li>
+    <li><strong>Tratare:</strong> osmoză inversă, schimbători de ioni (selectivi NO₃)</li>
+  </ul>
+  <div class="result-box rb-bad" style="margin-top:1rem">⚠️ Sugarii sub 6 luni sunt grupul de risc maxim — nu se folosește apă cu nitrați > 50 mg/L!</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const DATA = {
+  0:[{icon:"🔬",lbl:"Org.",steps:[
+    {title:"Proprietăți Organoleptice",badge:"PRELIMINAR",
+     text:"Mirosul și gustul apei se determină subiectiv. Norma (OG 7/2023): 'acceptabil pentru consumator și fără modificare anormală'. Se evaluează la sursă ca examinare preliminară.",
+     note:"Metoda subiectivă — nu oferă date cantitative exacte",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <circle cx="120" cy="85" r="55" fill="#0d1a2e" stroke="#76e3ea" stroke-width="2"/>
+       <text x="120" y="72" text-anchor="middle" font-size="24">👃</text>
+       <text x="120" y="102" text-anchor="middle" font-size="13" fill="#76e3ea" font-family="Inter" font-weight="700">Miros</text>
+       <text x="50" y="165" text-anchor="middle" font-size="24">👅</text>
+       <text x="50" y="185" text-anchor="middle" font-size="10" fill="#76e3ea" font-family="Inter">Gust</text>
+       <text x="190" y="165" text-anchor="middle" font-size="24">👁️</text>
+       <text x="190" y="185" text-anchor="middle" font-size="10" fill="#76e3ea" font-family="Inter">Culoare</text></svg>`,res:null},
+    {title:"Proprietăți Fizice",badge:"MĂSURABILE",
+     text:"Temperatura (termometru), culoarea (comparator), turbiditatea (nefelometru), conductivitatea electrică (conductometru), radioactivitatea.",
+     note:"Proprietățile fizice se pot măsura cantitativ — rezultate obiective",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       ${[["🌡️","Temperatură","20°C",40,50],["🎨","Culoare","<15 grad Pt",40,110],["🌊","Turbiditate","≤5 UNT",130,50],["⚡","Conductiv.","<2500 µS",130,110]].map(([e,l,v,x,y])=>`
+       <rect x="${x}" y="${y}" width="95" height="45" fill="#161b22" stroke="#21262d" stroke-width="1" rx="8"/>
+       <text x="${x+12}" y="${y+17}" font-size="14">${e}</text>
+       <text x="${x+12}" y="${y+30}" font-size="9" fill="#76e3ea" font-family="Inter" font-weight="600">${l}</text>
+       <text x="${x+90}" y="${y+30}" text-anchor="end" font-size="8" fill="#f0b429" font-family="JetBrains Mono">${v}</text>`).join('')}</svg>`,res:null},
+    {title:"Ancheta Sanitară a Sursei",badge:"INSPECȚIE",
+     text:"Se evaluează: protecția zonei de captare, distanța față de sursele de poluare (WC, grajduri, gropi de gunoi), starea tehnică a captării, riscul de contaminare.",
+     note:"Ancheta sanitară precede întotdeauna prelevarea probelor de apă",
+     svg:null,res:{type:"warn",text:"📋 Fântâni: zona de protecție sanitară = minim 10 m față de orice sursă de poluare"}},
+    {title:"Recoltarea Probelor",badge:"PROTOCOL",
+     text:"Flacoane sterile pentru analize microbiologice (1L) și chimice (2L). Etichetare: sursa, data, ora, temperatura, persoana care a recoltat. Transport la laborator: maxim 6h la 4°C.",
+     note:"Recoltarea incorectă invalidează toate analizele ulterioare",
+     svg:null,res:{type:"ok",text:"✅ Probele microbiologice au prioritate — se analizează în primele 2 ore"}}
+  ]}],
+  1:[{icon:"💧",lbl:"Turb.",steps:[
+    {title:"Principiul Determinării",badge:"METODĂ",
+     text:"Turbiditatea se determină prin compararea probei cu suspensii etalon de SiO₂ în apă distilată (metodă istorică) sau prin nefelometrie cu fotocelulă (metodă modernă). Rezultatul se exprimă în UNT.",
+     note:"1 grad turbiditate = opalescența 1 mg SiO₂/dm³",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <rect x="30" y="30" width="50" height="120" fill="#76e3ea11" stroke="#76e3ea" stroke-width="1.5" rx="4"/>
+       <text x="55" y="100" text-anchor="middle" font-size="8" fill="#76e3ea" font-family="Inter">ETALON</text>
+       <rect x="100" y="50" width="50" height="100" fill="#76e3ea33" stroke="#76e3ea" stroke-width="1.5" rx="4"/>
+       <text x="125" y="110" text-anchor="middle" font-size="8" fill="#76e3ea" font-family="Inter">PROBĂ</text>
+       <text x="125" y="125" text-anchor="middle" font-size="8" fill="#f0b429" font-family="JetBrains Mono">3 UNT</text>
+       <rect x="170" y="20" width="45" height="150" fill="#76e3ea55" stroke="#76e3ea" stroke-width="1.5" rx="4"/>
+       <text x="192" y="100" text-anchor="middle" font-size="8" fill="#f85149" font-family="Inter">DEPĂȘIT</text>
+       <text x="192" y="115" text-anchor="middle" font-size="8" fill="#f85149" font-family="JetBrains Mono">8 UNT</text>
+       <line x1="30" y1="175" x2="215" y2="175" stroke="#21262d" stroke-width="1"/>
+       <text x="122" y="195" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Comparare vizuală / nefelometrie</text></svg>`,res:null},
+    {title:"Aparatura Modernă – Nefelometrul",badge:"APARAT",
+     text:"Nefelometrul măsoară lumina dispersată de particulele suspendate la un unghi de 90°. Sensibilitate: 0,01 UNT. Calibrare cu suspensie Formazin standard.",
+     note:"Turbiditate > 1 UNT poate compromite eficacitatea clorării",
+     svg:null,res:{type:"warn",text:"⚠️ Turbiditate crescută protejează bacteriile de acțiunea dezinfectanților (shadowing effect)"}},
+    {title:"Norma Sanitară",badge:"OG 7/2023",
+     text:"Norma turbiditate (Ordonanța 7/2023): ≤ 5 UNT pentru apa potabilă distribuită în rețea.",
+     note:"La sursă turbiditatea poate fi mai mare — se reduce prin tratare (coagulare + filtrare)",
+     svg:`<svg width="240" height="160" viewBox="0 0 240 160">
+       <rect x="20" y="20" width="200" height="50" fill="#3fb95015" stroke="#3fb950" stroke-width="1" rx="8"/>
+       <text x="30" y="50" font-size="12" fill="#3fb950" font-family="Inter" font-weight="700">Apă conformă</text>
+       <text x="205" y="50" text-anchor="end" font-size="18" fill="#3fb950" font-family="JetBrains Mono" font-weight="800">≤ 5 UNT</text>
+       <rect x="20" y="85" width="200" height="50" fill="#f8514915" stroke="#f85149" stroke-width="1" rx="8"/>
+       <text x="30" y="115" font-size="12" fill="#f85149" font-family="Inter" font-weight="700">Apă neconformă</text>
+       <text x="205" y="115" text-anchor="end" font-size="18" fill="#f85149" font-family="JetBrains Mono" font-weight="800">&gt; 5 UNT</text></svg>`,res:null},
+    {title:"Concluzie",badge:"CONCLUZIE",
+     text:"Turbiditatea crescută indică prezența particulelor coloidale sau în suspensie din sol, alge sau materie organică. Necesită tratare prin coagulare-floculare-filtrare înainte de dezinfecție.",
+     note:"Turbiditate și culoare crescute simultan → poluare organică",
+     svg:null,res:{type:"ok",text:"✅ Turbiditate < 0,5 UNT = cerință minimă pentru dezinfecție eficace cu UV"}}
+  ]}],
+  2:[{icon:"⚗️",lbl:"pH",steps:[
+    {title:"Importanța pH-ului în Apă",badge:"CHIMIE",
+     text:"pH-ul influențează: activitatea biologică (autoepurare), corozivitatea apei față de instalații, solubilitatea metalelor grele (Pb, Cu), eficacitatea dezinfecției cu clor (optim pH 7,0-7,5).",
+     note:"La pH > 8, cloramina (HOCl→OCl⁻) are eficiență dezinfectantă de 70× mai mică!",
+     svg:`<svg width="240" height="180" viewBox="0 0 240 180">
+       <defs><linearGradient id="phgrad" x1="0%" y1="0%" x2="100%" y2="0%">
+         <stop offset="0%" stop-color="#f85149"/><stop offset="30%" stop-color="#f0b429"/>
+         <stop offset="50%" stop-color="#3fb950"/><stop offset="70%" stop-color="#58a6ff"/>
+         <stop offset="100%" stop-color="#a371f7"/></linearGradient></defs>
+       <rect x="20" y="50" width="200" height="25" fill="url(#phgrad)" rx="4"/>
+       ${[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].map((v,i)=>`
+       <line x1="${20+i*200/14}" y1="75" x2="${20+i*200/14}" y2="82" stroke="white" stroke-width="1" opacity=".5"/>
+       <text x="${20+i*200/14}" y="93" text-anchor="middle" font-size="8" fill="#6e7681" font-family="JetBrains Mono">${v}</text>`).join('')}
+       <line x1="113" y1="45" x2="113" y2="85" stroke="white" stroke-width="2"/>
+       <text x="113" y="40" text-anchor="middle" font-size="10" fill="white" font-family="JetBrains Mono" font-weight="700">pH=7</text>
+       <rect x="86" y="100" width="54" height="22" fill="#3fb95020" stroke="#3fb950" stroke-width="1" rx="4"/>
+       <text x="113" y="115" text-anchor="middle" font-size="9" fill="#3fb950" font-family="Inter" font-weight="700">Zonă optimă: 6,5–9,5</text>
+       <text x="120" y="155" text-anchor="middle" font-size="10" fill="#6e7681" font-family="Inter">Scala pH — norma OG 7/2023: 6,5-9,5</text></svg>`,res:null},
+    {title:"Metoda Aliamovski",badge:"METODA",
+     text:"10 ml apă → eprubetă colorimetrică → + 0,6 ml amestec indicator (roșu de metil + albastru de bromtimol) → agitare → comparare cu scala etalon colorimetrică.",
+     note:"Exactitate: ±0,2 unități pH. Mai precisă decât hârtia indicatoare (±0,5 unități)",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       ${["#f85149","#f0b429","#3fb950","#58a6ff","#a371f7"].map((c,i)=>`
+       <rect x="${20+i*42}" y="60" width="35" height="100" fill="${c}25" stroke="${c}" stroke-width="1.5" rx="4"/>
+       <text x="${37+i*42}" y="120" text-anchor="middle" font-size="8" fill="${c}" font-family="JetBrains Mono">${[5.5,6.5,7.0,7.5,8.5][i]}</text>`).join('')}
+       <rect x="113" y="40" width="35" height="120" fill="#3fb95040" stroke="#3fb950" stroke-width="2.5" rx="4"/>
+       <text x="130" y="175" text-anchor="middle" font-size="9" fill="#3fb950" font-family="Inter" font-weight="700">Proba: pH≈7</text>
+       <text x="120" y="195" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Scala Aliamovski (comparare)</text></svg>`,res:null},
+    {title:"Norma Sanitară pH",badge:"OG 7/2023",
+     text:"Norma pH apă potabilă (OG 7/2023): 6,5 – 9,5. În practică, valori de 7,0–7,8 sunt optime pentru clorare eficientă.",
+     note:"Apa acidă (pH < 6,5): corodează conductele metalice → eliberare Pb, Cu, Zn",
+     svg:null,res:{type:"ok",text:"✅ pH optim pentru clorare: 7,0–7,5 (HOCl predominant, bactericid mai puternic)"}},
+    {title:"Concluzie pH",badge:"CONCLUZIE",
+     text:"pH-ul se determină la sursă (înainte de tratare) și după tratare (în rețea). Variațiile bruște față de valorile obișnuite ale sursei semnalizează o poluare accidentală.",
+     note:"pH ridicat (>9) la sursă poate indica infiltrarea de ape industriale alcaline",
+     svg:null,res:{type:"warn",text:"⚠️ pH anormal = semnal de alarmă — se corelează cu celelalte analize chimice"}}
+  ]}],
+  3:[{icon:"🧂",lbl:"Cloruri",steps:[
+    {title:"Clorurile din Apă",badge:"CHIMIE",
+     text:"Clorurile provin din solubilizarea sărurilor de teren (NaCl, KCl, CaCl₂, MgCl₂). Concentrația lor este în general constantă pentru o sursă. Variațiile bruște semnalează poluarea.",
+     note:"Creșteri bruște → infiltrare ape de șiroire, ape uzate sau ape saline",
+     svg:`<svg width="240" height="180" viewBox="0 0 240 180">
+       <text x="120" y="40" text-anchor="middle" font-size="13" fill="#76e3ea" font-family="Inter" font-weight="700">Surse de Cloruri</text>
+       ${[["💧","Solubilizare teren","NaCl natural",70,65],["🚜","Agric./irigatii","Săruri aplicate",160,65],["🏭","Ape uzate","Cl industrial",70,120],["🌊","Intruziune marină","ape saline",160,120]].map(([e,l,s,x,y])=>`
+       <rect x="${x-40}" y="${y}" width="80" height="45" fill="#161b22" stroke="#21262d" stroke-width="1" rx="8"/>
+       <text x="${x}" y="${y+17}" text-anchor="middle" font-size="14">${e}</text>
+       <text x="${x}" y="${y+29}" text-anchor="middle" font-size="9" fill="#76e3ea" font-family="Inter" font-weight="600">${l}</text>
+       <text x="${x}" y="${y+41}" text-anchor="middle" font-size="8" fill="#6e7681" font-family="Inter">${s}</text>`).join('')}
+       <text x="120" y="175" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Norma: max. 250 mg Cl⁻/L (OG 7/2023)</text></svg>`,res:null},
+    {title:"Duritatea Apei",badge:"MINERALIZARE",
+     text:"Duritatea = concentrația ionilor de Ca²⁺ și Mg²⁺. Apă dură: nu face spumă cu săpunul, formează cruste în vase și instalații, colmatează mașinile de spălat. Se exprimă în grade germane (°dH) sau mg CaCO₃/L.",
+     note:"1 °dH = 10 mg CaO/L = 17,8 mg CaCO₃/L",
+     svg:null,res:{type:"warn",text:"⚠️ Nu există normă sanitară strictă pentru duritate — mai mult o problemă economică/estetică"}},
+    {title:"Concluzie",badge:"CONCLUZIE",
+     text:"Clorurile și duritatea sunt indicatori indirecți ai mineralizării globale a apei. Se interpretează împreună cu celelalte analize fizico-chimice pentru o evaluare completă.",
+     note:"Apa moale (duritate mică) este mai corozivă față de conductele metalice",
+     svg:null,res:{type:"ok",text:"✅ Indicatori completați → interpretare context, nu izolat"}}
+  ]}]
+};
+
+const state={cur:[0,0,0,0,0]};
+function render(t){
+  const d=DATA[t]; if(!d||!d[0])return;
+  const s=d[0].steps,i=state.cur[t];
+  const pe=document.getElementById('pipe'+t);
+  pe.innerHTML='<div class="pipeline">'+s.map((st,j)=>{
+    const c=j<i?'done':j===i?'active':'';
+    return `<div class="step-dot ${c}" onclick="goTo(${t},${j})">
+      <div class="circle">${st.icon||d[0].icon}</div>
+      <div class="lbl">${d[0].lbl}</div>
+    </div>${j<s.length-1?`<div class="step-conn ${j<i?'done':''}"></div>`:''}`
+  }).join('')+'</div>';
+  const st=s[i];
+  document.getElementById('sc'+t).className='stage-card'+(i===s.length-1?' hl':'');
+  document.getElementById('sv'+t).innerHTML=(st.svg||`<svg width="240" height="180" viewBox="0 0 240 180"><text x="120" y="100" text-anchor="middle" font-size="60" opacity=".3">${d[0].icon}</text></svg>`)+'<div class="vis-lbl">'+d[0].lbl+'</div>';
+  let h=`<div class="badge">${st.badge}</div><h2>${st.title}</h2><p>${st.text}</p>`;
+  if(st.note)h+=`<div class="note">📌 ${st.note}</div>`;
+  if(st.res)h+=`<div class="result-box rb-${st.res.type==='ok'?'ok':st.res.type==='warn'?'warn':'bad'}">${st.res.text}</div>`;
+  document.getElementById('si'+t).innerHTML=h;
+  document.getElementById('ct'+t).textContent=(i+1)+' / '+s.length;
+  document.getElementById('b'+t+'p').disabled=i===0;
+  document.getElementById('b'+t+'n').disabled=i===s.length-1;
+}
+function next(t){if(state.cur[t]<DATA[t][0].steps.length-1){state.cur[t]++;render(t);}}
+function prev(t){if(state.cur[t]>0){state.cur[t]--;render(t);}}
+function reset(t){state.cur[t]=0;render(t);}
+function goTo(t,i){state.cur[t]=i;render(t);}
+function show(i){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('nav button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  if(i<4&&!document.getElementById('pipe'+i).innerHTML)render(i);
+}
+[0,1,2,3].forEach(render);
+</script>
+</body>
+</html>

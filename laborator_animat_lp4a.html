@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LP4A – Evaluarea Stării de Nutriție</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root{--bg:#0d1117;--panel:#161b22;--border:#21262d;--blue:#58a6ff;--amber:#f0b429;--green:#3fb950;--red:#f85149;--purple:#a371f7;--orange:#fd8c73;--text:#c9d1d9;--muted:#6e7681;--white:#f0f6fc;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+  header{padding:1.5rem 2.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;background:linear-gradient(135deg,#1a0d0a 60%,#1e1209);}
+  .header-icon{font-size:2.2rem;}
+  header h1{font-size:1.4rem;font-weight:800;color:var(--white);}
+  header p{font-size:.82rem;color:var(--muted);margin-top:.2rem;}
+  nav{display:flex;overflow-x:auto;background:var(--panel);border-bottom:1px solid var(--border);scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  nav button{flex:1;min-width:150px;padding:.85rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  nav button.active{color:var(--white);border-bottom-color:var(--orange);}
+  .panel{display:none;padding:2rem 2.5rem;max-width:1050px;margin:0 auto;}.panel.active{display:block;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;margin-bottom:1.5rem;}
+  .card h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.5rem;}
+  .card p,.card li{font-size:.9rem;color:var(--text);line-height:1.75;}
+  .card ul{padding-left:1.4rem;margin-top:.5rem;}
+  .pipeline{display:flex;align-items:flex-start;margin-bottom:2rem;flex-wrap:wrap;gap:.5rem;}
+  .step-dot{display:flex;flex-direction:column;align-items:center;flex:1;min-width:90px;cursor:pointer;}
+  .step-dot .circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;border:2px solid var(--border);background:var(--panel);transition:all .3s;}
+  .step-dot.done .circle{border-color:var(--orange);background:rgba(253,140,115,.1);}
+  .step-dot.active .circle{border-color:var(--amber);background:rgba(240,180,41,.12);box-shadow:0 0 18px rgba(240,180,41,.3);transform:scale(1.12);}
+  .step-dot .lbl{font-size:.63rem;color:var(--muted);text-align:center;margin-top:.4rem;max-width:88px;line-height:1.3;}
+  .step-dot.done .lbl{color:var(--orange);}.step-dot.active .lbl{color:var(--amber);font-weight:700;}
+  .step-conn{flex:0 0 14px;height:2px;margin-top:22px;background:var(--border);transition:background .4s;}.step-conn.done{background:var(--orange);}
+  .stage-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.8rem;min-height:320px;display:flex;gap:2rem;align-items:flex-start;transition:border-color .3s;}
+  .stage-card.hl{border-color:var(--orange);box-shadow:0 0 30px rgba(253,140,115,.07);}
+  .stage-vis{flex:0 0 260px;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+  .stage-info{flex:1;}
+  .stage-info h2{font-size:1.15rem;font-weight:800;color:var(--white);margin-bottom:.3rem;}
+  .badge{display:inline-block;background:rgba(253,140,115,.12);color:var(--orange);font-size:.68rem;font-weight:700;letter-spacing:.1em;padding:.2rem .6rem;border-radius:20px;margin-bottom:.7rem;}
+  .stage-info p{font-size:.88rem;color:var(--text);line-height:1.75;margin-bottom:.4rem;}
+  .note{font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:.5rem .8rem;border-radius:0 6px 6px 0;margin-top:.5rem;}
+  .result-box{padding:.75rem 1.1rem;border-radius:9px;font-size:.88rem;font-weight:700;margin-top:.8rem;animation:fs .35s ease;}
+  .rb-bad{background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.25);}
+  .rb-warn{background:rgba(240,180,41,.1);color:var(--amber);border:1px solid rgba(240,180,41,.25);}
+  .rb-ok{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.25);}
+  @keyframes fs{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .controls{display:flex;gap:.8rem;margin-top:1.5rem;align-items:center;flex-wrap:wrap;}
+  .btn{padding:.6rem 1.3rem;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;}
+  .btn-p{background:var(--orange);color:#0d1117;}.btn-p:hover{filter:brightness(1.1);}
+  .btn-p:disabled{opacity:.3;cursor:default;}
+  .btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-s:hover{color:var(--text);}
+  .btn-r{background:transparent;color:var(--muted);border:1px solid var(--border);margin-left:auto;}.btn-r:hover{color:var(--red);border-color:var(--red);}
+  .sc{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);}
+  .vis-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-align:center;padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;width:100%;}
+  svg{overflow:visible;}
+  .pulse{animation:pg 1.5s ease-in-out infinite;}
+  @keyframes pg{0%,100%{opacity:.7;}50%{opacity:1;filter:drop-shadow(0 0 5px currentColor);}}
+  @media(max-width:700px){.stage-card{flex-direction:column;}.stage-vis{flex:none;width:100%;}.panel{padding:1.2rem 1rem;}header{padding:1rem;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-icon">🍎</div>
+  <div>
+    <h1>LP4A – Evaluarea Stării de Nutriție</h1>
+    <p>IMC · Circumferința abdominală · Pliul cutanat · Impedanța bioelectrică · Biomarkeri</p>
+  </div>
+</header>
+<nav>
+  <button class="active" onclick="show(0)">📊 IMC</button>
+  <button onclick="show(1)">📏 Circumferință Abdominală</button>
+  <button onclick="show(2)">🔬 Compoziție Corporală</button>
+  <button onclick="show(3)">🧪 Biomarkeri</button>
+  <button onclick="show(4)">📋 Ancheta Alimentară</button>
+</nav>
+<div id="panels">
+
+<div class="panel active" id="p0">
+<div class="card"><h2>📊 Indicele de Masă Corporală (IMC)</h2>
+<p>IMC = Greutatea (kg) / Înălțimea² (m). Cel mai utilizat indicator al stării ponderale la adulți. Limitare: nu diferențiază masa musculară de cea adipoasă.</p>
+</div>
+<div id="pipe0"></div>
+<div class="stage-card" id="sc0"><div class="stage-vis" id="sv0"></div><div class="stage-info" id="si0"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(0)" id="b0p">← Înapoi</button>
+  <span class="sc" id="ct0">1 / 5</span>
+  <button class="btn btn-p" onclick="next(0)" id="b0n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(0)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p1">
+<div class="card"><h2>📏 Circumferința Abdominală</h2>
+<p>Reflectă distribuția adipozității. Grăsimea viscerală (abdominală) este metabolic activă și asociată cu risc cardiovascular și metabolic crescut, independent de IMC.</p>
+</div>
+<div id="pipe1"></div>
+<div class="stage-card" id="sc1"><div class="stage-vis" id="sv1"></div><div class="stage-info" id="si1"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(1)" id="b1p">← Înapoi</button>
+  <span class="sc" id="ct1">1 / 3</span>
+  <button class="btn btn-p" onclick="next(1)" id="b1n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(1)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p2">
+<div class="card"><h2>🔬 Compoziția Corporală — Metode de Evaluare</h2>
+<p>Evaluarea procentului de grăsime corporală oferă informații mai precise decât IMC despre starea de nutriție. Metode: plicometrie, impedanță bioelectrică, DXA.</p>
+</div>
+<div id="pipe2"></div>
+<div class="stage-card" id="sc2"><div class="stage-vis" id="sv2"></div><div class="stage-info" id="si2"></div></div>
+<div class="controls">
+  <button class="btn btn-s" onclick="prev(2)" id="b2p">← Înapoi</button>
+  <span class="sc" id="ct2">1 / 4</span>
+  <button class="btn btn-p" onclick="next(2)" id="b2n">Următor →</button>
+  <button class="btn btn-r" onclick="reset(2)">↺ Reset</button>
+</div>
+</div>
+
+<div class="panel" id="p3">
+<div class="card"><h2>🧪 Biomarkeri ai Stării de Nutriție</h2>
+<p>Analizele biochimice completează evaluarea clinico-antropometrică și permit cuantificarea deficiențelor nutriționale specifice.</p>
+</div>
+<div class="card">
+  <ul>
+    <li><strong>Albumina serică:</strong> 3,5–5,0 g/dL — marker stare proteică (semiviatà 21 zile = marker tardiv)</li>
+    <li><strong>Prealbumina:</strong> 18–45 mg/dL — marker mai rapid (t½ = 2 zile)</li>
+    <li><strong>Transferina serică:</strong> 200–360 mg/dL — statut proteic + fier</li>
+    <li><strong>Feritina:</strong> 30–300 ng/mL (B), 15–200 ng/mL (F) — rezerve fier</li>
+    <li><strong>Vitamina D:</strong> 30–100 ng/mL — deficit frecvent (>50% din populație)</li>
+    <li><strong>Hemoglobina + VCM:</strong> anemie feriprivă vs. megaloblastică (B12/folat)</li>
+  </ul>
+  <div class="result-box rb-warn" style="margin-top:1rem">⚠️ Albumina scăzută în boli inflamatorii acute (nu reflectă starea nutritivă — PCR trebuie corelat)</div>
+</div>
+</div>
+
+<div class="panel" id="p4">
+<div class="card"><h2>📋 Ancheta Alimentară</h2>
+<p>Evaluarea consumului alimentar cuantifică aportul de energie și nutrienți pe o perioadă definită. Stă la baza planificării intervențiilor nutriționale.</p>
+</div>
+<div class="card">
+  <ul>
+    <li><strong>Recall 24h:</strong> rapid, neinvaziv, dependent de memorie — reflect o singură zi</li>
+    <li><strong>Jurnal alimentar 7 zile:</strong> cel mai precis — modifică comportamentul (efect Hawthorne)</li>
+    <li><strong>Frecvența consumului (FFQ):</strong> obiceiuri alimentare cronice — estimare cantitativă mai slabă</li>
+    <li><strong>Aportul recomandat adulți (România):</strong> F: 2000 kcal/zi · B: 2500 kcal/zi</li>
+    <li><strong>Distribuție macronutrienți:</strong> Glucide 50-60% · Lipide 25-35% · Proteine 15-20%</li>
+    <li><strong>Fibre:</strong> minim 25-30 g/zi (deficit frecvent în dieta modernă)</li>
+  </ul>
+  <div class="result-box rb-ok" style="margin-top:1rem">✅ Deficiențe frecvente la populația română: fier, calciu, vitamina D, fibre alimentare</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const DATA={
+  0:[{icon:"📊",lbl:"IMC",steps:[
+    {title:"Formula IMC",badge:"CALCUL",
+     text:"IMC = Greutatea (kg) / Înălțimea² (m²). Greutatea cu 1 zecimală, înălțimea în metri cu 2 zecimale. Exemplu: 75 kg, 1,72 m → IMC = 75 / (1,72 × 1,72) = 75 / 2,958 = 25,4 kg/m².",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <text x="120" y="35" text-anchor="middle" font-size="13" fill="#fd8c73" font-family="JetBrains Mono" font-weight="700">IMC = G / Î²</text>
+       <rect x="30" y="50" width="80" height="50" fill="#fd8c7315" stroke="#fd8c73" stroke-width="1.5" rx="8"/>
+       <text x="70" y="70" text-anchor="middle" font-size="11" fill="#fd8c73" font-family="Inter" font-weight="700">Greutate</text>
+       <text x="70" y="90" text-anchor="middle" font-size="18" fill="white" font-family="JetBrains Mono" font-weight="700">75 kg</text>
+       <rect x="130" y="50" width="80" height="50" fill="#58a6ff15" stroke="#58a6ff" stroke-width="1.5" rx="8"/>
+       <text x="170" y="70" text-anchor="middle" font-size="11" fill="#58a6ff" font-family="Inter" font-weight="700">Înălțime²</text>
+       <text x="170" y="90" text-anchor="middle" font-size="18" fill="white" font-family="JetBrains Mono" font-weight="700">2,96</text>
+       <line x1="60" y1="110" x2="185" y2="140" stroke="#6e7681" stroke-width="1" stroke-dasharray="3,2"/>
+       <rect x="70" y="140" width="100" height="40" fill="#3fb95015" stroke="#3fb950" stroke-width="2" rx="8"/>
+       <text x="120" y="160" text-anchor="middle" font-size="12" fill="#3fb950" font-family="Inter" font-weight="700">IMC = 25,4</text>
+       <text x="120" y="195" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Supraponderal (25–29,9)</text></svg>`,res:null},
+    {title:"Clasificarea IMC la Adulți",badge:"OMS",
+     text:"Clasificarea OMS: Subponderal < 18,5 · Normoponderal 18,5–24,9 · Supraponderal 25–29,9 · Obezitate Grad I 30–34,9 · Obezitate Grad II 35–39,9 · Obezitate Grad III ≥ 40.",
+     note:"Clasele obezității (informal): de invidiat, de râs, de plâns 😄",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       ${[["<18.5","Subponderal","#58a6ff",12],["18.5-24.9","Normoponderal","#3fb950",46],["25-29.9","Supraponderal","#f0b429",80],["30-34.9","Obezitate I","#fd8c73",114],["35-39.9","Obezitate II","#f85149",148],["≥ 40","Obezitate III","#a371f7",182]].map(([r,l,c,y])=>`
+       <rect x="15" y="${y}" width="210" height="26" fill="${c}15" stroke="${c}" stroke-width="1" rx="5"/>
+       <text x="25" y="${y+17}" font-size="10" fill="${c}" font-family="JetBrains Mono" font-weight="700">${r}</text>
+       <text x="210" y="${y+17}" text-anchor="end" font-size="10" fill="${c}" font-family="Inter" font-weight="600">${l}</text>`).join('')}
+     </svg>`,res:null},
+    {title:"IMC la Copii — Nomograme",badge:"COPII",
+     text:"La copii IMC se interpretează pe nomograme specifice vârstei și sexului (percentile). Supraponderal: P85–P95. Obezitate: > P95. Nu se folosesc limitele adulților.",
+     note:"Nomogramele OMS (0-5 ani) și CDC (2-20 ani) sunt standarde internaționale",
+     svg:null,res:{type:"warn",text:"⚠️ IMC copii ≠ IMC adulți — interpretare obligatoriu pe percentile specifice vârstă/sex"}},
+    {title:"Limitele IMC",badge:"CRITICĂ",
+     text:"IMC nu diferențiază masa musculară de cea adipoasă. Un atlet musculat poate fi 'obez' după IMC. O persoană vârstnică sarcopenică poate fi 'normoponderală' cu exces de grăsime.",
+     note:"IMC trebuie corelat ÎNTOTDEAUNA cu circumferința abdominală și compoziția corporală",
+     svg:null,res:{type:"ok",text:"✅ IMC = screening rapid, nu diagnostic — necesită completare cu alte metode"}},
+    {title:"Concluzie IMC",badge:"PRACTICĂ",
+     text:"Calculul IMC este primul pas în evaluarea stării nutriționale. Se interpretează în context clinic (sex, vârstă, etnie, masă musculară) și se completează cu celelalte metode antropometrice.",
+     svg:null,res:{type:"ok",text:"✅ Formula: IMC = G(kg) / Î²(m) · Normo: 18,5–24,9 · Supra: 25–29,9 · Obez: ≥30"}}
+  ]}],
+  1:[{icon:"📏",lbl:"CA",steps:[
+    {title:"Metodologia Măsurării",badge:"PROTOCOL OMS",
+     text:"Banda metrică se plasează la mijlocul distanței dintre rebordul costal inferior și creasta iliacă. Pacientul în ortostatism, abdomen relaxat, la sfârșitul expirului. Se citesc 2 valori, se face media.",
+     svg:`<svg width="240" height="200" viewBox="0 0 240 200">
+       <ellipse cx="120" cy="100" rx="60" ry="80" fill="#fd8c7312" stroke="#fd8c73" stroke-width="1.5"/>
+       <ellipse cx="120" cy="100" rx="60" ry="80" fill="none" stroke="#fd8c73" stroke-width="0.5" stroke-dasharray="3,2"/>
+       <line x1="60" y1="100" x2="180" y2="100" stroke="#f0b429" stroke-width="2" stroke-dasharray="5,3"/>
+       <text x="120" y="96" text-anchor="middle" font-size="9" fill="#f0b429" font-family="Inter" font-weight="700">↔ Circumferința</text>
+       <text x="120" y="108" text-anchor="middle" font-size="9" fill="#f0b429" font-family="Inter">abdominală</text>
+       <line x1="120" y1="25" x2="120" y2="175" stroke="#21262d" stroke-width="1" stroke-dasharray="3,2"/>
+       <text x="120" y="195" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Mijlocul: rebord costal — creastă iliacă</text></svg>`,res:null},
+    {title:"Valori Normale și de Risc",badge:"NORME",
+     text:"Riscul cardiovascular crescut: Bărbați > 94 cm (risc) și > 102 cm (risc înalt). Femei > 80 cm (risc) și > 88 cm (risc înalt). Valorile OMS sunt unanim acceptate internațional.",
+     note:"Valorile diferă ușor pe etnii — asiatici au risc la valori mai mici (B>90cm, F>80cm)",
+     svg:`<svg width="240" height="160" viewBox="0 0 240 160">
+       ${[["👨 Bărbați","Risc: >94 cm","Risc înalt: >102 cm","#58a6ff",10],["👩 Femei","Risc: >80 cm","Risc înalt: >88 cm","#fd8c73",85]].map(([s,r1,r2,c,y])=>`
+       <rect x="15" y="${y}" width="210" height="65" fill="${c}10" stroke="${c}" stroke-width="1" rx="10"/>
+       <text x="25" y="${y+22}" font-size="13" fill="${c}" font-family="Inter" font-weight="800">${s}</text>
+       <text x="25" y="${y+40}" font-size="10" fill="#f0b429" font-family="JetBrains Mono">⚠ ${r1}</text>
+       <text x="25" y="${y+56}" font-size="10" fill="#f85149" font-family="JetBrains Mono">🔴 ${r2}</text>`).join('')}
+     </svg>`,res:null},
+    {title:"Semnificația Distribuției Adipozității",badge:"RISC METABOLIC",
+     text:"Obezitate centrală (viscerală): grăsime în jurul organelor interne, metabolic activă → inflamație cronică → rezistență la insulină → DZ tip 2, HTA, dislipidemie. Mai periculoasă decât obezitatea glutteo-femurală.",
+     note:"Un pacient normoponderal cu CA > normă ('obezitate normoponderală') are risc metabolic crescut",
+     svg:null,res:{type:"bad",text:"🔴 CA crescut = risc independent față de IMC pentru: DZ tip 2, BCV, AVC"}}
+  ]}],
+  2:[{icon:"🔬",lbl:"Compoz.",steps:[
+    {title:"Plicometria (Măsurarea Pliului Cutanat)",badge:"METODĂ",
+     text:"Calibrul Harpenden sau Lange măsoară grosimea pliului cutanat în 4 locații standard: biceps, triceps, subscapular, suprailian. Formula Durnin-Womersley calculează % grăsime corporală.",
+     note:"Eroare: ±3-5% · Condiție: aceeași persoană care măsoară, aceeași oră",
+     svg:`<svg width="240" height="180" viewBox="0 0 240 180">
+       <rect x="90" y="30" width="60" height="100" fill="#fd8c7312" stroke="#fd8c73" stroke-width="1.5" rx="6"/>
+       <rect x="80" y="60" width="20" height="40" fill="#161b22" stroke="#21262d" stroke-width="1" rx="3"/>
+       <rect x="140" y="60" width="20" height="40" fill="#161b22" stroke="#21262d" stroke-width="1" rx="3"/>
+       <line x1="100" y1="80" x2="140" y2="80" stroke="#f0b429" stroke-width="2"/>
+       <text x="120" y="75" text-anchor="middle" font-size="8" fill="#f0b429" font-family="JetBrains Mono">12 mm</text>
+       <text x="120" y="160" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Calibru plicometric (Harpenden)</text>
+       ${[["Biceps",50,140],["Triceps",100,140],["Subscap.",150,140],["Suprailian",200,140]].map(([l,x,y])=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="8" fill="#6e7681" font-family="Inter">${l}</text>`).join('')}</svg>`,res:null},
+    {title:"Impedanța Bioelectrică (BIA)",badge:"METODĂ MODERNĂ",
+     text:"Principiu: țesutul adipos are impedanță electrică mai mare decât cel muscular (mai multă apă). Curent electric de mică intensitate (50 kHz, 0,8 mA) → impedanță → calcul % grăsime.",
+     note:"Condiții standard: hidratare normală, fără efort fizic intens cu 12h înainte, dimineața a jeun",
+     svg:`<svg width="240" height="180" viewBox="0 0 240 180">
+       <rect x="60" y="20" width="120" height="80" fill="#161b22" stroke="#fd8c73" stroke-width="1.5" rx="10"/>
+       <text x="120" y="50" text-anchor="middle" font-size="11" fill="#fd8c73" font-family="Inter" font-weight="700">BIA Analyzer</text>
+       <text x="120" y="70" text-anchor="middle" font-size="20" fill="white" font-family="JetBrains Mono" font-weight="700">18,4%</text>
+       <text x="120" y="85" text-anchor="middle" font-size="8" fill="#6e7681" font-family="JetBrains Mono">grăsime corporală</text>
+       <circle cx="70" cy="130" r="12" fill="#21262d" stroke="#fd8c73" stroke-width="1"/>
+       <circle cx="170" cy="130" r="12" fill="#21262d" stroke="#fd8c73" stroke-width="1"/>
+       <line x1="82" y1="130" x2="158" y2="130" stroke="#f0b429" stroke-width="1.5" stroke-dasharray="4,3"/>
+       <text x="120" y="165" text-anchor="middle" font-size="9" fill="#6e7681" font-family="Inter">Electrozi plantari (picioare)</text></svg>`,res:null},
+    {title:"DXA (Absorbțiometria Duală)",badge:"GOLD STANDARD",
+     text:"Absorptiometria duală cu raze X (DXA) diferențiază masa osoasă, masa slabă (mușchi) și masa adipoasă pe regiuni anatomice. Precizie ±1-2%. Folosit și pentru densitate minerală osoasă (osteoporoză).",
+     note:"DXA = gold standard dar costisitor și cu expunere la radiații (mică: ~1 µSv = 10% din radiația naturală zilnică)",
+     svg:null,res:{type:"ok",text:"✅ DXA = cel mai precis · BIA = practic și accesibil · Plicometrie = portabilă"}},
+    {title:"Valori de Referință % Grăsime",badge:"REFERINȚĂ",
+     text:"Bărbați: esențial 2-5%, atleti 6-13%, fitness 14-17%, acceptabil 18-24%, obezitate >25%. Femei: esențial 10-13%, atlete 14-20%, fitness 21-24%, acceptabil 25-31%, obezitate >32%.",
+     note:"Valorile variază cu vârsta — la vârstnici limite superioare mai permisive",
+     svg:null,res:{type:"ok",text:"✅ Bărbați: normo 14-17% fitness · Femei: normo 21-24% fitness"}}
+  ]}]
+};
+
+const state={cur:[0,0,0]};
+function render(t){
+  const d=DATA[t];if(!d||!d[0])return;
+  const s=d[0].steps,i=state.cur[t];
+  document.getElementById('pipe'+t).innerHTML='<div class="pipeline">'+s.map((st,j)=>{
+    const c=j<i?'done':j===i?'active':'';
+    return `<div class="step-dot ${c}" onclick="goTo(${t},${j})"><div class="circle">${d[0].icon}</div><div class="lbl">${d[0].lbl}</div></div>${j<s.length-1?`<div class="step-conn ${j<i?'done':''}"></div>`:''}`
+  }).join('')+'</div>';
+  const st=s[i];
+  document.getElementById('sc'+t).className='stage-card'+(i===s.length-1?' hl':'');
+  document.getElementById('sv'+t).innerHTML=(st.svg||`<svg width="240" height="180" viewBox="0 0 240 180"><text x="120" y="100" text-anchor="middle" font-size="60" opacity=".3">${d[0].icon}</text></svg>`)+'<div class="vis-lbl">'+d[0].lbl+'</div>';
+  let h=`<div class="badge">${st.badge}</div><h2>${st.title}</h2><p>${st.text}</p>`;
+  if(st.note)h+=`<div class="note">📌 ${st.note}</div>`;
+  if(st.res)h+=`<div class="result-box rb-${st.res.type==='ok'?'ok':st.res.type==='warn'?'warn':'bad'}">${st.res.text}</div>`;
+  document.getElementById('si'+t).innerHTML=h;
+  document.getElementById('ct'+t).textContent=(i+1)+' / '+s.length;
+  document.getElementById('b'+t+'p').disabled=i===0;
+  document.getElementById('b'+t+'n').disabled=i===s.length-1;
+}
+function next(t){if(state.cur[t]<DATA[t][0].steps.length-1){state.cur[t]++;render(t);}}
+function prev(t){if(state.cur[t]>0){state.cur[t]--;render(t);}}
+function reset(t){state.cur[t]=0;render(t);}
+function goTo(t,i){state.cur[t]=i;render(t);}
+function show(i){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('nav button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  if(i<3&&!document.getElementById('pipe'+i).innerHTML)render(i);
+}
+[0,1,2].forEach(render);
+</script>
+</body>
+</html>
