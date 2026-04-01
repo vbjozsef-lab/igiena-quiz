@@ -4196,8 +4196,10 @@ function StudentLogin({session, onLogin}) {
           value={name} onChange={e=>{setName(e.target.value);setErr("");}}
           onKeyDown={e=>e.key==="Enter"&&go()}/>
         <label style={S.label}>Grupa</label>
-        <input style={{...S.input,marginBottom:12}} placeholder="ex. 214"
-          value={group} onChange={e=>{setGroup(e.target.value);setErr("");}}/>
+        <select style={{...S.input,marginBottom:12}} value={group} onChange={e=>{setGroup(e.target.value);setErr("");}}>
+          <option value="">— Selectați grupa —</option>
+          {Array.from({length:40},(_,i)=><option key={i+1} value={String(i+1)}>{i+1}</option>)}
+        </select>
         <label style={S.label}>Specializare</label>
         <select style={{...S.input,marginBottom:16}} value={spec} onChange={e=>{setSpec(e.target.value);setErr("");}}>
           <option value="">— Selectați specializarea —</option>
