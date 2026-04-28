@@ -1557,73 +1557,120 @@ const FISE_DATA = {
   ],
 
   lp2a: [
-    { id:"g1", emoji:"🚬", title:"Medic de familie — intervenție antifumat", color:"#7c3aed",
-      caz:[{l:"Pacient",v:"Bărbat 47 ani, fumător activ 25 ani"},{l:"Consum",v:"25 țigarete/zi"},{l:"Fagerstrom",v:"Test aplicat — răspunsuri: Q1=după 5 min (3p), Q2=da (1p), Q3=prima (1p), Q4=25 țig (2p), Q5=da (1p), Q6=da (1p)"},{l:"CO expirat",v:"28 ppm"},{l:"COHb%",v:"5,3%"},{l:"Comorbidități",v:"HTA gr.II, BPOC stadiu I (VEMS 72%)"}],
+    { id:"g1", emoji:"🚬", title:"BPOC la fumătoare — Fagerström 8/10, CO 34 ppm", color:"#7c3aed",
+      caz:[
+        {l:"Pacientă",v:"Femeie, 58 ani, fumătoare 40 ani · 30 țig/zi (60 pack-years)"},
+        {l:"CO expirat",v:"34 ppm → Roșu ×4 (Fumător !!!)"},
+        {l:"Fagerström",v:"8/10 — dependență foarte puternică"},
+        {l:"Spirometrie",v:"VEMS/CVF = 0,58 → BPOC stadiu II (GOLD)"},
+        {l:"HRCT",v:"Hiperinflație, emfizem centrolobular bilateral"},
+        {l:"COHb sânge",v:"5,2% (normal nefumători: <1,5%)"},
+        {l:"Simptome",v:"Dispnee la efort, tuse productivă cronică"},
+        {l:"Tratament inițiat",v:"Varenicline 1 mg × 2/zi + consiliere 8 săptămâni"},
+      ],
       qs:[
-        {q:"Calculați scorul Fagerstrom și interpretați dependența.",h:"Scor: 3+1+1+2+1+1 = 9 puncte = dependență FOARTE PUTERNICĂ. Necesită farmacoterapie obligatorie + consiliere intensivă."},
-        {q:"Interpretați CO 28 ppm și COHb 5,3%. Ce led colorat arată Smokerlyzer-ul?",h:"28 ppm = LED roșu ×3 = Fumător !!. COHb 5,3% = afectare transport O2. Normal <1,74%. Explicați pacientului vizual impactul."},
-        {q:"Ce tratament farmacologic recomandați? Justificați alegerea față de celelalte opțiuni.",h:"Varenicline (Champix) prima linie — cel mai eficient (RR 2,24). Atenție: monitorizare psihiatrică. Sau NRT combinate (plasture + gumă). Bupropion alternativă dacă Varenicline contraindicat."},
-        {q:"HTA și BPOC schimbă recomandarea terapeutică? Explicați.",h:"HTA: NRT permis cu precauție (monitorizare TA). Varenicline: sigur cardiovascular (studiu EAGLES). BPOC: renunțarea la fumat = singura intervenție care încetinește progresia!"},
-        {q:"Aplicați VBA (Very Brief Advice). Scrieți exact ce spuneți pacientului în 30 de secunde.",h:"ASK: deja știm că fumează. ADVISE: 'Renunțarea la fumat este cel mai important lucru pentru sănătatea dvs. acum.' ACT: 'Vă refer la centrul Stop Fumat / inițiez tratament astăzi.'"},
-        {q:"Ce monitorizare planificați la 1, 3 și 6 luni? Ce indici urmăriți?",h:"1 lună: CO expirat, TA, aderență medicație. 3 luni: funcție pulmonară (VEMS), simptome. 6 luni: abstinență confirmată CO<7ppm, calitate viață, greutate."},
-      ], conc:["Scorul Fagerstrom calculat","Tratamentul ales și justificarea","Obiectivul la 6 luni"] },
+        {q:"Interpretați valoarea CO expirat (34 ppm). Ce cod culori indică monitorul Micro CO și ce semnifică COHb 5,2%?",h:"34 ppm = Roșu ×4 (Fumător !!!, ≥26 ppm). COHb 5,2%: fumătorii au COHb 4-5% (vs <1,5% nefumători). CO formează COHb → hipoxie tisulară. CO expirat = biomarker obiectiv motivațional, corelat cu fumatul activ."},
+        {q:"Calculați pack-years și interpretați riscul. Ce relație există între pack-years și riscul de BPOC/cancer?",h:"Pack-years = (nr. țig/zi / 20) × ani fumat = 30/20 × 40 = 60 pack-years. Risc BPOC sever și cancer bronhopulmonar extrem de crescut la >20 pack-years. 60 pack-years = risc cumulativ major. 85% din cancerele bronhopulmonare apar la fumători."},
+        {q:"Scorul Fagerström 8/10 — ce tratament farmacologic este indicat și de ce Varenicline este prima alegere?",h:"8/10 = dependență foarte puternică → indicație tratament farmacologic obligatoriu. Varenicline (agonist parțial α4β2): eficacitate 2-3× față de placebo, cea mai eficientă monoterapie. Debut cu 1-2 săpt. înainte de data renunțării. Alternativă: Bupropion sau TSN combinat."},
+        {q:"Descrieți tehnica corectă de determinare a CO din aerul expirat (Micro CO). Ce greșeli invalidează măsurarea?",h:"Inspirație profundă → 2× click buton → reținere respirație 15 secunde (bip la ultimele 3s) → expirație lentă și completă în piesă bucală. Greșeli: respirație incompletă, nerespectarea celor 15 secunde, expirație parțială → subevaluare CO."},
+        {q:"Ce este VBA (Very Brief Advice) și cum se aplică în 30 de secunde? Cine poate aplica VBA?",h:"VBA = Ask → Advise → Act. ASK: Fumați? ADVISE: Renunțarea la fumat este cel mai bun lucru pentru sănătatea dvs. ACT: referire consiliere/medicație. Eficient în 30 secunde. Orice cadru medical: medic, dentist, asistentă, farmacist. Crește rata renunțării."},
+        {q:"La urmărire (4, 12, 26 săpt.) CO expirat = 6 ppm (verde). Ce semnifică și cum folosiți acest rezultat terapeutic?",h:"6 ppm = Verde = Nefumător confirmat (0-6 ppm). Confirmă abstinența. Se folosește ca feedback motivațional obiectiv: 'Vedeți — plămânii dvs. se curăță!' Monitorizare CO la fiecare consultație de tabacologie. Recompensă concretă a efortului pacientei."},
+      ], conc:["Scorul Fagerström și medicamentul indicat","CO expirat: valoare, cod culori și semnificație","Definiția și pașii VBA"] },
 
-    { id:"g2", emoji:"🏭", title:"Fumat pasiv la locul de muncă — restaurant", color:"#dc2626",
-      caz:[{l:"Locație",v:"Restaurant, zona pentru fumători"},{l:"Personal expus",v:"8 ospătari, 6h/zi expunere"},{l:"PM2.5 zona fumători",v:"185 µg/m³"},{l:"PM2.5 zona nefumători",v:"38 µg/m³"},{l:"CO ospătar",v:"12 ppm după tură (norma nefumători: <6 ppm)"},{l:"Lege",v:"Legea 349/2015: spații închise 100% fum-free"}],
+    { id:"g2", emoji:"🦷", title:"Tânăr fumător — intervenție stomatologică, VBA în cabinet", color:"#0ea5e9",
+      caz:[
+        {l:"Pacient",v:"Bărbat, 22 ani, fumător 4 ani · 15 țig/zi (3 pack-years)"},
+        {l:"Motiv vizită",v:"Tartru, gingivită — cabinet stomatologic"},
+        {l:"CO expirat",v:"14 ppm → Roșu ×1 (Fumător confirmat)"},
+        {l:"Fagerström",v:"3/10 — dependență scăzută"},
+        {l:"Motivație",v:"Prezentă — dorește renunțare"},
+        {l:"Plan terapeutic",v:"TSN gumă nicotinică 2 mg + suport online (stopfumat.eu)"},
+        {l:"Rezultat la 3 luni",v:"CO expirat 2 ppm (verde) → nefumător confirmat"},
+      ],
       qs:[
-        {q:"Identificați neconformitățile legale. Angajatorul poate fi sancționat?",h:"Legea 349/2015 interzice fumatul în spații închise publice inclusiv restaurante. Zona 'fumători interior' este ilegală din 2016. Amendă 5.000-10.000 lei. DA, sancționat."},
-        {q:"Comparați PM2.5 din zona fumători cu norma OMS zilnică (15 µg/m³).",h:"185/15 = 12,3× depășire normă OMS! Zona nefumători: 38/15 = 2,5× tot depășit. Demonstrează că separarea fizică NU protejează."},
-        {q:"Interpretați CO 12 ppm al ospătarului. Ce înseamnă pentru sănătatea lui?",h:"12 ppm = LED roșu ×1 = Fumător activ (deși este nefumător!). Expunere cronică → risc cardiovascular, cancer pulmonar +20-30% (IARC Gr.1 fumat pasiv)."},
-        {q:"Ce drepturi legale au angajații și ce acțiuni pot întreprinde?",h:"Drept la muncă în mediu sigur (Legea 319/2006). Pot sesiza ITM, DSP. Angajatorul răspunde civil și penal. Pot refuza lucrul în zonă periculoasă fără sancțiuni."},
-        {q:"Ce măsuri tehnice ar putea reduce expunerea dacă zona fumători ar fi permisă (outdoor)?",h:"Mutare zonă fumători outdoor, minim 5m de uși/ferestre. Ventilare separată. Barieră fizică etanșă. (Dar legal în RO este interzis indoor oricum.)"},
-        {q:"Redactați procesul verbal de constatare și sancționare.",h:"Identificare: data, ora, locație, proprietar. Constatare: zonă fumători interior, PM2.5 185 µg/m³, CO personal crescut. Temei legal: art. 3 Legea 349/2015. Sancțiune: amendă 5.000 lei + obligație conformare imediată."},
-      ], conc:["Neconformitatea legală principală","Riscul demonstrat prin date","Sancțiunea aplicabilă"] },
+        {q:"De ce stomatologul poate și trebuie să aplice VBA? Ce efect al fumatului este relevant în contextul vizitei dentare?",h:"Orice cadru medical poate aplica VBA — nu necesită specialitate tabacologie. Context relevant: fumatul cauzează boală parodontală, cancer oral, implante dentare cu rată succes redusă. Vizita dentară = oportunitate de intervenție antifumat. Rata succes crește cu 70% față de tentativa singură."},
+        {q:"Fagerström 3/10 — ce medicament este indicat și de ce nu se prescrie Varenicline pentru acest pacient?",h:"3/10 = dependență scăzută → TSN (substituție nicotinică): gumă 2mg sau plasture. Varenicline: indicat la Fagerström ≥5 (dependență medie-puternică), necesită monitorizare efecte neuropsihice. Bupropion: CI la tineri (<18 ani, utilizat cu precauție). TSN = first-line la dependență scăzută."},
+        {q:"Interpretați CO 14 ppm. Cum folosiți monitorul CO ca instrument motivațional în consultație?",h:"14 ppm = Roșu ×1 = Fumător confirmat (11-15 ppm). Afișați pacientului: 'Vedeți cifra? Acesta este monoxidul de carbon din sângele dvs.' Obiectivizează fumatul → motivație concretă. La 3 luni: 2 ppm (verde) = confirmare abstinență + feedback pozitiv puternic."},
+        {q:"Ce substanțe toxice din fumul de țigară sunt relevante pentru sănătatea orală și parodontală?",h:"Nicotina: vasoconstricție → ischemie gingivală → mascare inflamație. Gudron/HAP: depuneri pe dinți, cancerigenitate orală. CO: hipoxie tisulară → vindecare lentă post-extracție. Oxizi de azot: iritație mucoasă. Cancerul oral apare de 6× mai frecvent la fumători față de nefumători."},
+        {q:"Descrieți tehnica VBA completă (Ask-Advise-Act) aplicată de stomatolog în această consultație.",h:"ASK: 'Fumați?' → confirmă fumatul. ADVISE: 'Fumatul cauzează boala parodontală și cancer oral — renunțarea e cel mai bun lucru pentru sănătatea dvs.' ACT: CO expirat afișat + TSN gumă 2mg + referire www.stopfumat.eu + plan 8 săptămâni. Durata: 30 secunde integrate în consultație."},
+        {q:"Ce reprezintă pack-years și care este riscul la 3 pack-years comparativ cu 60 pack-years?",h:"Pack-years = (nr. țig/zi / 20) × ani. 3 pack-years (15 țig × 4 ani): risc relativ scăzut, leziuni reversibile, prognostic excelent dacă renunță acum. 60 pack-years: risc major BPOC, cancer. La 22 ani cu 3 pack-years → renunțarea acum = recuperare aproape completă a funcției pulmonare."},
+      ], conc:["De ce orice cadru medical poate aplica VBA","Fagerström 3/10 → medicamentul indicat","CO expirat ca instrument motivațional"] },
 
-    { id:"g3", emoji:"🧫", title:"NTG crescut în cabinet stomatologic", color:"#0891b2",
-      caz:[{l:"Locație",v:"Cabinet stomatologic, 3 fotolii"},{l:"NTG 37°C/m³",v:"1.240 germeni/m³ (norma: <600)"},{l:"Streptococi",v:"68/m³ (norma: max 16)"},{l:"Stafilococi",v:"nedetectați"},{l:"Suprafețe",v:"NTG 8 UFC/cm² (norma: max 5)"},{l:"Protocol dezinfecție",v:"alcool 70% între pacienți"},{l:"Aerosoli",v:"turbina generează aerosoli permanent"}],
+    { id:"g3", emoji:"🏥", title:"Infecție nosocomială MRSA — ATI, NTG 2400/m³", color:"#dc2626",
+      caz:[
+        {l:"Locație",v:"Salon ATI, Spital Județean, iarnă (februarie-martie)"},
+        {l:"Situație",v:"3 pacienți cu MRSA în 2 săptămâni → suspiciune focar nosocomial"},
+        {l:"NTG aer (Koch)",v:"2.400 germeni/m³ (norma ATI: ≤500/m³)"},
+        {l:"Stafilococi pe suprafețe",v:"Detectați pe 4 suprafețe (norma: 0)"},
+        {l:"NTG mâini personal",v:"180/mână (norma chirurgi: ≤15/mână)"},
+        {l:"Complianță igiena mâinilor",v:"34% (audit intern)"},
+        {l:"Genotipare MRSA",v:"Aceeași clonă la cei 3 pacienți → sursă comună"},
+      ],
       qs:[
-        {q:"Interpretați toate datele și identificați neconformitățile.",h:"NTG 1240 vs 600 = 2×. Streptococi 68 vs 16 = 4,25×. Suprafețe 8 vs 5 UFC/cm². Trei indicatori depășiți simultan = risc infecțios real."},
-        {q:"Care este sursa probabilă a streptococilor crescuți? Explicați mecanismul.",h:"Turbina stomatologică generează aerosoli cu picături Flügge din cavitatea orală → streptococi viridans și hemolitici aeropurtați → sedimentare pe suprafețe și inhalare personal."},
-        {q:"Alcoolul 70% este suficient pentru dezinfecția suprafețelor stomatologice? Argumentați.",h:"Insuficient pentru suprafețe poroase și instrumentar critic. Necesară dezinfecție niveluri: suprafețe = cloramină 1% sau glutaraldehidă. Instrumentar = autoclavare 134°C. Alcool 70% doar pe suprafețe mici, neted."},
-        {q:"Ce echipament de protecție respiratorie este obligatoriu pentru medicul stomatolog?",h:"Mască FFP2 (aerosoli sub 5µm din turbină). Vizieră sau ochelari de protecție. Nu mască chirurgicală (nu protejează aerosoli fini). Standard EN 149:2001."},
-        {q:"Ce modificări ale protocolului de dezinfecție impuneți?",h:"1. Pauză 15 min între pacienți (sedimentare aerosoli). 2. Purificator aer HEPA. 3. Cloramină 1% pentru suprafețe. 4. Autoclavare instrumentar. 5. Aparat autoclave verificat anual."},
-        {q:"Poate funcționa cabinetul? Ce termene impuneți pentru conformare?",h:"Da, poate funcționa cu restricții: max 2 fotolii active, pauze extinse. Termen remediere 14 zile. Reevaluare bacteriologică completă înainte ridicare restricții."},
-      ], conc:["Indicatorul cel mai îngrijorător","Sursa contaminării identificată","Condiția de funcționare normală"] },
+        {q:"Calculați de câte ori este depășit NTG în aer față de normă. Ce metodă s-a folosit și descrieți principiul.",h:"2.400/500 = 4,8× depășire norma ATI. Metoda Koch (sedimentare): 2 cutii Petri Ø10cm expuse 10 min la h=0,8-1m → incubare 48h la 37°C → N = n×100 germeni/m³. Formula Omelianski: în 5 min se depun germenii din 10L aer pe 100cm²."},
+        {q:"NTG mâini 180/mână față de norma <15. Ce semnifică și ce protocol de igienă a mâinilor implementați?",h:"180/15 = 12× depășire norma chirurgicală. Semnifică transmitere manuportată → vector principal infecție nosocomială. Protocol: săpun antiseptic + gel alcool 70% înainte ȘI după fiecare contact cu pacient. Audit periodic complianță (țintă: >80%). Spălare 40-60 sec apă+săpun sau 20-30 sec gel alcool."},
+        {q:"Genotiparea MRSA arată aceeași clonă la 3 pacienți. Ce implică epidemiologic și ce investigații urmează?",h:"Aceeași clonă = sursă comună confirmată → focar nosocomial. Investigații: screening bacteriologic personal (nazofaring + mâini) → 2 asistente identificate ca purtătoare MRSA. Izolare purtători + tratament decolonizare (mupirocin nazal). Tipizare MLST: CC8/CC22 = circulație internațională."},
+        {q:"Descrieți metoda tamponului pentru controlul bacteriologic al suprafețelor. Ce suprafețe prioritizați în ATI?",h:"Tampon steril șterge suprafață CUNOSCUTĂ (10cm², mișcări în X) → 10mL ser fiziologic → diluții → agar → 24h 37°C → calcul: germeni/cm² = colonii × diluție × 10mL/suprafață. Suprafețe prioritare ATI: bare pat, clanțe uși, tastaturi monitorizare, tăvițe proceduri, stetoscop."},
+        {q:"Ce norme sanitare se aplică pentru NTG aer în diferite spații medicale? De ce normele sunt mai stricte la bloc operator față de salon?",h:"Locuințe vară: ≤1500/m³. Saloane spital: ≤600/m³. ATI/săli naștere: ≤500/m³. Săli operații: ≤300/m³. Săli aseptice farma: ≤100/m³. Mai strict la bloc operator: orice contaminare aeriană poate ajunge direct în plagă chirurgicală → infecție de sit chirurgical → sepsis. Stafilococi = 0 obligatoriu."},
+        {q:"Studiul românesc (Cocianu et al. 2026) arată creșterea MDR de la 0% la 36,2% într-un an. Ce lecție practică oferă pentru controlul infecțiilor?",h:"Fără monitorizare bacteriologică riguroasă, MDR poate exploda în 6 luni. Lecții: NTG + tampon = instrumente de bază ale controlului. Igiena mâinilor = intervenția nr.1 (dovadă: după protocol → NTG 310/m³, 0 cazuri noi în 6 săpt.). Audit complianță obligatoriu. Dezinfecție UV-C 254nm + clor 0,1%."},
+      ], conc:["Depășirea NTG calculată și metoda Koch (formula)","Sursă infecției (genotipare) și intervențiile aplicate","Normele sanitare NTG pentru diferite spații medicale"] },
 
-    { id:"g4", emoji:"🏥", title:"Infecție nosocomială — investigație focar", color:"#b91c1c",
-      caz:[{l:"Locație",v:"Secție chirurgie, spital regional"},{l:"Situație",v:"5 pacienți cu infecție plagă postoperatorie în 10 zile"},{l:"Agent",v:"Staphylococcus aureus meticilino-rezistent (MRSA)"},{l:"NTG aer sală operații",v:"420/m³ (norma <300)"},{l:"NTG mâini chirurgi",v:"32 UFC/mână (norma <15)"},{l:"HEPA filtru",v:"neverificat de 18 luni"}],
+    { id:"g4", emoji:"🧫", title:"Evaluare bacteriologică sală de operații — audit pre-acreditare", color:"#16a34a",
+      caz:[
+        {l:"Context",v:"Audit bacteriologic pre-acreditare, bloc operator, spital regional"},
+        {l:"NTG aer (Koch)",v:"420 germeni/m³"},
+        {l:"Stafilococi aer",v:"Detectați (1,2% din NTG)"},
+        {l:"Coliformi suprafețe",v:"1,8/cm² (masă operatorie)"},
+        {l:"NTG mâini chirurgi",v:"28/mână"},
+        {l:"Ventilație",v:"4 volume/h (recomandare: min 6 volume/h)"},
+        {l:"Filtre HEPA",v:"Montate, dar neînlocuite de 18 luni (standard: 12 luni)"},
+      ],
       qs:[
-        {q:"Confirmați sau infirmați un focar nosocomial. Ce criterii folosiți?",h:"FOCAR CONFIRMAT: ≥2 cazuri cu același agent + legătură epidemiologică (aceeași sală, același chirurg, interval scurt). MRSA = agent de alarmă OMS. Anunț obligatoriu DSP."},
-        {q:"Trasați lanțul epidemiologic al transmiterii MRSA în acest context.",h:"Sursă: personal purtător MRSA (nazofaringe/mâini) sau pacient colonizat. Cale: mâini nespălate, aerosoli, instrumentar. Poartă de intrare: plagă chirurgicală. Gazdă susceptibilă: pacient postoperator imunosupresat."},
-        {q:"NTG mâini 32 UFC vs normă 15. Ce spune acest lucru despre tehnica de spălare?",h:"Tehnică insuficientă sau nesistematică. Posibil: timp scurt, omitere zone (degete, unghii, interdigital). Sau recontaminare după spălare (atingere robinet cu mâna). Necesară reauditare tehnică OMS 6 pași."},
-        {q:"HEPA filtru neverificat 18 luni — ce risc specific implică pentru sala de operații?",h:"Filtru înfundat/deteriorat → pierdere eficiență filtrare → germeni aeropurtați inclusiv MRSA în sala sterilă. Laminar flow compromis → depunere pe câmp operator."},
-        {q:"Ce investigații microbiologice ordonați pentru identificarea sursei?",h:"Tampoane nazale TOȚI chirurgii + anestezisti + instrumentiste. Culturi din toate plăgile. Tipizare moleculară PFGE/WGS pentru confirmare legătură clonală. Tampoane suprafețe + aer."},
-        {q:"Ce măsuri de control al focarului impuneți în primele 24 ore?",h:"1. Carantinare sală operații. 2. Izolare contact 5 pacienți MRSA. 3. Screening personal. 4. Dezinfecție terminală. 5. Decontaminare portători (mupirocin nazal). 6. Verificare și înlocuire HEPA."},
-      ], conc:["Confirmarea focarului (da/nu + criterii)","Sursa probabilă identificată","Prioritatea #1 în primele 24 ore"] },
+        {q:"Analizați fiecare parametru față de norma sanitară și stabiliți dacă sala îndeplinește condițiile de acreditare.",h:"NTG 420 < 500... NU! Norma sală operații: ≤300/m³. 420 > 300 → NON-CONFORM. Stafilococi: norma = 0 → orice detecție = NON-CONFORM. Coliformi suprafețe: masa operatorie max 2/cm² → 1,8 < 2 = conform. NTG mâini chirurgi: max 15/mână → 28 > 15 = NON-CONFORM. Ventilație 4 < 6 volume/h = NON-CONFORM."},
+        {q:"De ce stafilococii în aerul sălii de operații sunt inacceptabili chiar și în cantități mici?",h:"Stafilococul aureus (inclusiv MRSA): principal agent al infecțiilor de sit chirurgical și endocarditei pe proteză. Orice număr în sală de operații = risc direct contaminare câmp chirurgical → infecție profundă. Norma internațională și MS România: STAF = 0 în sală de operații. Fără toleranță."},
+        {q:"Descrieți metoda Koch pas cu pas pentru determinarea NTG în sala de operații.",h:"1. 2 cutii Petri agar nutritiv pregătite la 37°C. 2. Deschise la h=0,8-1m, 10 minute, în puncte caracteristice (centrul sălii + colțuri). 3. Capac imediat + etichetare (data, ora, loc). 4. Incubare 48h la 37°C ±1°C. 5. Numărare colonii cu lupă/contor. 6. N=n×100 germeni/m³. Dezavantaj Koch: determină doar bacteriile sedimentabile."},
+        {q:"Filtrele HEPA neînlocuite de 18 luni — ce impact au asupra calității aerului și ce decizie luați?",h:"HEPA (High-Efficiency Particulate Air): filtrare ≥99,97% particule >0,3µm. La 18 luni: eficiența scade, posibil colmatare → bypass particule → NTG crescut. Decizie: înlocuire imediată filtre HEPA (cost vs risc sepsis chirurgical). Verificare presiune diferențială. Sala OPRITĂ până la conformare."},
+        {q:"Ce este metoda aspirației (Krotov) și în ce privință este superioară față de Koch?",h:"Krotov: aer proiectat direct pe suprafața gelozei rotative → captare inclusiv bacterii nesedimentabile. Formula: N=n×1000/V(dm³). Superioritate vs Koch: determină DENSITATEA REALĂ (inclusiv particule fine care nu sedimentează). Koch: doar bacteriile care sedimentează gravitațional în 10 min. Aspirare: mai reprezentativă pentru aer real."},
+        {q:"Ce plan de remediere propuneți pentru a aduce sala la conformitate înainte de acreditare?",h:"Imediat: închidere sală + dezinfecție completă UV-C 254nm (1h) + clor 0,1% suprafețe. 24-48h: înlocuire filtre HEPA + verificare sistem ventilație → ≥6 volume/h. Personal: re-training spălare chirurgicală mâini (Brushless sau antiseptic 3-5 min). Recontrol bacteriologic după 72h → dacă conform: redeschidere. Raport scris DSP."},
+      ], conc:["Parametrii non-conformi identificați","De ce stafilococi = 0 obligatoriu în sală de operații","Diferența Koch vs aspirație (Krotov)"] },
 
-    { id:"g5", emoji:"🌬️", title:"Sindromul Sick Building — clădire de birouri", color:"#0ea5e9",
-      caz:[{l:"Locație",v:"Clădire birouri, 6 etaje, 280 angajați"},{l:"Simptome raportate",v:"65% angajați: cefalee, oboseală, ochi uscați, iritație nazală — simptome dispar weekend"},{l:"CO2",v:"2.400 ppm (norma: <1.000)"},{l:"Umiditate relativă",v:"22% (recomandat: 40-60%)"},{l:"COV total (TVOC)",v:"680 µg/m³ (norma: <300)"},{l:"Ventilare",v:"HVAC cu recirculare 90%, aport aer proaspăt minim"}],
+    { id:"g5", emoji:"📊", title:"Fumat în România — epidemiologie și costuri (date 2024)", color:"#f59e0b",
+      caz:[
+        {l:"Prevalența fumat adulți România",v:"26% (36,2% bărbați · 16,6% femei) — WHO 2024"},
+        {l:"Fumători activi",v:"~4,1 milioane (WHO estimate, aged 15+)"},
+        {l:"Decese atribuite fumatului",v:"~29.500/an (8,82% din totalul deceselor)"},
+        {l:"Cost economic",v:"~24,4 miliarde RON/an (direct + indirect)"},
+        {l:"Vârsta medie debut",v:"15,3 ani"},
+        {l:"Rata renunțare pe cont propriu",v:"3-5% succes"},
+        {l:"Media UE fumat",v:"~18% (Eurobarometer 2024) — România: 26%"},
+      ],
       qs:[
-        {q:"Stabiliți diagnosticul de Sick Building Syndrome. Ce criterii sunt îndeplinite?",h:"SBS = simptome >20% angajați + ameliorare la plecare din clădire + fără altă cauză identificată. Criterii îndeplinite: 65% simptomatici, ameliorare weekend, CO2/COV crescute."},
-        {q:"Calculați depășirile pentru CO2, UR și TVOC față de normele recomandate.",h:"CO2: 2400/1000 = 2,4×. UR: 22% vs 40-60% = sub limita inferioară. TVOC: 680/300 = 2,27×. Trei parametri simultan = certitudine SBS."},
-        {q:"De ce UR de 22% contribuie la simptome? Ce organe sunt afectate?",h:"Aer uscat → deshidratare mucoase nazale, oculare → iritație, creștere susceptibilitate infecții respiratorii. Mucoasa nazală = prima linie apărare împotriva agenților inhalați."},
-        {q:"Recircularea 90% a aerului — ce risc specific generează în contextul COVID/influenza?",h:"Recirculare mare = redistribuire aerosoli infecțioși în întreaga clădire. Super-spreading posibil. Norma post-COVID: minim 10 ACH cu aer proaspăt sau filtrare HEPA H13 în circuit recirculat."},
-        {q:"Ce modificări urgente ale sistemului HVAC recomandați?",h:"Creștere aport aer proaspăt la 30-40% (reducere recirculare). Adăugare umidificatoare (țintă UR 45%). Filtrare HEPA H13. Curățare canale HVAC (COV din depozite). Monitorizare CO2 continuă cu alarme."},
-        {q:"Angajatorul are obligații legale? Ce reglementări invocați?",h:"Da: HG 1091/2006 (locuri de muncă). Legea 319/2006 SSM. Normativ I5 HVAC. Directiva 89/654/CEE. Risc: răspundere pentru cheltuieli medicale angajați afectați."},
-      ], conc:["Diagnosticul stabilit și criteriile","Parametrul cel mai deviant","Modificarea HVAC prioritară"] },
+        {q:"România are 26% prevalență fumători față de media UE de 18%. Ce factori explică această diferență și ce intervenții la nivel național sunt necesare?",h:"Factori: debut precoce (15,3 ani), accesibilitate prețuri (țigări mai ieftine vs UE Vest), publicitate insuficient restricționată, presiune socio-culturală, acces limitat la programe Stop Fumat. Intervenții: taxe tutun crescute, centre Stop Fumat accesibile, VBA obligatoriu în consultații, restricții publicitate digitală."},
+        {q:"Rata de succes 3-5% la renunțarea pe cont propriu. De ce este atât de scăzută și cum o cresc intervențiile profesionale?",h:"3-5% = dependența nicotinică este o tulburare medicală, nu o lipsă de voință. Nicotina activează circuitul dopaminergic de recompensă → sevraj sever. Intervenții: VBA → +70%. TSN → +50-70% vs placebo. Varenicline → +200-300%. Combinat (TSN + Varenicline) → eficacitate maximă. Consiliere comportamentală adaugă 25%."},
+        {q:"Calculați câte decese zilnice sunt atribuite fumatului în România. Ce sursă produce aceste date și cum se estimează?",h:"29.500 decese/an ÷ 365 = ~81 decese/zi (1 deces la ~18 minute). Surse: WHO Global Tobacco Report 2024, Tobacco Atlas. Metodă estimare: Population Attributable Fraction (PAF) = riscul relativ al fumătorilor × prevalența fumatului în deces prin cauze specifice (cancer, BCV, BPOC)."},
+        {q:"Vârsta medie de debut fumat este 15,3 ani. Ce intervenții de prevenție primară sunt eficiente la adolescenți?",h:"Legislative: interzicerea vânzării minorilor, taxe tutun, interdicție publicitate. Educaționale: programe school-based (Life Skills Training), educație peer-to-peer, conștientizare influenței anturajului. Politici: spații fără fum, campanii media. VBA adaptat la adolescenți în cabinet pediatric/medic familie. Eficiență maximă: intervenție înainte de debut."},
+        {q:"Costul economic 24,4 miliarde RON/an. Ce include și de ce argumentul economic susține investiția în programe Stop Fumat?",h:"Costuri directe: spitalizări (BPOC, cancer, BCV), medicație, îngrijire paliativă. Costuri indirecte: pierdere productivitate (absenteism, invaliditate prematură, deces prematur). ROI programe Stop Fumat: 1 leu investit → 3-7 lei economisiți în costuri medicale. Programele Stop Fumat sunt cele mai cost-eficiente intervenții în sănătate publică."},
+        {q:"Compoziția fumului de țigară include 4000+ substanțe. Care sunt principalele grupe toxice și mecanismul principal al fiecăreia?",h:"Nicotina: stimulant + vasoconstrictor → dependență (receptor α4β2). CO: COHb → hipoxie tisulară. Gudron/HAP (benzpiren, nitrozamine): cancerigeni → mutații ADN. NOx: distrug alveolele prin acid azotic. Metale grele (Pb, Cd, As): toxicitate cumulativă cardiovascular. HCN: inhibă enzimele mitocondriale. Fumat pasiv = 1h = nicotina dintr-o țigară."},
+      ], conc:["Rata de renunțare pe cont propriu și de ce este scăzută","Cele 3 grupe principale de toxici din fumul de țigară","Diferența România vs UE și o cauză principală"] },
 
-    { id:"g6", emoji:"🧪", title:"Dezinfecția suprafețelor — protocol greșit", color:"#7c3aed",
-      caz:[{l:"Locație",v:"Salon medical, 8 paturi"},{l:"Protocol actual",v:"ștergere cu alcool 70% o dată/zi"},{l:"NTG suprafețe",v:"18 UFC/cm² (norma max 5)"},{l:"Coliformi",v:"detectați pe bara patului (norma: 0)"},{l:"Frecvența curățare",v:"1×/zi dimineața"},{l:"Produsul folosit",v:"alcool izopropilic 70% — expirat de 4 luni"}],
+    { id:"g6", emoji:"🔬", title:"Metoda Koch — determinare practică, sală de curs aglomerată", color:"#6366f1",
+      caz:[
+        {l:"Context",v:"Evaluare bacteriologică, sală de curs, 80 studenți, 2 ore, iarnă"},
+        {l:"Metoda",v:"Koch (sedimentare) — 2 cutii Petri Ø10cm, 10 minute, h=0,9m"},
+        {l:"Colonii numărate",v:"Cutia 1: 38 colonii · Cutia 2: 42 colonii · Total: 80 colonii"},
+        {l:"Streptococi",v:"Identificați pe mediu Frazier: 3 colonii (3,75% din NTG)"},
+        {l:"Stafilococi",v:"Nedetectați"},
+        {l:"Normă aplicabilă",v:"Instituții de copii/școli: ≤1500/m³ (iarnă: ≤4500/m³)"},
+      ],
       qs:[
-        {q:"Identificați toate erorile din protocolul de dezinfecție actual.",h:"1. Frecvență insuficientă (1×/zi vs. după fiecare pacient). 2. Produs expirat = eficacitate redusă. 3. Alcool singur insuficient pentru coliformi. 4. Tehnica ștergere uscată vs. umedă cu timp de contact."},
-        {q:"Coliformi pe bara patului — ce sursa indică și ce risc generează?",h:"Coliformi = contaminare fecală (mâini personal nespălate sau pacienți). Risc: transmitere E. coli, Klebsiella, C. difficile la pacienți imunocompromiși. Risc infecție urinară, digestivă."},
-        {q:"Ce dezinfectant recomandați în locul alcoolului izopropilic? Justificați.",h:"Hipoclorit de sodiu 0,1% (1.000 ppm Cl activ) pentru suprafețe: spectru larg, activ vs. coliformi, C. difficile, SARS-CoV-2. Sau aldehide quaternare (Deconex). Alcool: ineficient pe materie organică."},
-        {q:"Stabiliți frecvența corectă de dezinfecție pentru un salon cu 8 paturi.",h:"Minim: dimineața (curățenie generală) + după fiecare externare (dezinfecție terminală) + după orice contaminare vizibilă. Mânerele ușilor, barele paturilor, telecomenzi: de 3×/zi."},
-        {q:"Ce tehnica corectă de ștergere dezinfectantă trebuie instruiți personalul?",h:"Suprafață umedă → timp contact 1-5 min → NU ștergeți imediat! Mișcări unidirectionale (nu circular — recontaminare). Mănuși de unică folosință. Schimb lavete la fiecare suprafață."},
-        {q:"Ce fișă de supraveghere implementați pentru monitorizarea eficacității dezinfecției?",h:"Registru: data/ora, produs, lot, concentrație, suprafața tratată, responsabil. Verificare bacteriologică lunară. Indicatori colorimetrici pe suprafețe (test ATP bioluminiscență). Audit trimestrial protocol."},
-      ], conc:["Eroarea principală identificată","Produsul dezinfectant recomandat","Frecvența optimă de dezinfecție"] },
+        {q:"Calculați NTG/m³ folosind formula Koch. Aerul este conform normei pentru o sală de curs iarna?",h:"N = n × 100 = 80 × 100 = 8.000 germeni/m³. Norma iarnă instituții: ≤4.500/m³. 8.000 > 4.500 → AER VICIAT, NON-CONFORM. Dacă ar fi vară: norma ≤1.500/m³ → și mai depășit. Concluzie: ventilație complet insuficientă pentru 80 persoane."},
+        {q:"Streptococii reprezintă 3,75% din NTG. Care este norma și ce semnifică prezența lor în aer?",h:"Norma: streptococi max 1% din NTG (norme MS România). 3,75% > 1% → NON-CONFORM. Semnifică: persoane cu infecții respiratorii active sau purtători sănătoși în sală. Risc transmitere aerogenă (faringite, scarlatină). Streptococi = indicator poluare biologică de origine umană."},
+        {q:"Descrieți formula Omelianski și explicați de ce cutia Petri standard Ø10cm este calibrată pentru 10 minute de expunere.",h:"Omelianski: în 5 min se depun germenii din 10L aer pe 100cm². Cutia Petri Ø10cm → suprafață = π×5²=78,5≈80cm². 10 minute expunere = 2×5 min → 2×10L = 20L capturat. Deci N = colonii × 1000L/m³ / 20L × 1 cutie... simplificat: N = n × 100. Formula este dedusă din proporționalitate Omelianski."},
+        {q:"Ce dezavantaj major are metoda Koch față de metoda aspirației? Când este preferată metoda aspirației?",h:"Koch dezavantaj: captează NUMAI bacteriile sedimentabile gravitațional. Bacteriile fine (<1µm), virusurile și sporii rămân în suspensie → nedetectați. Aspirație (Krotov): captează densitatea REALĂ inclusiv particule nesedimentabile → mai reprezentativă. Aspirație preferată: săli de operații, ATI, industria farmaceutică, cercetare, când sunt necesare date exacte."},
+        {q:"Ce măsuri practice recomandați pentru reducerea NTG în sala de curs la valori conforme?",h:"Ventilație: aerisire forțată 10 min la fiecare 50 min de curs (deschide ferestre). Monitorizare: senzor CO₂ <800 ppm = calitate aer bună. Reducere ocupare: max 1 persoană/2m². Instalare filtre HEPA în sistem HVAC. Igienă respiratorie: masca în episoade epidemice. Dezinfecție UV-C noapte dacă echipament disponibil. Verificare conformitate după remediere."},
+        {q:"Pe baza datelor obținute, redactați concluzia raportului de control bacteriologic al aerului.",h:"Concluzie: NTG = 8.000/m³ → depășire normă iarnă de 1,78× (norma: ≤4.500/m³). Streptococi = 3,75% > norma 1%. Stafilococi = absenți (conform). CONCLUZIE: AER VICIAT, NON-CONFORM normelor igienico-sanitare. RECOMANDARE: aerisire forțată periodică, reducere ocupare sală, verificare ventilație mecanică. Control bacteriologic repetat la 30 zile după remediere."},
+      ], conc:["NTG calculat și interpretarea față de normă","Formula Omelianski — principiul metodei Koch","Dezavantajul Koch vs aspirație"] },
   ],
-
   lp2b: [
     { id:"g1", emoji:"💡", title:"Iluminat insuficient în sala de clasă", color:"#f59e0b",
       caz:[{l:"Locație",v:"Clasă gimnaziu, 28 elevi"},{l:"Iluminanță medie",v:"180 lux (norma min: 300 lux)"},{l:"Uniformitate iluminat",v:"0,3 (norma min: 0,7)"},{l:"Ferestre",v:"orientate Nord, parțial obturate de copaci"},{l:"Vârsta elevilor",v:"11-14 ani"},{l:"Simptome raportate",v:"oboseală oculară, cefalee, dificultăți citit la 40% din elevi"}],
@@ -2782,7 +2829,7 @@ function AdminPanel({onBack, teacherName}) {
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
     const header = "Semestru,An,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
-    const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${(()=>{const d=new Date(r.timestamp);const tz=new Date(d.toLocaleString("en-US",{timeZone:"Europe/Bucharest"}));return tz.toLocaleString("ro-RO");})()}"`).join("\n");
+    const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${(()=>{const d=new Date(r.timestamp+3*60*60*1000);const tz=new Date(d.toLocaleString("en-US",{timeZone:"Europe/Bucharest"}));return tz.toLocaleString("ro-RO");})()}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
     a.download=`igiena_rezultate_${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -3113,7 +3160,7 @@ function AdminPanel({onBack, teacherName}) {
                           </td>
                           <td style={{padding:"9px 12px",color:"#64748b",fontFamily:"monospace"}}>{fmt(r.timeUsed)}</td>
                           <td style={{padding:"9px 12px",color:"#475569",fontSize:11}}>
-                            {(()=>{const tz=new Date(d.toLocaleString("en-US",{timeZone:"Europe/Bucharest"}));return tz.toLocaleDateString("ro-RO")+" "+tz.toLocaleTimeString("ro-RO",{hour:"2-digit",minute:"2-digit"});})()}
+                            {d.toLocaleDateString("ro-RO")} {d.toLocaleTimeString("ro-RO",{hour:"2-digit",minute:"2-digit"})}
                           </td>
                         </tr>
                       );
@@ -4882,7 +4929,7 @@ function ResultScreen({studentName, studentGroup, labId, module, entry, answers,
           </div>
           <h2 style={{color:"#0a2a18",fontSize:22,margin:"0 0 4px"}}>{entry.pct}% — {entry.pct>=80?"Excelent! 🎉":entry.pct>=60?"Bun! 👍":"Mai încearcă! 💪"}</h2>
           <p style={{color:"#4a9a6a",fontSize:14,margin:"0 0 4px"}}>{studentName} · {module.title}</p>
-          <p style={{color:"#94a3b8",fontSize:12,margin:0}}>Timp: {entry.timeUsed}s · {(()=>{const n=new Date();const tz=new Date(n.toLocaleString("en-US",{timeZone:"Europe/Bucharest"}));return tz.toLocaleString("ro-RO");})()}</p>
+          <p style={{color:"#94a3b8",fontSize:12,margin:0}}>Timp: {entry.timeUsed}s · {new Date(Date.now()+3*60*60*1000).toLocaleString("ro-RO")}</p>
         </div>
         <div style={{display:"flex",gap:10,marginBottom:20}}>
           <button style={{...S.btnG,flex:1}} onClick={onRestart}>🔄 Reîncepe</button>
