@@ -3200,7 +3200,7 @@ async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEv
         score:totalScore,total:maxScore,pct,time_used:0,
         teacher:session?.teacher||"",semester:session?.semester||"",
         specialization:student?.spec||"",
-        studyYear:student?.studyYear||""
+        studyYear:""
       })
     });
   } catch(e){console.error("save error",e);}
@@ -4366,10 +4366,10 @@ function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFi
         timestamp:Date.now(),
         teacher:sessionTeacher||"", semester:sessionSemester||"",
         specialization:studentSpec||"",
-        studyYear:student?.studyYear||""
+        studyYear:""
       };
-      try { addResult(entry).catch(()=>{}); } catch(e) {}
-      try { onFinish(entry, newAns, qs); } catch(e) { console.error("onFinish error:", e); }
+      addResult(entry).catch(()=>{});
+      onFinish(entry, newAns, qs);
     } else {
       setAns(newAns);
       setCur(cur+1);
