@@ -3200,7 +3200,7 @@ async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEv
         score:totalScore,total:maxScore,pct,time_used:0,
         teacher:session?.teacher||"",semester:session?.semester||"",
         specialization:student?.spec||"",
-        studyYear:""
+        studyYear:student?.studyYear||""
       })
     });
   } catch(e){console.error("save error",e);}
@@ -4325,7 +4325,7 @@ function LP4BModuleSelect({studentName, onSelect, onDemo}) {
 // ════════════════════════════════════════════════════════════
 // QUIZ SCREEN
 // ════════════════════════════════════════════════════════════
-function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFinish, sessionTeacher, sessionSemester}) {
+function QuizScreen({studentName, studentGroup, studentSpec, studentStudyYear, labId, module, onFinish, sessionTeacher, sessionSemester}) {
   const _labQMap = {
     lp1a:LP1A_QUESTIONS, lp1b:LP1B_QUESTIONS,
     lp2a:LP2A_QUESTIONS, lp2b:LP2B_QUESTIONS,
@@ -4366,7 +4366,7 @@ function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFi
         timestamp:Date.now(),
         teacher:sessionTeacher||"", semester:sessionSemester||"",
         specialization:studentSpec||"",
-        studyYear:""
+        studyYear:studentStudyYear||""
       };
       addResult(entry).catch(()=>{});
       onFinish(entry, newAns, qs);
@@ -4550,7 +4550,7 @@ function App() {
   if (screen==="lp4b_modules") return <LP4BModuleSelect studentName={student?.name} onSelect={m=>{setModule(m);setScreen("quiz");}} onDemo={()=>setShowDemo(true)}/>;
   if (showDemo) return <DemoScreen lab={LABS.find(l=>l.id===session?.labId)} onBack={()=>setShowDemo(false)}/>;
   if (screen==="quiz" && module) return (
-    <QuizScreen studentName={student?.name} studentGroup={student?.group} studentSpec={student?.spec||""}
+    <QuizScreen studentName={student?.name} studentGroup={student?.group} studentSpec={student?.spec||""} studentStudyYear={student?.studyYear||""}
       labId={session?.labId} module={module} sessionTeacher={session?.teacher||""} sessionSemester={session?.semester||""}
       onFinish={(e,a,q)=>{setResult(e);setAnswers(a);setQuizQs(q);setScreen("result");}}/>
   );
