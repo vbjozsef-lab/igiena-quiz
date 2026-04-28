@@ -1997,27 +1997,29 @@ async function addSession(session) {
   }
 }
 async function addResult(result) {
-  await sb("results", {
+  try { await sb("results", {
     method: "POST",
     prefer: "return=minimal",
-    body: JSON.stringify({
-      session_id: result.token || null,
-      name: result.name,
-      grp: result.group,
-      lab_id: result.labId,
-      lab_code: result.labCode,
-      module: result.module,
-      module_title: result.moduleTitle,
-      score: result.score,
-      total: result.total,
-      pct: result.pct,
-      time_used: result.timeUsed,
-      teacher: result.teacher || "",
-      semester: result.semester || "",
-      specialization: result.specialization || "",
-      study_year: result.studyYear || ""
-    })
-  });
+    body: JSON.stringify(Object.fromEntries(
+      Object.entries({
+        session_id: result.token || null,
+        name: result.name,
+        grp: result.group,
+        lab_id: result.labId,
+        lab_code: result.labCode,
+        module: result.module,
+        module_title: result.moduleTitle,
+        score: result.score,
+        total: result.total,
+        pct: result.pct,
+        time_used: result.timeUsed,
+        teacher: result.teacher || "",
+        semester: result.semester || "",
+        specialization: result.specialization || "",
+        study_year: result.studyYear || ""
+      }).filter(([,v]) => v !== null && v !== undefined)
+    ))
+  }); } catch(e) { console.warn("addResult:", e); }
 }
 async function getSession(token) {
   const res = await sb(`sessions?id=eq.${token}&select=*`);
@@ -4366,8 +4368,8 @@ function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFi
         specialization:studentSpec||"",
         studyYear:student?.studyYear||""
       };
-      addResult(entry).catch(()=>{});
-      onFinish(entry, newAns, qs);
+      try { addResult(entry).catch(()=>{}); } catch(e) {}
+      try { onFinish(entry, newAns, qs); } catch(e) { console.error("onFinish error:", e); }
     } else {
       setAns(newAns);
       setCur(cur+1);
