@@ -2014,7 +2014,8 @@ async function addResult(result) {
       time_used: result.timeUsed,
       teacher: result.teacher || "",
       semester: result.semester || "",
-      specialization: result.specialization || ""
+      specialization: result.specialization || "",
+      study_year: result.studyYear || ""
     })
   });
 }
@@ -2043,7 +2044,8 @@ async function loadResults() {
     timestamp: new Date(r.created_at).getTime(), timeUsed: r.time_used,
     teacher: r.teacher || "",
     semester: r.semester || "",
-    specialization: r.specialization || ""
+    specialization: r.specialization || "",
+    studyYear: r.study_year || ""
   }));
 }
 
@@ -2375,7 +2377,7 @@ function AdminPanel({onBack, teacherName}) {
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
     const header = "Semestru,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
-    const rows = toExport.map(r=>`"${r.semester||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
+    const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
     a.download=`igiena_rezultate_${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -2663,6 +2665,9 @@ function AdminPanel({onBack, teacherName}) {
                             {r.semester ? <span style={{background:"#fef3c7",color:"#92400e",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700}}>📅 {r.semester}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
                           </td>
                           <td style={{padding:"9px 12px"}}>
+                            {r.studyYear ? <span style={{background:"#dbeafe",color:"#1d4ed8",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600}}>📅 {r.studyYear}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
+                          </td>
+                          <td style={{padding:"9px 12px"}}>
                             {r.specialization ? <span style={{background:"#ede9fe",color:"#5b21b6",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600}}>🎓 {r.specialization}</span> : <span style={{color:"#94a3b8",fontSize:11}}>–</span>}
                           </td>
                           <td style={{padding:"9px 12px"}}>
@@ -2906,7 +2911,7 @@ function FisaGrupScreen({session, student, onBack}) {
               style={{padding:"14px 8px",borderRadius:12,border:"2px solid "+f.color+"44",background:f.color+"18",
                 cursor:"pointer",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
               <span style={{fontSize:26}}>{f.emoji}</span>
-              <span style={{fontSize:12,fontWeight:700,color:f.color}}>Grupa {i+1}</span>
+              <span style={{fontSize:12,fontWeight:700,color:f.color}}>Fișa {i+1}</span>
               <span style={{fontSize:10,color:"#64748b",lineHeight:1.3}}>{f.title.split(" — ")[0]}</span>
             </button>
           ))}
@@ -2923,7 +2928,7 @@ function FisaGrupScreen({session, student, onBack}) {
       <div style={FS.hdr}>
         <span style={{fontSize:22}}>{f.emoji}</span>
         <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:15}}>Grupa {allFise.indexOf(f)+1} — {f.title}</div>
+          <div style={{fontWeight:700,fontSize:15}}>Fișa {allFise.indexOf(f)+1} — {f.title}</div>
           <div style={{fontSize:11,color:"#90b4d8"}}>{student?.name} · Citiți cazul cu atenție</div>
         </div>
         <button onClick={()=>setPhase("select")} style={{padding:"6px 12px",background:"rgba(255,255,255,.15)",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,color:"white",fontSize:12,cursor:"pointer"}}>← Înapoi</button>
@@ -2935,7 +2940,7 @@ function FisaGrupScreen({session, student, onBack}) {
           <div style={{background:f.color,padding:"14px 20px",display:"flex",alignItems:"center",gap:12}}>
             <span style={{fontSize:28}}>{f.emoji}</span>
             <div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,.8)",textTransform:"uppercase",letterSpacing:".08em",fontWeight:700}}>Caz prezentat — Grupa {allFise.indexOf(f)+1}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,.8)",textTransform:"uppercase",letterSpacing:".08em",fontWeight:700}}>Caz prezentat — Fișa {allFise.indexOf(f)+1}</div>
               <div style={{fontSize:17,fontWeight:800,color:"white"}}>{f.title}</div>
             </div>
           </div>
@@ -3189,10 +3194,11 @@ async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEv
         session_id:session?.token||null,name:student?.name,grp:student?.group,
         lab_id:session?.labId,lab_code:session?.labCode,
         module:"fisa_"+f.id,
-        module_title:"Fisa Grupa: "+f.title+"\n---\n"+answersText,
+        module_title:"Fișa: "+f.title+"\n---\n"+answersText,
         score:totalScore,total:maxScore,pct,time_used:0,
         teacher:session?.teacher||"",semester:session?.semester||"",
-        specialization:student?.spec||""
+        specialization:student?.spec||"",
+        studyYear:student?.studyYear||""
       })
     });
   } catch(e){console.error("save error",e);}
@@ -3818,7 +3824,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                   background:active?"#EEF2FF":"transparent",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
                 <span style={{fontSize:17}}>{f.emoji}</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,fontWeight:active?700:500,color:active?"#6366f1":"#1e293b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Grupa {i+1}</div>
+                  <div style={{fontSize:12,fontWeight:active?700:500,color:active?"#6366f1":"#1e293b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>Fișa {i+1}</div>
                   <div style={{fontSize:10,color:active?"#818cf8":"#94a3b8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginTop:1,display:"flex",gap:4,alignItems:"center"}}>
                     {f.qs.length}Q
                     {edited && <span style={{color:"#f59e0b",background:"#fffbeb",borderRadius:5,padding:"0 4px",fontSize:9}}>✎</span>}
@@ -3844,7 +3850,7 @@ function FisaPreviewPanel({labId, mode="preview"}) {
                 <span style={{fontSize:24}}>{selFisa.emoji}</span>
                 <div style={{flex:1}}>
                   <div style={{fontSize:10,color:"rgba(255,255,255,.75)",fontWeight:700,textTransform:"uppercase",letterSpacing:".08em"}}>
-                    Fișă Grupă {activeFise.indexOf(selFisa)+1}
+                    Fișa {activeFise.indexOf(selFisa)+1}
                     {hasEdits && <span style={{marginLeft:8,background:"rgba(255,255,255,.25)",borderRadius:8,padding:"1px 6px",fontSize:9}}>EDITAT</span>}
                   </div>
                   <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>{selFisa.title}</div>
@@ -4169,18 +4175,20 @@ function TokenJoin({token, onValid, onInvalid}) {
 // STUDENT LOGIN
 // ════════════════════════════════════════════════════════════
 function StudentLogin({session, onLogin}) {
-  const [name, setName]   = useState("");
-  const [group, setGroup] = useState("");
-  const [spec, setSpec]   = useState("");
-  const [err, setErr]     = useState("");
+  const [name, setName]         = useState("");
+  const [group, setGroup]       = useState("");
+  const [spec, setSpec]         = useState("");
+  const [studyYear, setStudyYear] = useState("");
+  const [err, setErr]           = useState("");
   const lab = LABS.find(l=>l.id===session.labId) || {};
 
   const go = () => {
     if (name.trim().length < 3) { setErr("Introduceți numele complet (min. 3 caractere)."); return; }
     if (!group) { setErr("Selectați grupa!"); return; }
+    if (!studyYear) { setErr("Selectați anul de studiu!"); return; }
     if (!spec) { setErr("Selectați specializarea!"); return; }
     markSessionUsed(session.token, name.trim());
-    onLogin(name.trim(), group, spec);
+    onLogin(name.trim(), group, spec, studyYear);
   };
 
   return (
@@ -4199,6 +4207,16 @@ function StudentLogin({session, onLogin}) {
         <select style={{...S.input,marginBottom:12}} value={group} onChange={e=>{setGroup(e.target.value);setErr("");}}>
           <option value="">— Selectați grupa —</option>
           {Array.from({length:40},(_,i)=><option key={i+1} value={String(i+1)}>{i+1}</option>)}
+        </select>
+        <label style={S.label}>Anul de studiu</label>
+        <select style={{...S.input,marginBottom:12}} value={studyYear} onChange={e=>{setStudyYear(e.target.value);setErr("");}}>
+          <option value="">— Selectați anul —</option>
+          <option value="Anul I">Anul I</option>
+          <option value="Anul II">Anul II</option>
+          <option value="Anul III">Anul III</option>
+          <option value="Anul IV">Anul IV</option>
+          <option value="Anul V">Anul V</option>
+          <option value="Anul VI">Anul VI</option>
         </select>
         <label style={S.label}>Specializare</label>
         <select style={{...S.input,marginBottom:16}} value={spec} onChange={e=>{setSpec(e.target.value);setErr("");}}>
@@ -4345,7 +4363,8 @@ function QuizScreen({studentName, studentGroup, studentSpec, labId, module, onFi
         score, total:qs.length, pct, timeUsed,
         timestamp:Date.now(),
         teacher:sessionTeacher||"", semester:sessionSemester||"",
-        specialization:studentSpec||""
+        specialization:studentSpec||"",
+        studyYear:student?.studyYear||""
       };
       addResult(entry).catch(()=>{});
       onFinish(entry, newAns, qs);
@@ -4492,7 +4511,7 @@ function App() {
       onInvalid={msg=>{setErrMsg(msg);setScreen("error");}}/>
   );
   if (screen==="error")       return <ErrorScreen message={errMsg} onBack={()=>{setScreen("home");window.history.pushState({},"",window.location.pathname);}}/>;
-  if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g,sp)=>{setStudent({name:n,group:g,spec:sp||""});setScreen("labRouter");}}/>;
+  if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g,sp,sy)=>{setStudent({name:n,group:g,spec:sp||"",studyYear:sy||""});setScreen("labRouter");}}/>;
 
   if (screen==="labRouter") {
     if (session?.labCode?.endsWith("-FISA")) { setScreen("fisa_grup"); }
