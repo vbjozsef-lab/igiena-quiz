@@ -3611,7 +3611,7 @@ async function submitFisaGrup(f,answers,concluzii,student,session,setPhase,setEv
         score:totalScore,total:maxScore,pct,time_used:0,
         teacher:session?.teacher||"",semester:session?.semester||"",
         specialization:student?.spec||"",
-        studyYear:student?.studyYear||""
+        study_year:student?.studyYear||""
       })
     });
   } catch(e){console.error("save error",e);}
