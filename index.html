@@ -2388,7 +2388,7 @@ function AdminPanel({onBack, teacherName}) {
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
     const header = "Semestru,An,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
-    const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
+    const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO",{timeZone:"Europe/Bucharest"})}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
     a.download=`igiena_rezultate_${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -2712,7 +2712,7 @@ function AdminPanel({onBack, teacherName}) {
                           </td>
                           <td style={{padding:"9px 12px",color:"#64748b",fontFamily:"monospace"}}>{fmt(r.timeUsed)}</td>
                           <td style={{padding:"9px 12px",color:"#475569",fontSize:11}}>
-                            {d.toLocaleDateString("ro-RO")} {d.toLocaleTimeString("ro-RO",{hour:"2-digit",minute:"2-digit"})}
+                            {d.toLocaleDateString("ro-RO",{timeZone:"Europe/Bucharest"})} {d.toLocaleTimeString("ro-RO",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Bucharest"})}
                           </td>
                         </tr>
                       );
@@ -4456,7 +4456,7 @@ function ResultScreen({studentName, studentGroup, labId, module, entry, answers,
           </div>
           <h2 style={{color:"#0a2a18",fontSize:22,margin:"0 0 4px"}}>{entry.pct}% — {entry.pct>=80?"Excelent! 🎉":entry.pct>=60?"Bun! 👍":"Mai încearcă! 💪"}</h2>
           <p style={{color:"#4a9a6a",fontSize:14,margin:"0 0 4px"}}>{studentName} · {module.title}</p>
-          <p style={{color:"#94a3b8",fontSize:12,margin:0}}>Timp: {entry.timeUsed}s · {new Date().toLocaleString("ro-RO")}</p>
+          <p style={{color:"#94a3b8",fontSize:12,margin:0}}>Timp: {entry.timeUsed}s · {new Date().toLocaleString("ro-RO",{timeZone:"Europe/Bucharest"})}</p>
         </div>
         <div style={{display:"flex",gap:10,marginBottom:20}}>
           <button style={{...S.btnG,flex:1}} onClick={onRestart}>🔄 Reîncepe</button>
