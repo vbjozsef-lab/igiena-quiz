@@ -2378,7 +2378,7 @@ function AdminPanel({onBack, teacherName}) {
       (specFilter==="all"||r.specialization===specFilter) &&
       (!nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()))
     );
-    const header = "Semestru,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
+    const header = "Semestru,An,Specializare,Profesor,Nume,Grupă,Laborator,Modul,Scor,Procent,Timp,Data\n";
     const rows = toExport.map(r=>`"${r.semester||""}","${r.studyYear||""}","${r.specialization||""}","${r.teacher||""}","${r.name}","${r.group||""}","${r.labCode||""}","${r.moduleTitle||""}",${r.score}/${r.total},${r.pct}%,${r.timeUsed}s,"${new Date(r.timestamp).toLocaleString("ro-RO")}"`).join("\n");
     const blob = new Blob(["\uFEFF"+header+rows],{type:"text/csv;charset=utf-8"});
     const a = document.createElement("a"); a.href=URL.createObjectURL(blob);
@@ -2652,7 +2652,7 @@ function AdminPanel({onBack, teacherName}) {
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
                   <thead>
                     <tr style={{background:"rgba(99,102,241,0.08)"}}>
-                      {["Semestru","Specializare","Profesor","Nume","Grupă","Lab","Modul","Scor","%","Timp","Data"].map(h=>(
+                      {["Semestru","An","Specializare","Profesor","Nume","Grupă","Lab","Modul","Scor","%","Timp","Data"].map(h=>(
                         <th key={h} style={{textAlign:"left",padding:"10px 12px",borderBottom:"1.5px solid #e0e7ff",color:"#6366f1",fontSize:11,textTransform:"uppercase",letterSpacing:"0.06em"}}>{h}</th>
                       ))}
                     </tr>
