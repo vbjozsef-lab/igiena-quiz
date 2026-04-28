@@ -2035,9 +2035,18 @@ async function markSessionUsed(token, studentName) {
   // Just log — recorded via result entry
 }
 async function loadResults() {
-  const res = await sb("results?select=*&order=created_at.desc&limit=500");
-  if (!res.ok) return [];
-  const data = await res.json();
+  // Paginated fetch — loads ALL results regardless of count
+  const PAGE = 1000;
+  let all = [], from = 0, done = false;
+  while (!done) {
+    const res = await sb(`results?select=*&order=created_at.desc&limit=${PAGE}&offset=${from}`);
+    if (!res.ok) break;
+    const page = await res.json();
+    all = all.concat(page);
+    if (page.length < PAGE) done = true;
+    else from += PAGE;
+  }
+  const data = all;
   return data.map(r => ({
     name: r.name, group: r.grp, labId: r.lab_id, labCode: r.lab_code,
     module: r.module, moduleTitle: r.module_title,
