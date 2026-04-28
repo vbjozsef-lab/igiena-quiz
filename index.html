@@ -2800,6 +2800,9 @@ function AdminPanel({onBack, teacherName}) {
     .filter(r => semFilter==="all"||r.semester===semFilter)
     .filter(r => specFilter==="all"||r.specialization===specFilter)
     .filter(r => !nameFilter||r.name.toLowerCase().includes(nameFilter.toLowerCase()));
+  const DISPLAY_LIMIT = 500;
+  const displayResults = filteredResults.slice(0, DISPLAY_LIMIT);
+  const hasMore = filteredResults.length > DISPLAY_LIMIT;
 
   return (
     <div style={{minHeight:"100vh",background:"#F0F4FF",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",position:"relative"}}>
@@ -3051,7 +3054,11 @@ function AdminPanel({onBack, teacherName}) {
 
             {filteredResults.length===0
               ? <p style={{color:"#94a3b8",textAlign:"center",padding:40}}>Nu există rezultate înregistrate.</p>
-              : <div style={{overflowX:"auto",borderRadius:14,border:"1px solid rgba(255,255,255,0.08)",background:"#fff",boxShadow:"0 4px 16px rgba(99,102,241,0.06)"}}>
+              : <div>
+                {hasMore && <div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:8,padding:"8px 14px",marginBottom:10,fontSize:13,color:"#92400e"}}>
+                  ⚠️ Se afișează primele {DISPLAY_LIMIT} din {filteredResults.length} rezultate. Exportați CSV pentru toate datele.
+                </div>}
+                <div style={{overflowX:"auto",borderRadius:14,border:"1px solid rgba(255,255,255,0.08)",background:"#fff",boxShadow:"0 4px 16px rgba(99,102,241,0.06)"}}>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
                   <thead>
                     <tr style={{background:"rgba(99,102,241,0.08)"}}>
@@ -3061,7 +3068,7 @@ function AdminPanel({onBack, teacherName}) {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredResults.map((r,i)=>{
+                    {displayResults.map((r,i)=>{
                       const lab=LABS.find(l=>l.id===r.labId);
                       const d=new Date(r.timestamp);
                       return (
@@ -3113,6 +3120,7 @@ function AdminPanel({onBack, teacherName}) {
                     })}
                   </tbody>
                 </table>
+              </div>
               </div>
             }
           </div>
