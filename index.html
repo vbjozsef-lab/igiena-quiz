@@ -2759,72 +2759,77 @@ function AdminLogin({onSuccess, onBack}) {
 // ③ ADMIN PANEL — QR generator + results
 // ════════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════════
-// PREZENTA TAB
+// PREZENTA TAB — pivot table
 // ════════════════════════════════════════════════════════════
 function PrezentaTab({results, labs}) {
   const [yearFilter, setYearFilter] = useState("all");
   const [grpFilter,  setGrpFilter]  = useState("all");
-  const [labFilter,  setLabFilter]  = useState("all");
   const [specFilter, setSpecFilter] = useState("all");
 
-  // All quiz results (exclude fise de grup)
+  // Quiz results only
   const quizResults = results.filter(r => !r.module || !r.module.startsWith("fisa_"));
 
-  // Unique filter values
-  const years  = ["Anul I","Anul II","Anul III","Anul IV","Anul V","Anul VI"];
+  // Unique values
   const groups = [...new Set(quizResults.map(r=>r.group||"").filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
   const specs  = [...new Set(quizResults.map(r=>r.specialization||"").filter(Boolean))].sort();
 
-  // Apply filters
+  // Filter
   const filtered = quizResults
     .filter(r => yearFilter==="all" || (r.studyYear||"")===yearFilter)
     .filter(r => grpFilter==="all"  || (r.group||"")===grpFilter)
-    .filter(r => labFilter==="all"  || (r.labId||"")===labFilter)
     .filter(r => specFilter==="all" || (r.specialization||"")===specFilter);
 
-  // Deduplicate: best score per student per lab
-  const deduped = Object.values(
-    filtered.reduce((acc, r) => {
-      const key = (r.name||"").trim()+"||"+(r.group||"")+"||"+(r.labId||"");
-      if (!acc[key] || r.pct > acc[key].pct) acc[key] = r;
-      return acc;
-    }, {})
-  ).sort((a,b)=>{
-    const ga = Number(a.group||0), gb = Number(b.group||0);
-    if (ga !== gb) return ga - gb;
-    return (a.name||"").localeCompare(b.name||"");
+  // Build pivot: {studentKey -> {labId -> pct}}
+  // Best score per student per lab
+  const pivot = {};
+  filtered.forEach(r => {
+    const key = (r.name||"").trim()+"|||"+(r.group||"");
+    if (!pivot[key]) pivot[key] = {name:(r.name||"").trim(), group:r.group||"", studyYear:r.studyYear||"", spec:r.specialization||""};
+    const lab = r.labId||"";
+    if (!pivot[key][lab] || r.pct > pivot[key][lab]) pivot[key][lab] = r.pct;
   });
 
+  // Sort rows by group then name
+  const rows = Object.values(pivot).sort((a,b)=>{
+    if (Number(a.group)!==Number(b.group)) return Number(a.group)-Number(b.group);
+    return a.name.localeCompare(b.name);
+  });
+
+  // Labs to show as columns (only labs that appear in filtered results)
+  const activeLabs = labs.filter(l => filtered.some(r=>r.labId===l.id));
+
+  const sS = {padding:"6px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:13,background:"#fff",color:"#1e293b",cursor:"pointer"};
+
   const exportCSV = () => {
-    const header = "An,Specializare,Grupa,Nume,Lab,Scor,%";
-    const rows = deduped.map(r=>[
-      r.studyYear||"", r.specialization||"", r.group||"",
-      r.name||"", r.labCode||r.labId||"",
-      r.score+"/"+r.total, r.pct+"%"
-    ].map(v=>'"'+String(v).replace(/"/g,"''")+'"').join(",")).join("\n");
-    const blob = new Blob([header+"\n"+rows],{type:"text/csv;charset=utf-8"});
+    const labCols = activeLabs.map(l=>l.code);
+    const header = ["Grupă","An","Specializare","Nume",...labCols].join(",");
+    const csvRows = rows.map(r =>
+      [r.group, r.studyYear||"", r.spec||"", r.name,
+       ...activeLabs.map(l => r[l.id]!==undefined ? r[l.id]+"%" : "Absent")
+      ].map(v=>'"'+String(v||"").replace(/"/g,"''")+'"').join(",")
+    ).join("\n");
+    const blob = new Blob([header+"\n"+csvRows],{type:"text/csv;charset=utf-8"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href=url;
-    a.download="prezenta_"+labFilter+"_"+grpFilter+".csv";
-    a.click();
+    a.href=url; a.download="prezenta_"+grpFilter+".csv"; a.click();
     URL.revokeObjectURL(url);
   };
 
-  const sS = {padding:"6px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:13,background:"#fff",color:"#1e293b",cursor:"pointer"};
+  // Color for pct cell
+  const pctColor = pct => pct>=80?"#15803d":pct>=50?"#d97706":"#dc2626";
+  const pctBg    = pct => pct>=80?"#f0fdf4":pct>=50?"#fffbeb":"#fef2f2";
 
   return (
     <div>
       {/* Header */}
-      <div style={{marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
+      <div style={{marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
         <div>
           <h2 style={{fontSize:18,fontWeight:800,color:"#1e1b4b",margin:0}}>📋 Tabel Prezență</h2>
           <p style={{fontSize:12,color:"#64748b",margin:"3px 0 0"}}>
-            Quiz individual · <b>{deduped.length}</b> studenți unici · {filtered.length} înregistrări totale · {quizResults.length} quiz-uri în baza de date
+            <b>{rows.length}</b> studenți · {filtered.length} înregistrări · {quizResults.length} quiz-uri total în BD
           </p>
         </div>
-        <button onClick={exportCSV}
-          style={{padding:"8px 16px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+        <button onClick={exportCSV} style={{padding:"8px 16px",background:"linear-gradient(135deg,#6366f1,#8b5cf6)",color:"#fff",border:"none",borderRadius:9,fontWeight:700,fontSize:13,cursor:"pointer"}}>
           📥 CSV
         </button>
       </div>
@@ -2833,7 +2838,7 @@ function PrezentaTab({results, labs}) {
       <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14,background:"#fff",padding:"10px 12px",borderRadius:12,border:"1px solid #e0e7ff"}}>
         <select style={sS} value={yearFilter} onChange={e=>setYearFilter(e.target.value)}>
           <option value="all">📅 Toți anii</option>
-          {years.map(y=><option key={y} value={y}>{y}</option>)}
+          {["Anul I","Anul II","Anul III","Anul IV","Anul V","Anul VI"].map(y=><option key={y} value={y}>{y}</option>)}
         </select>
         <select style={sS} value={specFilter} onChange={e=>setSpecFilter(e.target.value)}>
           <option value="all">🎓 Toate specializările</option>
@@ -2843,70 +2848,60 @@ function PrezentaTab({results, labs}) {
           <option value="all">👥 Toate grupele</option>
           {groups.map(g=><option key={g} value={g}>Grupa {g}</option>)}
         </select>
-        <select style={sS} value={labFilter} onChange={e=>setLabFilter(e.target.value)}>
-          <option value="all">🔬 Toate lab-urile</option>
-          {labs.map(l=><option key={l.id} value={l.id}>{l.icon} {l.code}</option>)}
-        </select>
-        {(yearFilter!=="all"||grpFilter!=="all"||labFilter!=="all"||specFilter!=="all") && (
-          <button onClick={()=>{setYearFilter("all");setGrpFilter("all");setLabFilter("all");setSpecFilter("all");}}
+        {(yearFilter!=="all"||grpFilter!=="all"||specFilter!=="all") && (
+          <button onClick={()=>{setYearFilter("all");setGrpFilter("all");setSpecFilter("all");}}
             style={{...sS,background:"#fef2f2",color:"#dc2626",border:"1.5px solid #fecaca",fontWeight:600}}>
             ✕ Reset
           </button>
         )}
       </div>
 
-      {/* Table */}
+      {/* Pivot Table */}
       {quizResults.length===0 ? (
         <div style={{background:"#fff",borderRadius:12,border:"1px solid #e0e7ff",padding:"48px 24px",textAlign:"center",color:"#94a3b8"}}>
-          <div style={{fontSize:40,marginBottom:8,opacity:.4}}>📋</div>
-          <p style={{margin:0,fontWeight:600}}>{results.length===0 ? "⏳ Se încarcă..." : "Nu există rezultate de quiz în baza de date."}</p>
+          <div style={{fontSize:36,marginBottom:8,opacity:.4}}>📋</div>
+          <p style={{margin:0,fontWeight:600}}>{results.length===0?"⏳ Se încarcă...":"Nu există rezultate de quiz în baza de date."}</p>
         </div>
-      ) : deduped.length===0 ? (
-        <div style={{background:"#fff",borderRadius:12,border:"1px solid #e0e7ff",padding:"32px 24px",textAlign:"center",color:"#94a3b8"}}>
+      ) : rows.length===0 ? (
+        <div style={{background:"#fff",borderRadius:12,border:"1px solid #e0e7ff",padding:"32px",textAlign:"center",color:"#94a3b8"}}>
           <p style={{margin:0}}>Nicio înregistrare pentru filtrele selectate.</p>
         </div>
       ) : (
         <div style={{overflowX:"auto",borderRadius:12,border:"1px solid #e0e7ff",background:"#fff",boxShadow:"0 2px 8px rgba(99,102,241,0.06)"}}>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:550}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
             <thead>
               <tr style={{background:"#F0F4FF"}}>
-                {["#","An","Specializare","Grupă","Nume","Lab","Scor","%"].map(h=>(
-                  <th key={h} style={{textAlign:"left",padding:"10px 12px",borderBottom:"2px solid #e0e7ff",fontWeight:700,color:"#4338ca",fontSize:12,whiteSpace:"nowrap"}}>
-                    {h}
+                <th style={{textAlign:"left",padding:"10px 12px",borderBottom:"2px solid #e0e7ff",fontWeight:700,color:"#4338ca",fontSize:12,whiteSpace:"nowrap",position:"sticky",left:0,background:"#F0F4FF",zIndex:1}}>Grupă</th>
+                <th style={{textAlign:"left",padding:"10px 12px",borderBottom:"2px solid #e0e7ff",fontWeight:700,color:"#4338ca",fontSize:12,whiteSpace:"nowrap",position:"sticky",left:48,background:"#F0F4FF",zIndex:1}}>Nume</th>
+                {activeLabs.map(l=>(
+                  <th key={l.id} style={{textAlign:"center",padding:"10px 10px",borderBottom:"2px solid #e0e7ff",fontWeight:700,color:"#4338ca",fontSize:12,whiteSpace:"nowrap"}}>
+                    {l.icon} {l.code}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {deduped.map((r,i)=>(
-                <tr key={i} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"#fff":"#F8FAFF",transition:"background .1s"}}
+              {rows.map((r,i)=>(
+                <tr key={i} style={{borderBottom:"1px solid #f1f5f9",background:i%2===0?"#fff":"#F8FAFF"}}
                   onMouseEnter={e=>e.currentTarget.style.background="#EEF2FF"}
                   onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"#fff":"#F8FAFF"}>
-                  <td style={{padding:"8px 12px",color:"#94a3b8",fontSize:11,fontWeight:500}}>{i+1}</td>
-                  <td style={{padding:"8px 12px"}}>
-                    {r.studyYear
-                      ? <span style={{background:"#dbeafe",color:"#1d4ed8",borderRadius:6,padding:"2px 7px",fontSize:11,fontWeight:700}}>{r.studyYear}</span>
-                      : <span style={{color:"#cbd5e1",fontSize:11}}>—</span>}
+                  <td style={{padding:"8px 12px",position:"sticky",left:0,background:"inherit",zIndex:1,whiteSpace:"nowrap"}}>
+                    <span style={{background:"#EEF2FF",color:"#4338ca",borderRadius:6,padding:"2px 8px",fontSize:12,fontWeight:700}}>{r.group}</span>
                   </td>
-                  <td style={{padding:"8px 12px",fontSize:12,color:"#475569",maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.specialization||"—"}</td>
-                  <td style={{padding:"8px 12px"}}>
-                    <span style={{background:"#EEF2FF",color:"#4338ca",borderRadius:6,padding:"2px 9px",fontSize:12,fontWeight:700}}>
-                      {r.group||"—"}
-                    </span>
+                  <td style={{padding:"8px 12px",fontWeight:600,color:"#1e293b",whiteSpace:"nowrap",position:"sticky",left:48,background:"inherit",zIndex:1,minWidth:150}}>
+                    {r.name}
+                    {r.studyYear && <span style={{marginLeft:6,background:"#dbeafe",color:"#1d4ed8",borderRadius:5,padding:"1px 5px",fontSize:10,fontWeight:700}}>{r.studyYear}</span>}
                   </td>
-                  <td style={{padding:"8px 12px",fontWeight:600,color:"#1e293b"}}>{r.name||"—"}</td>
-                  <td style={{padding:"8px 12px"}}>
-                    <span style={{background:"#f0fdf4",color:"#15803d",borderRadius:6,padding:"2px 7px",fontSize:11,fontWeight:600}}>
-                      {r.labCode||r.labId||"—"}
-                    </span>
-                  </td>
-                  <td style={{padding:"8px 12px",fontFamily:"monospace",fontSize:12,color:"#475569"}}>{r.score}/{r.total}</td>
-                  <td style={{padding:"8px 12px"}}>
-                    <span style={{
-                      fontWeight:700,fontSize:13,
-                      color:r.pct>=80?"#15803d":r.pct>=50?"#d97706":"#dc2626"
-                    }}>{r.pct}%</span>
-                  </td>
+                  {activeLabs.map(l=>(
+                    <td key={l.id} style={{padding:"7px 10px",textAlign:"center"}}>
+                      {r[l.id]!==undefined
+                        ? <span style={{background:pctBg(r[l.id]),color:pctColor(r[l.id]),borderRadius:6,padding:"3px 8px",fontSize:12,fontWeight:700,display:"inline-block",minWidth:36}}>
+                            {r[l.id]}%
+                          </span>
+                        : <span style={{color:"#cbd5e1",fontSize:12}}>—</span>
+                      }
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
