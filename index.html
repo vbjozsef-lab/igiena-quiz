@@ -3425,13 +3425,13 @@ function AdminPanel({onBack, teacherName}) {
               }) : (
                 <div style={{color:"#94a3b8",fontSize:13,textAlign:"center",padding:20}}>Nu exista raspunsuri stocate pentru aceasta intrare.</div>
               )}
-      {tab==="prezenta" && (
-        <PrezentaTab results={results} labs={LABS}/>
-      )}
             </div>
           </div>
         );
       })()}
+      {tab==="prezenta" && (
+        <PrezentaTab results={results} labs={LABS}/>
+      )}
       </div>
     </div>
   );
