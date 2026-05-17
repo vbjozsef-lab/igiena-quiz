@@ -117,11 +117,7 @@
 <script>
 // Pure data — no Babel needed
 const LP5B_MODULES = [
-  {id:"bacterio",  icon:"🔬", title:"Bacteriologia Cărnii",      sub:"NTG, coliformi, norme mezeluri",  color:"#a855f7", dim:"rgba(168,85,247,.12)", border:"rgba(168,85,247,.3)",  time:7, count:6},
-  {id:"parazito",  icon:"🪱",  title:"Parazitologia Cărnii",      sub:"Trichine, tenii, botriocefal",   color:"#ef4444", dim:"rgba(239,68,68,.12)",  border:"rgba(239,68,68,.3)",   time:7, count:6},
-  {id:"tia",       icon:"🤒",  title:"Toxiinfecții Alimentare",   sub:"TIA, HACCP, prevenire OMS",      color:"#f97316", dim:"rgba(249,115,22,.12)", border:"rgba(249,115,22,.3)",  time:6, count:5},
-  {id:"lapte5b",   icon:"🥛",  title:"Bacteriologia Laptelui",    sub:"NTG, coliformi, drojdii",        color:"#06b6d4", dim:"rgba(6,182,212,.12)",  border:"rgba(6,182,212,.3)",   time:5, count:4},
-  {id:"full5b",    icon:"🏆",  title:"Quiz Complet LP5B",         sub:"Tot materialul LP5B",            color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)",  time:14},
+  {id:"full5b", icon:"🧫", title:"Quiz Complet LP5B — Bacteriologie & Parazitologie", sub:"TIA, trichinelă, paraziți, lapte · Toate întrebările", color:"#a855f7", dim:"rgba(168,85,247,.1)", border:"rgba(168,85,247,.3)"},
 ];
 
 const LP5B_QUESTIONS = {
@@ -398,10 +394,7 @@ const LP5B_QUESTIONS = {
 // LP1A – MICROCLIMAT, PROPRIETĂȚI FIZICE AER
 // ════════════════════════════════════════════════════════════
 const LP1A_MODULES = [
-  {id:"temp",    icon:"🌡️", title:"Temperatura Aerului",        sub:"Norme, instrumente, metodologie", color:"#64748b", dim:"rgba(100,116,139,.12)", border:"rgba(100,116,139,.3)", time:6, count:5},
-  {id:"umid",    icon:"💧", title:"Umiditatea Aerului",          sub:"UR, UA, UM, higrometre",          color:"#0ea5e9", dim:"rgba(14,165,233,.12)",  border:"rgba(14,165,233,.3)",  time:5, count:5},
-  {id:"misc_aer",icon:"💨", title:"Mișcarea & Radiația Aerului", sub:"Viteza, anemometru, IR",          color:"#6366f1", dim:"rgba(99,102,241,.12)",  border:"rgba(99,102,241,.3)",  time:5, count:4},
-  {id:"full1a",  icon:"🏆", title:"Quiz Complet LP1A",           sub:"Tot materialul LP1A",             color:"#10b981", dim:"rgba(16,185,129,.12)",  border:"rgba(16,185,129,.3)",  time:13},
+  {id:"full1a", icon:"🌬️", title:"Quiz Complet LP1A — Microclimatul Interior", sub:"Temperatura, umiditate, mișcarea aerului · Toate întrebările", color:"#6366f1", dim:"rgba(99,102,241,.1)", border:"rgba(99,102,241,.3)"},
 ];
 
 const LP1A_QUESTIONS = {
@@ -455,9 +448,7 @@ const LP1A_QUESTIONS = {
 // LP1B – PULBERI, GAZE, CALITATEA AERULUI
 // ════════════════════════════════════════════════════════════
 const LP1B_MODULES = [
-  {id:"pulberi",  icon:"🏭", title:"Pulberi – Proprietăți",       sub:"PM2.5, PM10, sedimentare",   color:"#78716c", dim:"rgba(120,113,108,.12)", border:"rgba(120,113,108,.3)", time:6, count:5},
-  {id:"gaze1b",   icon:"☁️", title:"Gaze Toxice & CMA",           sub:"CO, SO2, NOx, indici",       color:"#6b7280", dim:"rgba(107,114,128,.12)", border:"rgba(107,114,128,.3)", time:6, count:5},
-  {id:"full1b",   icon:"🏆", title:"Quiz Complet LP1B",            sub:"Tot materialul LP1B",        color:"#10b981", dim:"rgba(16,185,129,.12)",  border:"rgba(16,185,129,.3)",  time:12},
+  {id:"full1b", icon:"🏭", title:"Quiz Complet LP1B — Poluarea Aerului", sub:"Pulberi, gaze, calitatea aerului · Toate întrebările", color:"#64748b", dim:"rgba(100,116,139,.1)", border:"rgba(100,116,139,.3)"},
 ];
 
 const LP1B_QUESTIONS = {
@@ -503,9 +494,7 @@ const LP1B_QUESTIONS = {
 // LP2A – FUMAT & MICROBIOLOGIA AERULUI
 // ════════════════════════════════════════════════════════════
 const LP2A_MODULES = [
-  {id:"fumat",    icon:"🚬", title:"Fumatul & Asistență",         sub:"Fagerstrom, TSN, interventii", color:"#dc2626", dim:"rgba(220,38,38,.12)",  border:"rgba(220,38,38,.3)",  time:6, count:5},
-  {id:"co_aer",   icon:"🌫️", title:"CO Expirat & Microbiologie",  sub:"COHb, NTG aer, norme",        color:"#7c3aed", dim:"rgba(124,58,237,.12)", border:"rgba(124,58,237,.3)", time:7, count:5},
-  {id:"full2a",   icon:"🏆", title:"Quiz Complet LP2A",           sub:"Tot materialul LP2A",          color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)", time:13},
+  {id:"full2a", icon:"🚬", title:"Quiz Complet LP2A — Fumat & Microbiologia Aerului", sub:"Consiliere antifumat, bacteriologia aerului · Toate întrebările", color:"#dc2626", dim:"rgba(220,38,38,.1)", border:"rgba(220,38,38,.3)"},
 ];
 
 const LP2A_QUESTIONS = {
@@ -549,9 +538,7 @@ const LP2A_QUESTIONS = {
 // LP2B – ILUMINAT & SONOMETRIE
 // ════════════════════════════════════════════════════════════
 const LP2B_MODULES = [
-  {id:"iluminat", icon:"💡", title:"Evaluarea Iluminatului",       sub:"CL, CIN, CU, CR, norme lux",  color:"#eab308", dim:"rgba(234,179,8,.12)",  border:"rgba(234,179,8,.3)",  time:7, count:5},
-  {id:"zgomot",   icon:"🔊", title:"Zgomotul & Sonometria",        sub:"dB, limite, surse, măsuri",   color:"#f97316", dim:"rgba(249,115,22,.12)", border:"rgba(249,115,22,.3)", time:6, count:5},
-  {id:"full2b",   icon:"🏆", title:"Quiz Complet LP2B",            sub:"Tot materialul LP2B",         color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)", time:13},
+  {id:"full2b", icon:"💡", title:"Quiz Complet LP2B — Iluminat & Zgomot", sub:"Luxmetrie, sonometrie, norme · Toate întrebările", color:"#f59e0b", dim:"rgba(245,158,11,.1)", border:"rgba(245,158,11,.3)"},
 ];
 
 const LP2B_QUESTIONS = {
@@ -597,9 +584,7 @@ const LP2B_QUESTIONS = {
 // LP3A – APĂ FIZICO-CHIMIC & NITRAȚI (LP3B already has this content partially)
 // ════════════════════════════════════════════════════════════
 const LP3A_MODULES = [
-  {id:"fizchim3a", icon:"💧", title:"Proprietăți Fizico-Chimice",  sub:"Turbiditate, pH, duritate",   color:"#0284c7", dim:"rgba(2,132,199,.12)",   border:"rgba(2,132,199,.3)",  time:7, count:5},
-  {id:"nitrati3a", icon:"⚗️", title:"Nitrați, Nitriți & Amoniac", sub:"Ciclu N, methemoglobinemie",  color:"#7c3aed", dim:"rgba(124,58,237,.12)",  border:"rgba(124,58,237,.3)", time:6, count:5},
-  {id:"full3a",    icon:"🏆", title:"Quiz Complet LP3A",           sub:"Tot materialul LP3A",         color:"#10b981", dim:"rgba(16,185,129,.12)",  border:"rgba(16,185,129,.3)", time:12},
+  {id:"full3a", icon:"💧", title:"Quiz Complet LP3A — Igiena Apei (Fizico-Chimică)", sub:"Turbiditate, pH, cloruri, nitrați · Toate întrebările", color:"#0ea5e9", dim:"rgba(14,165,233,.1)", border:"rgba(14,165,233,.3)"},
 ];
 
 const LP3A_QUESTIONS = {
@@ -645,9 +630,7 @@ const LP3A_QUESTIONS = {
 // LP6A – RADIAȚII IONIZANTE & RADIOPROTECȚIE
 // ════════════════════════════════════════════════════════════
 const LP6A_MODULES = [
-  {id:"radiatii",  icon:"☢️", title:"Radiații & Unități Măsură",   sub:"Gy, Sv, Bq, tipuri radiații",  color:"#f59e0b", dim:"rgba(245,158,11,.12)", border:"rgba(245,158,11,.3)",  time:6, count:5},
-  {id:"protectie", icon:"🛡️", title:"Radioprotecție",              sub:"Limite doze, echipamente",     color:"#ef4444", dim:"rgba(239,68,68,.12)",  border:"rgba(239,68,68,.3)",   time:6, count:5},
-  {id:"full6a",    icon:"🏆", title:"Quiz Complet LP6A",            sub:"Tot materialul LP6A",          color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)",  time:13},
+  {id:"full6a", icon:"☢️", title:"Quiz Complet LP6A — Radiații Ionizante", sub:"Doze, surse, protecție radiologică · Toate întrebările", color:"#eab308", dim:"rgba(234,179,8,.1)", border:"rgba(234,179,8,.3)"},
 ];
 
 const LP6A_QUESTIONS = {
@@ -689,9 +672,7 @@ const LP6A_QUESTIONS = {
 // LP6B – IGIENĂ ȘCOLARĂ & COMPORTAMENTE DE RISC
 // ════════════════════════════════════════════════════════════
 const LP6B_MODULES = [
-  {id:"orar",     icon:"📅", title:"Capacitate de Lucru & Orar",  sub:"Variații zilnice, săptămânale", color:"#7c3aed", dim:"rgba(124,58,237,.12)", border:"rgba(124,58,237,.3)", time:6, count:5},
-  {id:"risc",     icon:"⚠️", title:"Comportamente de Risc",       sub:"Fumat, alcool, droguri, dentar", color:"#dc2626", dim:"rgba(220,38,38,.12)",  border:"rgba(220,38,38,.3)",  time:5, count:4},
-  {id:"full6b",   icon:"🏆", title:"Quiz Complet LP6B",           sub:"Tot materialul LP6B",           color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)", time:11},
+  {id:"full6b", icon:"🏫", title:"Quiz Complet LP6B — Igiena Școlară", sub:"Orar, capacitate de muncă, comportamente de risc · Toate întrebările", color:"#06b6d4", dim:"rgba(6,182,212,.1)", border:"rgba(6,182,212,.3)"},
 ];
 
 const LP6B_QUESTIONS = {
@@ -730,10 +711,7 @@ const LP6B_QUESTIONS = {
 // LP5A QUIZ MODULES & QUESTIONS
 // ════════════════════════════════════════════════════════════
 const LP5A_MODULES = [
-  {id:"cereale",  icon:"🌾", title:"Cereale și Panificație",    sub:"Gluten, aciditate, făină",       color:"#f59e0b", dim:"rgba(245,158,11,.12)", border:"rgba(245,158,11,.3)",  time:7, count:5},
-  {id:"legfruct", icon:"🍎", title:"Legume și Fructe",          sub:"Vit. C, caroten, aciditate",     color:"#22c55e", dim:"rgba(34,197,94,.12)",  border:"rgba(34,197,94,.3)",   time:6, count:5},
-  {id:"bauturi",  icon:"🥤", title:"Băuturi & Conserve",        sub:"Alcool metilic, etanșeitate",    color:"#3b82f6", dim:"rgba(59,130,246,.12)", border:"rgba(59,130,246,.3)",  time:6, count:5},
-  {id:"full5a",   icon:"🏆", title:"Quiz Complet LP5A",         sub:"Tot materialul LP5A",            color:"#8b5cf6", dim:"rgba(139,92,246,.12)", border:"rgba(139,92,246,.3)",  time:14},
+  {id:"full5a", icon:"🥦", title:"Quiz Complet LP5A — Produse Vegetale", sub:"Cereale, legume, fructe, băuturi · Toate întrebările", color:"#22c55e", dim:"rgba(34,197,94,.1)", border:"rgba(34,197,94,.3)"},
 ];
 
 const LP5A_QUESTIONS = {
@@ -905,11 +883,7 @@ const LP5A_QUESTIONS = {
 // LP4A QUIZ MODULES & QUESTIONS
 // ════════════════════════════════════════════════════════════
 const LP4A_MODULES = [
-  {id:"imc",      icon:"⚖️",  title:"IMC și Greutate Corporală", sub:"Calcul, interpretare",         color:"#f97316", dim:"rgba(249,115,22,.12)", border:"rgba(249,115,22,.3)",  time:6, count:5},
-  {id:"grasime",  icon:"📊",  title:"% Grăsime Corporală",       sub:"Metode, procedură, valori",    color:"#ef4444", dim:"rgba(239,68,68,.12)",  border:"rgba(239,68,68,.3)",   time:5, count:4},
-  {id:"consum",   icon:"🍽️", title:"Evaluarea Consumului Alim.", sub:"Metode, chestionar 24h",      color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)",  time:6, count:5},
-  {id:"caloric",  icon:"🔢",  title:"Calcul Caloric",             sub:"Aport energetic, nutrienti",  color:"#8b5cf6", dim:"rgba(139,92,246,.12)", border:"rgba(139,92,246,.3)",  time:6, count:5},
-  {id:"full4a",   icon:"🏆",  title:"Quiz Complet LP4A",          sub:"Tot materialul LP4A",         color:"#3b82f6", dim:"rgba(59,130,246,.12)", border:"rgba(59,130,246,.3)",  time:14},
+  {id:"full4a", icon:"🍎", title:"Quiz Complet LP4A — Evaluarea Stării de Nutriție", sub:"IMC, compoziție corporală, anchetă alimentară · Toate întrebările", color:"#f97316", dim:"rgba(249,115,22,.1)", border:"rgba(249,115,22,.3)"},
 ];
 
 const LP4A_QUESTIONS = {
@@ -1109,11 +1083,7 @@ const LP4A_QUESTIONS = {
 // LP3B QUIZ MODULES & QUESTIONS
 // ════════════════════════════════════════════════════════════
 const LP3B_MODULES = [
-  {id:"micro",    icon:"🦠", title:"Microbiologia Apei",        sub:"NTG, coliformi, norme",      color:"#06b6d4", dim:"rgba(6,182,212,.12)",  border:"rgba(6,182,212,.3)",  time:7, count:6},
-  {id:"dezinfect",icon:"🧪", title:"Dezinfecția Apei",          sub:"Clor rezidual, metode",      color:"#0ea5e9", dim:"rgba(14,165,233,.12)", border:"rgba(14,165,233,.3)", time:6, count:5},
-  {id:"fizchim",  icon:"💧", title:"Fizico-Chimic & pH",        sub:"pH, turbiditate, duritate",  color:"#3b82f6", dim:"rgba(59,130,246,.12)", border:"rgba(59,130,246,.3)", time:7, count:5},
-  {id:"nitrati",  icon:"⚗️", title:"Nitrați și Nitriți",        sub:"Methemoglobinemie, norme",   color:"#8b5cf6", dim:"rgba(139,92,246,.12)", border:"rgba(139,92,246,.3)", time:6, count:5},
-  {id:"full3b",   icon:"🏆", title:"Quiz Complet LP3B",         sub:"Tot materialul LP3A+LP3B",   color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)", time:14},
+  {id:"full3b", icon:"🦠", title:"Quiz Complet LP3B — Igiena Apei (Microbiologie)", sub:"NTG, coliformi, dezinfecție · Toate întrebările", color:"#10b981", dim:"rgba(16,185,129,.1)", border:"rgba(16,185,129,.3)"},
 ];
 
 const LP3B_QUESTIONS = {
@@ -1191,11 +1161,7 @@ const LP3B_QUESTIONS = {
 // LP4B QUIZ MODULES & QUESTIONS
 // ════════════════════════════════════════════════════════════
 const LP4B_MODULES = [
-  {id:"fresh",     icon:"🔬", title:"Proaspăt sau Alterat?", sub:"Carne, ouă, lapte",         color:"#ef4444", dim:"rgba(239,68,68,.12)",  border:"rgba(239,68,68,.3)",   time:8, count:5},
-  {id:"detective", icon:"🕵️", title:"Detectiv Laborator",   sub:"Falsificarea laptelui",      color:"#3b82f6", dim:"rgba(59,130,246,.12)", border:"rgba(59,130,246,.3)",  time:7, count:4},
-  {id:"egg",       icon:"🥚", title:"Detectiv Ouă",         sub:"Vechime și densitate",        color:"#f59e0b", dim:"rgba(245,158,11,.12)", border:"rgba(245,158,11,.3)",  time:6, count:4},
-  {id:"ph",        icon:"⚗️", title:"pH & Thorner Drill",   sub:"Valori-cheie, rapid",         color:"#10b981", dim:"rgba(16,185,129,.12)", border:"rgba(16,185,129,.3)",  time:5, count:6},
-  {id:"full",      icon:"🏆", title:"Quiz Complet",         sub:"Tot materialul LP4B",         color:"#8b5cf6", dim:"rgba(139,92,246,.12)", border:"rgba(139,92,246,.3)",  time:12},
+  {id:"full", icon:"🥩", title:"Quiz Complet LP4B — Produse de Origine Animală", sub:"Carne, lapte, ouă, conserve · Toate întrebările", color:"#ef4444", dim:"rgba(239,68,68,.1)", border:"rgba(239,68,68,.3)"},
 ];
 
 const LP4B_QUESTIONS = {
