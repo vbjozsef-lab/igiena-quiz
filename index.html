@@ -5503,6 +5503,30 @@ function App() {
 
   const handleJoinToken = token => { setPendingToken(token); setScreen("tokenJoin"); };
 
+  // Handle labRouter via useEffect (not during render)
+  React.useEffect(() => {
+    if (screen !== "labRouter") return;
+    if (session?.labCode?.endsWith("-FISA")) { setScreen("fisa_grup"); return; }
+    if (session?.labCode?.endsWith("-EXAM")) { setScreen("exam_code"); return; }
+    const modMap = {
+      lp1a:{mods:LP1A_MODULES,full:"full1a"}, lp1b:{mods:LP1B_MODULES,full:"full1b"},
+      lp2a:{mods:LP2A_MODULES,full:"full2a"}, lp2b:{mods:LP2B_MODULES,full:"full2b"},
+      lp3a:{mods:LP3A_MODULES,full:"full3a"}, lp3b:{mods:LP3B_MODULES,full:"full3b"},
+      lp4a:{mods:LP4A_MODULES,full:"full4a"}, lp4b:{mods:LP4B_MODULES,full:"full"},
+      lp5a:{mods:LP5A_MODULES,full:"full5a"}, lp5b:{mods:LP5B_MODULES,full:"full5b"},
+      lp6a:{mods:LP6A_MODULES,full:"full6a"}, lp6b:{mods:LP6B_MODULES,full:"full6b"},
+    };
+    const entry = modMap[session?.labId];
+    if (entry) {
+      const mod = entry.mods.find(m=>m.id===entry.full) || entry.mods[0];
+      setModule(mod);
+      setScreen("quiz");
+    } else {
+      setErrMsg("Practica "+session?.labCode+" nu are quiz activ inca.");
+      setScreen("error");
+    }
+  }, [screen, session]);
+
   if (screen==="home")        return <HomePage onAdminLogin={(t)=>{setTeacherName(t);setScreen("admin");}} onJoinToken={handleJoinToken}/>;
   if (screen==="adminLogin")  return <AdminLogin onSuccess={(t)=>{setTeacherName(t);setScreen("admin");}} onBack={()=>setScreen("home")}/>;
   if (screen==="admin")       return <AdminPanel teacherName={teacherName} onBack={()=>setScreen("home")}/>;
@@ -5514,32 +5538,7 @@ function App() {
   if (screen==="error")       return <ErrorScreen message={errMsg} onBack={()=>{setScreen("home");window.history.pushState({},"",window.location.pathname);}}/>;
   if (screen==="studentLogin")return <StudentLogin session={session} onLogin={(n,g,sp,sy)=>{setStudent({name:n,group:g,spec:sp||"",studyYear:sy||""});setScreen("labRouter");}}/>;
 
-  if (screen==="labRouter") {
-    if (session?.labCode?.endsWith("-FISA")) { setScreen("fisa_grup"); }
-    else if (session?.labCode?.endsWith("-EXAM")) { setScreen("exam_code"); }
-    else {
-      // Directly pick the full* module and go to quiz
-      const modMap = {
-        lp1a:{mods:LP1A_MODULES,full:"full1a"}, lp1b:{mods:LP1B_MODULES,full:"full1b"},
-        lp2a:{mods:LP2A_MODULES,full:"full2a"}, lp2b:{mods:LP2B_MODULES,full:"full2b"},
-        lp3a:{mods:LP3A_MODULES,full:"full3a"}, lp3b:{mods:LP3B_MODULES,full:"full3b"},
-        lp4a:{mods:LP4A_MODULES,full:"full4a"}, lp4b:{mods:LP4B_MODULES,full:"full"},
-        lp5a:{mods:LP5A_MODULES,full:"full5a"}, lp5b:{mods:LP5B_MODULES,full:"full5b"},
-        lp6a:{mods:LP6A_MODULES,full:"full6a"}, lp6b:{mods:LP6B_MODULES,full:"full6b"},
-      };
-      const labKey = session?.labId;
-      const entry = modMap[labKey];
-      if (entry) {
-        const mod = entry.mods.find(m=>m.id===entry.full) || entry.mods[0];
-        setModule(mod);
-        setScreen("quiz");
-      } else {
-        setErrMsg("Practica "+session?.labCode+" nu are quiz activ inca.");
-        setScreen("error");
-      }
-    }
-    return null;
-  }
+  if (screen==="labRouter") return null; // handled by useEffect above
 
   if (screen==="fisa_grup") return (
     <FisaGrupScreen session={session} student={student} onBack={()=>setScreen("home")}/>
