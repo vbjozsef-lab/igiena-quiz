@@ -2007,6 +2007,26 @@ const FISE_DATA = {
 <script>
 const EXAM_BANK_RAW = {
   lp1a: [
+    ["Temperatura optimă pentru muncă grea industrială:",["18-20°C","15-17°C","22-24°C","10-12°C"],[3],1],
+    ["Evaluarea umidității:",["Normală – în zona de confort","Prea uscată – sub 30%","Prea umedă – mucegaiuri","Necesită confirmare"],[1],1],
+    ["Diferența admisă temperatură pereți - temperatură medie aer:",["Sub 2°C","Sub 6°C","Sub 4°C","Sub 8°C"],[2],1],
+    ["Termometrul Six-Bellami este un termometru de:",["Maximă și minimă (meteorologie, horticultură)","Cameră obișnuit","Medical (35-42°C)","Digital electronic"],[0],1],
+    ["Principiul metodei psihometrice de determinare a umidității:",["Firul de păr se lungește cu umiditatea","Evaporarea și răcirea apei depinde de umiditatea aerului","Curent electric proporțional cu UR","Colorație indicatoare"],[1],1],
+    ["Evaluarea:",["Variația depășită, diferența pereți OK","Ambii parametri normali","Ambii parametri depășiți","Variația OK, diferența depășită"],[1],1],
+    ["Temperatura optimă în locuințe (valoare medie):",["14-16°C","24-28°C","10-12°C","18-22°C"],[3],1],
+    ["Diferența maximă admisă de temperatură pe verticală în încăperi:",["0,5-1°C","3-4°C","1,5-2°C","5-6°C"],[2],1],
+    ["Zona de confort termic pentru spitale:",["16-18°C","18-20°C","20-22°C","22-24°C"],[2],1],
+    ["Evaluarea:",["Neconformă – max 2-3°C la centrală","Conformă – sub 6°C","Conformă – normal pentru centrală","Date insuficiente"],[0],1],
+    ["Surse de eroare la măsurarea temperaturii aerului:",["Lumina solară directă pe termometru","Atingerea rezervorului, suflul expirator, sursă de căldură apropiată","Umiditatea crescută a aerului","Curenții de aer din încăpere"],[1],1],
+    ["Temperatura maximă admisă a corpurilor de încălzit:",["60°C","100°C","80°C","120°C"],[2],1],
+    ["Umiditatea relativă optimă a aerului:",["20 ± 10%","50 ± 20%","70 ± 10%","90 ± 5%"],[1],1],
+    ["Formula umidității relative (UR):",["UR = UM × UA × 100","UR = UM / UA × 100","UR = (UA + UM) / 100","UR = UA / UM × 100"],[3],1],
+    ["Umiditatea relativă > 70% favorizează:",["Uscăciunea mucoaselor","Scăderea temperaturii","Creșterea mucegaiurilor și acarienilor în praful de casă","Reducerea poluării cu germeni"],[2],1],
+    ["Principiul higrometrului cu fir de păr:",["Lungimea firului de păr variază proporțional cu umiditatea aerului","Curent electric proporțional cu umiditatea","Evaporarea apei depinde de umiditate","Colorație în funcție de UR"],[0],1],
+    ["Deficitul de saturație (DS) se calculează ca:",["DS = UA × UM","DS = UA / UM","DS = UA + UM","DS = UM - UA"],[3],1],
+    ["Viteza recomandată a curenților de aer în încăperi:",["0,1-0,3 m/s, fără a depăși 0,5 m/s","Sub 0,1 m/s","0,5-1 m/s","1-2 m/s"],[0],1],
+    ["Microclimatul reprezintă:",["Totalitatea factorilor fizici ai aerului care influențează schimburile de căldură organism-mediu","Doar temperatura aerului dintr-o cameră","Exclusiv umiditatea și curenții de aer","Nivelul de poluare cu gaze"],[0],1],
+    ["Aparatul de măsurare a vitezei curenților de aer se numește:",["Anemometru","Higometru","Actinometru","Termograf"],[0],1],
     ["Alegeți termometrele care fac parte din categoria termometrelor speciale:",["termometrul medical","termometrul de maximă și minimă","termometrul de cameră","termometrul de baie"],[0,1],2],
     ["Dintre afirmațiile de mai jos referitoare la umiditate, alegeți-le pe cele false:",["umiditatea absolută reprezintă cantitatea cea mai mare de vapori de apă ce poate satura un volum de aer la o anumită temperatură şi presiune (g/m3 aer).","umiditatea relativă reprezintă gradul de saturație al aerului cu vapori de apă","umiditatea maximă reprezintă cantitatea de vapori de apă existentă într-un volum de aer la un moment dat","formula umidității relative este = UA : UM x 100"],[0,2],2],
     ["Contaminarea cu micotoxine:",["crește incidența cancerului de rinichi","cereale cu risc: porumb, grâu, orz, ovăz, orez","condiţii favorizante: umiditatea şi temperaturile înalte","35% din culturile mondiale sunt contaminate"],[1,2],2],
@@ -2016,108 +2036,368 @@ const EXAM_BANK_RAW = {
     ["Proprietățile fizice ale aerului sunt:",["temperatura","umiditatea","presiunea atmosferică","pH-ul"],[0,1],2],
   ],
   lp1b: [
+    ["Principalul element de impurificare a aerului în mediul industrial:",["Gazele toxice","Microorganismele","Radioactivitatea","Pulberile (aerosolii)"],[3],1],
+    ["Particulă de 8 μm: unde se reține?",["În căile respiratorii superioare","Până în alveole, retenție 80-90%","Până în bronhiole, nu în alveole","Eliminată complet cu expirația"],[2],1],
+    ["Prag de informare (Legea 104/2011):",["Risc pentru toată populația – acțiune imediată","Depășire valoare-limită cu marjă de toleranță","Risc la scurtă durată pentru categorii sensibile – informare imediată","Efecte adverse directe pentru plante"],[2],1],
+    ["Sidepak AM510 măsoară:",["Concentrația de masă a PM2.5 în timp real","Viteza curenților de aer","Numărul de germeni din aer","Temperatura și umiditatea"],[0],1],
+    ["Dermatita de contact la mănuși de latex este cauzată de:",["Proteinele din latex","Talcul de lubrefierea mănușilor","Contactul cu sângele pacienților","Aditivii cu care este tratat latexul"],[3],1],
+    ["Formula de praf (conio-dispersiograma) determină:",["Cantitatea de praf din aer (mg/m3)","Procentul de particule > 5μm și < 5μm (grad dispersie)","Compoziția chimică a pulberilor","Sedimentabilitatea pulberilor"],[1],1],
+    ["Particulele PM2.5 au diametrul:",["Sub 2,5 μm","Sub 10 μm","Sub 0,1 μm","Între 10-50 μm"],[0],1],
+    ["Particulele sub 5 μm se rețin în plămân în proporție de:",["10-20%","80-90%","40-60%","99%"],[1],1],
+    ["Particulele > 10 μm sunt reținute în:",["Căile respiratorii superioare (CRS)","Alveole","Bronhiole","Trahee"],[0],1],
+    ["Particule care NU sedimentează, ci difuzează puternic în aer:",["PM10 (> 10 μm)","PM2.5 (2,5-10 μm)","PM0.1 (0,001-0,1 μm)","Pulberile de ciment"],[2],1],
+    ["Alergia la latex apare prin:",["Alergenele aeropurtate de particulele de talc de pe mănuși","Inhalarea CO din mănuși","Contactul cu mănuși ude","Iritanții chimici din cauciuc"],[0],1],
+    ["Silicoza este o pneumoconioză cauzată de:",["Pulberi de bioxid de siliciu (SiO2)","Pulberi de fier","Pulberi de ciment","Funingine"],[0],1],
+    ["CMA (concentrația maximă admisă) este doza de poluant care:",["Este detectabilă olfactiv","Nu determină direct/indirect efecte nocive; sub pragul de acțiune acută și cronică","Este permisă doar 30 minute","Depășește pragul de alertă"],[1],1],
+    ["CMA momentană se determină pe o perioadă de:",["5 minute","8 ore","24 ore","30 minute"],[3],1],
+    ["Pragul de alertă (Legea 104/2011) înseamnă:",["Risc la expunere îndelungată pentru sensibili","Risc doar pentru plante","Depășire toleranță admisă","Risc la expunere scurtă pentru toată populația – acțiune imediată necesară"],[3],1],
+    ["Indicele general de calitate al aerului se calculează ca:",["Media indicilor specifici pentru toți poluanții","Cel mai mare dintre indicii specifici monitorizați","Suma indicilor specifici","Indicele pentru SO2 exclusiv"],[1],1],
+    ["Metode rapide-orientative de determinare a gazelor toxice se bazează pe:",["Cromatografie în gaz","Spectrofotometrie UV","Reactivi care își schimbă culoarea","Titrare potențiometrică"],[2],1],
+    ["Monitorizarea continuă a calității aerului în România se face prin:",["Doar 10 stații în orașe mari","142 stații monitorizare continuă (calitateaer.ro)","Exclusiv laboratoare mobile","Prin aplicații mobile"],[1],1],
     ["Consecințele inhalării pulberilor din aer pot fi următoarele:",["bronșită cronică","crampe abdominale","tuse","dureri în epigastru"],[0,2],2],
     ["Alegeți afirmația falsă privitoare la alergia la latex:",["prevalența la personalul medical este de 5-15%","persoana cu alergie la latex poate manifesta urticarie","cauza o reprezintă lipidele din compoziția latexului","persoana cu alergie la latex poate prezenta angioedem"],[2],1],
     ["Referitor la dimensiunea si sursele particulelor din aer, alegeți afirmațiile adevărate:",["particulele de 2,5 microni sunt particule inhalabile ultrafine","surse de particule de 2,5 microni pot fi arderile naturale","surse de particule de 2,5 microni pot fi drumurile","surse de particule inhalabile fine pot fi particulele secundare (prin interacțiune)"],[1,3],2],
     ["Referitor la concentrația maximă admisă (CMA), alegeți afirmația adevărată:",["CMA este doza de poluant care determină direct şi indirect efecte nocive asupra organismului uman","este peste pragul de percepere a mirosului şi al acţiunii iritative","nu are caracter legislativ","este sub pragul de acţiune acută şi cronică pentru om"],[3],1],
   ],
   lp2a: [
+    ["Décesele cauzate de fumat în România anual:",["~33.000","~5.000","~15.000","~100.000"],[0],1],
+    ["Consilierea specializată individuală antifumat durează minim:",["4 ședințe (30-45 min) + urmărire 6-12 luni","1 ședință de 30 min","10 ședințe săptămânale","O zi intensivă"],[0],1],
+    ["NTG aer iarna în locuințe – aer impurificat:",["Peste 1500/m3","Peste 2500/m3","Peste 7000/m3","Peste 4500/m3"],[2],1],
+    ["Streptococi hemolitici în aerul dintr-o locuință vara – aer impurificat:",["Peste 16/m3","Peste 124/m3","Peste 36/m3","Peste 1500/m3"],[2],1],
+    ["Dezavantajul metodei sedimentării Koch față de metoda prin aspirare:",["Prea scumpă","Necesită mult timp","Coeficient de eroare ridicat, evidențiază doar microorg. care sedimentează","Nu permite numărarea coloniilor"],[2],1],
+    ["Coliformii pe suprafețele sălilor de naștere/prematuri/ATI:",["Max 3/cm2","Max 1/cm2","Max 5/cm2","0 (absenți)"],[3],1],
+    ["Rata de reușită a renunțării la fumat pe cont propriu:",["15-20%","30-40%","50%","3-5%"],[3],1],
+    ["Sfatul antifumat minimal (Very Brief Advice) durează:",["5-10 minute","30 secunde – 3 minute","15-30 minute","O ședință de 1 oră"],[1],1],
+    ["Testul Fagerstrom evaluează:",["Motivația renunțării la fumat","Nivelul CO expirat","Riscul de cancer pulmonar","Gradul de dependență nicotinică"],[3],1],
+    ["Scor Fagerstrom = 7 puncte semnifică:",["Dependență puternică","Dependență foarte scăzută","Dependență medie","Dependență medie-mare"],[0],1],
+    ["Terapia de substituție nicotinică (TSN) include:",["Plasturele nicotinic și guma nicotinică","Bupropion și Varenicline","Nortriptilyne și Clonidina","Exclusiv terapie comportamentală"],[0],1],
+    ["LED verde la testul CO expirat (0-6 ppm) semnifică:",["Fumător activ","Nefumător","Zona de alarmă","Fumător ușor"],[1],1],
+    ["Tehnica corectă pentru testul CO expirat: reținerea respirației timp de:",["5 secunde","10 secunde","15 secunde","30 secunde"],[2],1],
+    ["NTG 37°C aer în saloane de operație: norma este:",["Sub 1500/m3","Sub 300/m3","Sub 600/m3","Sub 100/m3"],[1],1],
+    ["Metoda sedimentării (Koch) pentru bacteriologia aerului: formula Omelianski spune că în 5 min se depun germenii din:",["1L aer pe 100 cm2","10L aer pe 100 cm2","100L aer pe 100 cm2","1m3 aer pe 100 cm2"],[1],1],
+    ["Stafilococii pe suprafețe și mâinile personalului medical trebuie să fie:",["Sub 5/cm2","Sub 15/cm2","Sub 40/cm2","0 (absenți)"],[3],1],
+    ["Curățenia (spălare, ștergere umedă, aspirare) îndepărtează ce procent din microbi:",["95-98%","50-70%","80-90%","99,9%"],[0],1],
     ["Principiile generale privind asistența pentru fumători prevăd următoarele, cu excepția:",["informarea despre consecinţele fumatului","informare despre beneficiile renunțării la fumat","intervenție adaptată la particularitățile fumătorului (motivații, piedici, tehnici)","internare pentru evaluare și tratament"],[3],1],
     ["Referitor la normele igienico-sanitare privind germenii/m3 aer:",["proporţia streptococilor trebuie să fie max 1% din NTG (număr total de germeni)","stafilococii trebuie să fie 0","proporţia streptococilor trebuie să fie max 11% din NTG (număr total de germeni)","stafilococii trebuie să fie 1% din NTG (număr total de germeni)"],[0,1],2],
     ["În ce locuri este permis fumatul?",["mijloace de transport în comun","spații în aer liber (publice și la locul de muncă)","unități medico-sanitare","locuri de joacă pentru copii"],[1],1],
     ["Următoarele grupuri de persoane au sarcina de a oferi pacienților sfatul antifumat minimal:",["medicii de familie","doar medicii dentişti","asistentele medicale","doar medicii tabacologi"],[0,2],2],
+    ["Cine sunt cei în măsură să acorde consiliere specializată antifumat?",["asistente medicale cu pregătire în domeniu","doar psihiatrii","cei apropiați de pacient (familia) sunt cei mai în măsură","un psiholog cine lucrează într-un centru de antifumat"],[0,3],2],
+    ["Norme privind NTG în apa îmbuteliată:",["la 37°C → NTG = 50 / ml","la 20°C → NTG = 20%","E. coli, Streptococi fecali, Pseudomonas aeruginosa = 0 / 250 ml","Staphylococcus Aureus = 0 / 250 ml"],[2],1],
     ["Sfatul antifumat minimal se adresează următoarelor categorii de persoane:",["persoanele care comercializează produse din tutun","persoane care n-au fumat niciodată","foşti fumători și fumători","persoanele care lucrează în mediu toxic"],[1,2],2],
   ],
   lp2b: [
+    ["Coeficientul de iluminare naturală (CIN) minim pentru săli de clasă:",["≥ 2%","≥ 0,5%","≥ 1%","≥ 5%"],[0],1],
+    ["Iluminat fluorescent artificial minim pentru săli de clasă:",["150 lx","400 lx","500 lx","300 lx"],[3],1],
+    ["Coeficientul de reflexie (CR) înalt este:",["Sub 0,2","Peste 0,4","0,2-0,4","Exact 0,5"],[1],1],
+    ["Evaluarea pentru locuință:",["CIN neconformă (< 1%), iluminat natural neconform (< 100lx)","Conformă – ambii parametri OK","CIN conformă, iluminat neconformă","Ambele conforme, dar la limită"],[0],1],
+    ["Surse de zgomot ambiental exterior includ:",["Aparatura casnică","Sistemele de ventilație","Instalațiile sanitare","Traficul rutier, feroviar, aerian, construcțiile"],[3],1],
+    ["Coeficientul de adâncime (CA): ce reprezintă L și Î?",["L = lățimea, Î = înălțimea peretelui","L = lungimea camerei de la fereastră la peretele opus, Î = distanța podea-marginea sup. a ferestrei","L = lumina, Î = înălțimea","L = lux, Î = iluminanță"],[1],1],
+    ["Coeficientul de luminozitate (CL) pentru săli de clasă și operație:",["1/4 - 1/5","1/8 - 1/10","1/6 - 1/8","1/3"],[0],1],
+    ["Norma de iluminat natural minim pentru suprafețe de scris/citit:",["50 lx","100 lx","200 lx","500 lx"],[1],1],
+    ["Coeficientul de uniformitate (CU) minim pe suprafețele de lucru:",["0,25","0,40","0,65","0,85"],[2],1],
+    ["Coeficientul de adâncime (CA) trebuie să fie:",["CA ≥ 2","CA ≤ 2","CA = 1","CA ≥ 3"],[1],1],
+    ["Principiul luxmetrului:",["Fir de păr variază cu lumina","Comparare cu standard de sticlă","Oscilații acustice → electrice","Fotocelulă generează curent electric direct proporțional cu luminozitatea"],[3],1],
+    ["Coeficientul de absorbție (CAbs) al geamului: norma maximă:",["Maxim 24%","Maxim 10%","Maxim 50%","Maxim 5%"],[0],1],
+    ["Limita de zgomot interior admisă în spitale (saloane 1-2 paturi):",["30 dB","25 dB","35 dB","45 dB"],[0],1],
+    ["Trauma sonoră apare de la aproximativ:",["80 dB","90 dB","100 dB","120 dB"],[3],1],
+    ["Limita de zgomot exterior pentru parcuri și zone de recreere:",["35 dB","65 dB","45 dB","75 dB"],[2],1],
+    ["50% din populația UE locuiește:",["In zone cu zgomot sub 30 dB","În zone fără confort acustic minim","Lângă aeroporturi","In zone industriale"],[1],1],
+    ["Urechea umană percepe frecvențe între:",["2-2.000 Hz","200-200.000 Hz","20-20.000 Hz","1-100 Hz"],[2],1],
+    ["Limita de zgomot interior în săli de clasă și amfiteatre:",["30 dB","35 dB","40 dB","50 dB"],[2],1],
     ["Factorii iluminatului natural sunt următorii:",["clima locală","forma, poziția, mărimea pereților","adâncimea încăperii","transparența atmosferei nu influențează lumina naturală"],[0,2],2],
     ["Efectele adverse psihologice şi fizice din cauza zgomotului ambiental sunt următoarele:",["tulburări de somn","dureri precordiale","disfuncție vizuală","tulburări de comunicare"],[0,3],2],
     ["Măsurarea poluării sonore într-o încăpere de locuit se efectuează prin:",["folosirea audiometrului poziționat spre ferestrele deschise","folosirea audiometrului poziționat spre ferestrele închise","mai multe măsurători succesive (ziua, noaptea)","microfonul sonometrului de precizie trebuie orientat spre peretele exterior"],[2,3],2],
     ["Alegeți sursele de zgomot exterior:",["locurile de joacă pentru copii","aparatul de aer condiționat","traficul feroviar","mixerul de bucătărie"],[0,2],2],
-    ["Evaluarea caracteristicilor organoleptice pentru carne, presupune:",["evaluarea aspectului la suprafață","evaluarea mirosului","evaluarea ph-ului cu hârtie de filtru","evaluarea amoniacului"],[0,1],2],
-    ["Radioprotecția pacienților are în vedere următoarele aspecte:",["nu se fac radiografii de rutină","justificare/indicaţie: procedura trebuie să aducă un beneficiu net, să depăşească cu mult riscurile","se pot face radiografii înainte de anamneză şi examen clinic","se folosesc filme lente pentru creșterea timpului necesar în punerea diagnosticului"],[0,1],2],
-    ["O apă bogată în ioni de Ca:",["formează depuneri de calcar","este ideală pentru gătit/fierbere","permite folosirea detergentului de rufe în cantitate mai mică","formează spumă bogată cu săpunul"],[0],1],
     ["Iluminatul natural al unei încăperi depinde de:",["anotimp","condițiile meteorologice","orientarea intrării în încăpere (ușă)","numărul și forma corpurilor de iluminat"],[0,1],2],
-    ["Principala sursă de contaminare a apei cu nitrați:",["antibioticele folosite în ferme industriale","traficul intens pe drumuri","apa meteorică (poluanți din aer)","îngrășăminte folosite intensiv în agricultură"],[3],1],
     ["Alegeți afirmațiile corecte legate de iluminatul artificial în încăperi:",["în sălile operatorii se recomandă folosirea lămpilor focalizate","sursa de lumină să încălzească aerul, mai ales în anotimpul rece","sursa de lumină să aibă spectru luminos apropiat de cel natural","sunt permise mici variații de intensitate luminoasă perceptibile cu ochiul liber"],[0,2],2],
     ["Care din următoarele sunt metode de prevenire a contaminării aerului şi suprafeţelor aplicate în unități sanitare:",["lumină UV","răcire","încălzire","curățenie"],[0,3],2],
     ["În care din următoarele spații închise nivelul zgomotului este limitat la maximum 35 dB?",["cabinete medicale","apartamente de locuit","săli de clasă","săli de mese"],[0,1],2],
-    ["Prevenirea trichinelozei include:",["evitarea consumului de carne cu termen de valabilitate expirat","deratizare","afumarea adecvată a cărnii de porc","examinarea trichinoscopică a cărnii de porc"],[1,3],2],
     ["Pentru a calcula coeficientul de luminozitate al unei încăperi trebuie să cunoaștem:",["suprafața pereților","suprafața ferestrelor","suprafața pardoselii","suprafața ușilor"],[1,2],2],
-    ["Cine sunt cei în măsură să acorde consiliere specializată antifumat?",["asistente medicale cu pregătire în domeniu","doar psihiatrii","cei apropiați de pacient (familia) sunt cei mai în măsură","un psiholog cine lucrează într-un centru de antifumat"],[0,3],2],
-    ["Care din următoarele afirmaţii privind identificarea amoniacului din carne sunt corecte?",["Identificarea se poate face cu reactivul Nessler.","Amoniacul formează compuşi de culoare galbenă cu reactivul Nessler.","Identificarea nu se poate face cu reactivul Eber.","Amoniacul din carne se identifică prin însămânţarea extractului de carne pe un mediu de cultură."],[0,1],2],
     ["Evaluarea condiţiilor de iluminare artificială se realizează:",["pe baza măsurătorilor făcute cu anemometrul","pe baza indicatorilor structurali ai iluminării","pe baza măsurătorilor făcute cu luxmetrul","pe baza unghiurilor de iluminare"],[2],1],
-    ["Care din următoarele măsuri sunt eficiente în prevenirea cianozei generalizate a sugarului?",["folosirea exclusivă a apei cu pH alcalin","folosirea apei din surse controlate, sigure","folosirea exclusivă a apei dezinfectate","prevenirea infecţiilor tubului digestiv"],[1,3],2],
     ["În care din următoarele spaţii exterioare normele igienico-sanitare stabilesc un nivel al zgomotului de maximum 45 dB?",["gări feroviare","aeroporturi","parcuri","zone de recreere"],[2,3],2],
     ["Norme pentru iluminatul artificial, alegeți variantele corecte:",["lumină omogenă, neuniformă","să nu formeze umbre","fără variații de intensitate, pâlpâire","să încălzească aerul"],[1,2],2],
-    ["Între măsurile de prevenire a trichinelozei se numără:",["trichinoscopia obligatorie a cărnii porc și de vânat","deratizarea","furajarea naturală a animalelor de crescătorie","tratarea cărnii cu aditivi conservanţi"],[0,1],2],
   ],
   lp3a: [
+    ["1 grad de duritate germană = conținut de:",["10 mg CaO/l apă","10 mg Ca/l apă","10 mg CaCO3/l apă","10 mg Mg/l apă"],[0],1],
+    ["Care parametru depășește norma?",["Turbiditatea","Clorurile (max 250 mg/l)","pH-ul","Duritatea"],[1],1],
+    ["CMA nitrați în apă potabilă:",["< 10 mg/l","< 25 mg/l","< 100 mg/l","< 50 mg/l"],[3],1],
+    ["Variatii bruste ale clorurilor în apă indică:",["Dezinfecție corectă","Impurificare (infiltrare ape uzate, șiroire)","Duritate crescută","Turbiditate normală"],[1],1],
+    ["Determinarea NO2 trebuie făcută:",["Imediat după prelevare (produși instabili)","În 24h de la recoltare","Poate fi amânată 1 săptămână","La temperatura de 4°C timp de 48h"],[0],1],
+    ["Norma duritate totală minimă apă potabilă:",["2 grade germane","5 grade germane","10 grade germane","15 grade germane"],[1],1],
+    ["Etapele controlului igienico-sanitar al apei includ:",["Doar analiza microbiologică","Exclusiv analiza chimică a nitraților","Anchetă sanitară + recoltare + analize fizico-chimice + microbiologice + biologice + interpretare","Doar turbiditate și pH"],[2],1],
+    ["Proprietățile organoleptice ale apei conform OG 7/2023 trebuie să fie:",["Fără miros și gust","Acceptabile pentru consumator, fără modificare anormală","Inodore și incolore strict","pH neutru și fără clor"],[1],1],
+    ["Turbiditatea apei influențează:",["Exclusiv gustul apei","Doar culoarea apei","Nivelul de nitrați","Decisiv procesul de tratare a apei"],[3],1],
+    ["Duritatea temporară a apei este cauzată de:",["Bicarbonații de Ca și Mg (se elimină prin încălzire)","Sulfații de Ca și Mg","Clorurile de Ca","Azotații de Ca și Mg"],[0],1],
+    ["Fluoruri în apă > 1,5-2 mg/l pot cauza:",["Carii dentare","Methemoglobinemie","Duritate crescută","Fluoroză dentară"],[3],1],
+    ["Metoda Aliamovski pentru pH folosește indicatori:",["Roșu de metil și albastru de bromtimol, comparare scală etalon","Fenolftaleina și NaOH","Iodura de zinc și H2SO4","Difenilamina și H2SO4"],[0],1],
+    ["Nitrații NU sunt nocivi în sine; pericolul constă în:",["Gustul neplăcut al apei","Duritatea crescută a apei","Turbiditate crescută","Reducerea lor în NO2 în organism (methemoglobinemie)"],[3],1],
+    ["Determinarea calitativă a NO3 - colorație albastră cu:",["Iodura de zinc amidonată + H2SO4","Alfa-naftilamina + acid sulfanilic","Difenilamina în H2SO4 (capsulă porțelan)","Fenolftaleina + NaOH"],[2],1],
+    ["Methemoglobinemia clinic apare la MHb >:",["2% din Hb totală","10% din Hb totală","5% din Hb totală","20% din Hb totală"],[1],1],
+    ["Surse de contaminare cu nitrați a apei:",["Clorinarea insuficientă","Turbiditate crescută","Îngrășăminte azotate, dejecții animale/umane, fântâni puțin adânci în zone agricole","Duritate excesivă"],[2],1],
+    ["Prevenirea methemoglobinemiei include:",["Alimentație la sân + apă din surse conforme normelor pentru alimentație artificială","Evitarea apei clorinate","Evitarea apei dure","Folosirea exclusivă a apei fierte"],[0],1],
+    ["NO2 cantitativ: colorație ROZ cu:",["Iodura de zinc amidonată","Difenilamina","Alfa-naftilamina + acid sulfanilic (intensitate proporțională cu cantitatea)","Fenolftaleina"],[2],1],
     ["Alegeți proprietățile fizice ale apei:",["temperatură","transparență","duritate","ph"],[0,1],2],
     ["Privitor la microorganismele din apă:",["germenii care contribuie la procesele de degradare biochimică a substanţelor organice reprezintă microflora de impurificare","microflora proprie apei provine din apele reziduale","microflora de impurificare provine din dejecțiile umane și animale","microflora proprie provine din germenii care contribuie la procesele de degradare biochimică a substanţelor organice"],[2,3],2],
     ["Stabiliți corelațiile  adevărate:",["Aport scăzut de alimente - creștere masă musculară","Aport crescut de alimente – carențe","Toxice chimice – intoxicații alimentare","Microbi – toxiinfecții alimentare"],[2,3],2],
     ["Alegeți sursele naturale de radiații:",["aer","apă","surse medicale","centrale nucleare"],[0,1],2],
     ["Sunt proprietăți chimice ale apei, cu excepția:",["turbiditatea apei","concentraţia ionilor de hidrogen (pH)","concentraţia clorurilor","gustul apei"],[0,3],2],
     ["Referitor la duritatea apei alegeți afirmațiile care nu sunt adevărate:",["este un indicator direct al gradului de mineralizare al apei","se dozează doar ionii de Ca şi Mg (concentraţii mult mai mari decât restul)","apa cu o duritate prea mare face spumă bogată cu săpunul","norma prevede minim 5 grade germane"],[0,2],2],
-    ["Norma sanitară pentru numărul total de germeni (NTG) din apă:",["20/ml pentru apa dezinfectată (clorinată) prin incubare la 37°C","100/ml pentru apa dezinfectată (clorinată) prin incubare la 22°C","100/ml pentru apa dezinfectată (clorinată) prin incubare la 37°C","20/ml pentru apa dezinfectată (clorinată) prin incubare la 22°C"],[0,1],2],
     ["Referitor la procesul de dezinfecție al apei potabile:",["clorul rezidual este clorul care se introduce în apă pentru dezinfecție","are ca scop distrugerea germenilor saprofiți","dezinfecția se aplică la cerere pentru sistemele centrale de apă","dezinfecția se aplică la cerere pentru sistemele locale de apă"],[3],1],
+    ["Evaluarea caracteristicilor organoleptice pentru carne, presupune:",["evaluarea aspectului la suprafață","evaluarea mirosului","evaluarea ph-ului cu hârtie de filtru","evaluarea amoniacului"],[0,1],2],
+    ["O apă bogată în ioni de Ca:",["formează depuneri de calcar","este ideală pentru gătit/fierbere","permite folosirea detergentului de rufe în cantitate mai mică","formează spumă bogată cu săpunul"],[0],1],
     ["Analiza microbiologică a apei potabile urmărește:",["aprecierea gradului de încărcare microbiană a apei și identificarea germenilor","caracteristicile organoleptice a apei potabile","duritatea apei prin determinarea concentrațiilor de ioni de Ca și Mg","prezența microorganismelor patogene în apă"],[0,3],2],
     ["Printre măsurile de prevenire a methemoglobinemiei infantile se numără:",["expunerea sugarului la soare și aer curat","alimente preparate folosind apă din surse avizate sanitar","prevenirea și tratamentul cariilor dentare","alimentația la sân"],[1,3],2],
     ["Valoarea normală a pH-ului apei:",["6,5-9,5","10-11","1-2,5","3-5"],[0],1],
-    ["Prezenţa nitriților în apa potabilă peste limitele admise de normele igienico-sanitare poate duce la apariția:",["hepatitei cronice","ulcerului duodenal","diabetului zaharat tip II","methemoglobinemiei"],[3],1],
     ["Duritatea este un indicator al gradului de mineralizare al apei și este determinată de ionii de:",["Calciu","Magneziu","Iod","Fluor"],[0,1],2],
+    ["Prin măsurarea densității laptelui se pot depista următoarele forme de falsificare a laptelui:",["extragerea smântânii","adăugarea de bicarbonat","adăugarea de făină","diluarea cu apă"],[0,3],2],
     ["Sistemul HACCP de analiză a riscurilor în punctele critice de control contribuie la prevenirea riscurilor biologice, chimice și fizice asociate consumului de alimente în:",["etapa de cultivare a produselor","etapa de cercetare a produselor","etapa de prelucrare a produselor","etapa de desfacere a produselor"],[2,3],2],
     ["Determinarea proprietăților chimice ale apei constau în determinarea următoarelor:",["pH","duritate","miros","gust"],[0,1],2],
     ["Despre duritatea apei este adevărat:",["duritatea totală: minim 15 grade germane","se dozează doar ionii de Ca, Mg (concentrații mult mai mici decât restul)","indicator indirect al gradului de mineralizare","apa cu duritatea prea mare fierbe legumele eficient"],[2],1],
     ["Carnea alterată are un pH de:",["< 6,2","6,2 - 6,6","6,4 - 6,6","> 6,6"],[3],1],
-    ["Norme privind NTG în apa îmbuteliată:",["la 37°C → NTG = 50 / ml","la 20°C → NTG = 20%","E. coli, Streptococi fecali, Pseudomonas aeruginosa = 0 / 250 ml","Staphylococcus Aureus = 0 / 250 ml"],[2],1],
+    ["Care din fraudele de mai jos se pot depista cu ajutorul lactodensimetrului?",["neutralizarea acidității laptelui","diluarea cu apă a laptelui","extragerea smântânii din lapte","dublă falsificare a laptelui"],[1,2],2],
+    ["Care din următoarele măsuri sunt eficiente în prevenirea cianozei generalizate a sugarului?",["folosirea exclusivă a apei cu pH alcalin","folosirea apei din surse controlate, sigure","folosirea exclusivă a apei dezinfectate","prevenirea infecţiilor tubului digestiv"],[1,3],2],
     ["Următoarele afirmații privind ciclul azotului sunt corecte:",["în prima etapă azotul provenit din atmosferă, dejecțiile umane și animaliere este convertit în nitriți printr-un proces numit nitrificare","în prima etapă azotul provenit din atmosferă, dejecțiile umane și animaliere este convertit în amoniac printr-un proces numit amonificare","amoniacul sub influenţa bacteriilor fixatoare de azot se transformă în nitriţi şi nitraţi","amoniacul sub influenţa bacteriilor fixatoare de azot se transformă în azot molecular"],[1,2],2],
   ],
   lp3b: [
+    ["Analiza curenta obligatorie a apei include:",["NTG 22 grade C + enterococi","NTG 37 grade C + nr. coliformi","NTG 37 grade C + nitrati","Doar E. coli"],[1],1],
+    ["E. coli = 0/100ml la apa potabila de retea inseamna:",["Neconforma - trebuie 0/250ml","Conforma doar vara","Necesita confirmare","Conforma"],[3],1],
+    ["Evaluarea:",["Neconforma - trebuie 0/250ml","Conforma - admis 1-5/250ml","Conforma - norma e 0/100ml","Date insuficiente"],[0],1],
+    ["Clor rezidual liber la CAPAT de retea, minim necesar:",["0,5 mg/l","0,1 mg/l","0,3 mg/l","0,05 mg/l"],[1],1],
+    ["Duritatea minima a apei potabile (OG 7/2023):",["2 grade germane","5 grade germane","10 grade germane","15 grade germane"],[1],1],
+    ["Interpretarea poluarii:",["Poluare veche stabilizata","Poluare recenta activa (NH3 + NO2)","Apa conforma - NO3 sub norma","Poluare exclusiv chimica"],[1],1],
+    ["Dezinfectia apei este obligatorie la:",["Doar fantanile private","Sisteme centrale + fantani la cerere","Doar apa de suprafata","Numai in epidemie"],[1],1],
+    ["Metoda Aliamovski determina:",["Turbiditatea","Duritatea","Clorurile","pH prin comparare cu scala etalon"],[3],1],
+    ["Care parametri depasesc normele?",["Doar turbiditatea","Turbiditatea si duritatea","Turbiditatea, duritatea si clorurile","Toti normali"],[1],1],
+    ["Luciu verde metalic pe mediu EMB confirma:",["E. coli - contaminare fecala sigura","Streptococ fecal","Salmonella","NTG crescut"],[0],1],
+    ["NTG la 37 grade C ridicat semnifica:",["Contaminare mare cu flora umana/animala, posibil patogena","Apa cu mineralizare crescuta","Dezinfectie prea puternica","Apa acida"],[0],1],
+    ["Concluzia conform OG 7/2023:",["Conforma - coliforme admise 5/100ml","Conforma - E. coli in norma","Necesita confirmare EMB","Neconforma - coliforme trebuie 0/100ml"],[3],1],
+    ["Testul de prezumtie pentru coliformi se bazeaza pe:",["Coloratie pe mediu EMB","Crestere la 44,5 grade C","Coloratie cu difenilamina","Fermentarea lactozei cu producere de gaze la 37 grade C"],[3],1],
+    ["Colonii cu luciu verde metalic pe mediu EMB indica:",["Streptococ fecal","E. coli confirmat","Salmonella","NTG crescut"],[1],1],
+    ["Evaluarea:",["Conforma - limita 50/ml","Conforma - sub 100/ml","Neconforma - depaseste norma 20/ml","Date insuficiente"],[2],1],
+    ["Enterococii (Streptococcus faecalis) indica:",["Poluare chimica","Duritate crescuta","Turbiditate mare","Impurificare recenta cu continut intestinal"],[3],1],
+    ["Scopul dezinfectiei apei:",["Distrugerea germenilor patogeni si reducerea saprofitilor la normele de potabilitate","Reducerea duritatii","Eliminarea nitratilor","Cresterea pH-ului"],[0],1],
+    ["Clor rezidual LIBER la intrarea in retea, norma:",["mai mic sau egal 0,5 mg/l","mai mare sau egal 0,5 mg/l","mai mare sau egal 0,1 mg/l","mai mic sau egal 0,1 mg/l"],[0],1],
+    ["Interpretarea:",["Insuficient - dezinfectie inadecvata","Normal - sub limita superioara","Toxic - pericol consum","Corect - exact la norma"],[0],1],
+    ["Clorura de var contine aproximativ:",["10% clor activ","50% clor activ","75% clor activ","25% clor activ"],[3],1],
+    ["Timp minim de contact al clorului:",["30 minute","5 minute","15 minute","60 minute"],[0],1],
+    ["Clorul rezidual LEGAT se gaseste sub forma de:",["Acid hipocloros (HOCl)","Ioni hipocloriti","Cloramine","Clor gazos"],[2],1],
+    ["Turbiditate normala apa potabila (OG 7/2023):",["maxim 1 UNT","maxim 5 UNT","maxim 10 UNT","maxim 25 UNT"],[1],1],
+    ["pH normal al apei potabile (OG 7/2023):",["5,5 - 7,5","7,0 - 8,5","6,5 - 9,5","6,0 - 8,0"],[2],1],
+    ["Ce parametru este in afara normei?",["Toti normali","Clorurile - depasesc norma","pH - sub minima de 6,5","Duritatea - sub 5 grade"],[2],1],
+    ["Duritatea apei e cauzata in principal de ionii de:",["Na si K","Fe si Mn","Ca si Mg","Cl si SO4"],[2],1],
+    ["Fluoruri < 0,5 mg/l in apa favorizeaza:",["Fluoroza dentara","Methemoglobinemia","Holera","Carii dentare"],[3],1],
+    ["Cresteri bruste ale clorurilor in apa indica:",["Impurificare externa (ape uzate, siroire)","Dezinfectie corecta","Duritate crescuta","Turbiditate normala"],[0],1],
+    ["Ordinea corecta in ciclul azotului din apa:",["Reziduuri organice - NH3 - NO2 - NO3","NH3 - NO2 - NO3","NO3 - NO2 - NH3","NO2 - NO3 - NH3"],[0],1],
+    ["Evaluarea:",["Conforma","Conforma NO2, neconforma NO3","Neconforma la ambii parametri","Necesita confirmare"],[2],1],
+    ["Methemoglobinemia este cauzata de:",["Clor rezidual in exces","NO3 redus in NO2 in organism","Duritate mare","Turbiditate crescuta"],[1],1],
+    ["Norma CMA pentru nitrati (NO3) in apa potabila:",["sub 10 mg/l","sub 25 mg/l","sub 50 mg/l","sub 100 mg/l"],[2],1],
+    ["Determinarea calitativa a nitritilor: coloratie ALBASTRA cu:",["Alfa-naftilamina + acid sulfanilic","Difenilamina + H2SO4","Iodura de zinc amidonata + H2SO4","KMnO4"],[2],1],
+    ["Grupele cele mai susceptibile la methemoglobinemie:",["Adulti cu boli cronice","Femei gravide","Varstnici","Nou-nascuti si sugari alimentati artificial"],[3],1],
     ["Cele mai frecvente surse de contaminare a apei din fântâni:",["carieră de calcar în apropiere","dejecții umane/animale","îngrășăminte folosite intensiv în agricultură","poluanți din aerul înconjurător"],[1,2],2],
     ["Despre toxiinfecțiile alimentare este adevărat:",["simptomele apar insidios, perioada de incubație fiind 5-7 zile","cazurile apar de multe ori în colectivităţi (cantine, tabere, mese festive etc.)","au o prevalență mai mare în sezonul cald","principala cale de transmitere este folosirea apei de fântână contaminată"],[1,2],2],
+    ["Norma sanitară pentru numărul total de germeni (NTG) din apă:",["20/ml pentru apa dezinfectată (clorinată) prin incubare la 37°C","100/ml pentru apa dezinfectată (clorinată) prin incubare la 22°C","100/ml pentru apa dezinfectată (clorinată) prin incubare la 37°C","20/ml pentru apa dezinfectată (clorinată) prin incubare la 22°C"],[0,1],2],
     ["Care din determinările următoare sunt utilizate pentru monitorizarea parametrilor microbiologici ai apei potabile?",["determinarea cantitativă a nitraților","determinarea numărului total de germeni la 37°C","determinarea numărului de germeni coliformi","determinarea clorului rezidual total"],[1,2],2],
     ["Următoarele nu sunt surse de proveniență a germenilor din aer:",["oameni","nasofaringele și cavitatea bucală","de pe suprafețe sterile","dejecții"],[2],1],
     ["Care din determinările următoare sunt efectuate pentru monitorizarea parametrilor microbiologici ai apei potabile?",["determinarea numărului de germeni coliformi","determinarea clorului rezidual liber","determinarea clorului rezidual legat","determinarea numărului total de germeni la 37°C"],[0,3],2],
   ],
   lp4a: [
+    ["IMC = 22 la un adult:",["Subponderal","Normoponderal","Supraponderal","Obezitate gr. I"],[1],1],
+    ["Clasificarea si riscul:",["Supraponderala – risc moderat","Obezitate gr. I – risc crescut","Obezitate gr. II – risc foarte crescut","Obezitate gr. III – risc extrem"],[1],1],
+    ["Circumferinta abdominala la femei > 80 cm indica:",["Valoare normala","Risc cardiovascular si metabolic crescut","Subnutritie","Necesita confirmare IMC"],[1],1],
+    ["Principiul impedantei bioelectrice (masurare % grasime):",["Tesut adipos = impedanta MAI MARE vs. muscular","Tesut adipos = impedanta MAI MICA vs. muscular","Masurare densitate prin imersie in apa","Absorptie raze X"],[0],1],
+    ["Momentele nerecomandate pentru masurarea grasimii includ:",["Dimineata pe nemancate","Dupa efort intens, baie, alcool, masa bogata","Dupa 3 ore de la ultima masa","La temperatura camerei normale"],[1],1],
+    ["Total calorii:",["272 kcal","432 kcal","368 kcal","524 kcal"],[1],1],
+    ["Chestionarul alimentar pe 24h este administrat:",["Exclusiv online","Fata in fata, telefonic sau online","Doar in spital","Exclusiv de catre medic specialist"],[1],1],
+    ["Metode biochimice de evaluare a starii de nutritie includ:",["IMC si pliul cutanat","Albumina serica si transferina serica","Chestionarul alimentar","Impedanta bioelectrica"],[1],1],
+    ["La copii, IMC se interpreteaza:",["Cu aceleasi valori ca la adulti","Cu nomograme specifice varstei si sexului","Doar circumferinta abdominala conteaza","Nu se foloseste IMC la copii"],[1],1],
+    ["Evaluarea prelucrarii alimentelor include:",["Doar calculul caloric final","Decojire, pastrare in apa, temperaturi de gatire","Exclusiv metode de congelare","Etichetele nutritionale"],[1],1],
+    ["Formula IMC:",["Greutate (kg) x Inaltime (m)","Greutate (kg) / Inaltime² (m²)","Greutate (kg) / Inaltime (m)","Inaltime (m) / Greutate (kg)"],[1],1],
+    ["Interpretarea:",["Subponderal","Normoponderal","Supraponderal","Obezitate grad I"],[2],1],
+    ["Clasificarea:",["Supraponderal","Obezitate grad I","Obezitate grad II","Obezitate grad III"],[1],1],
+    ["Circumferinta abdominala normala la femei (OMS):",["mai mic sau egal 70 cm","mai mic sau egal 80 cm","mai mic sau egal 88 cm","mai mic sau egal 94 cm"],[1],1],
+    ["Limita superioara a circumferintei abdominale la barbati (OMS):",["80 cm","88 cm","94 cm","102 cm"],[2],1],
+    ["Interpretarea:",["Normoponderal – la limita inferioara","Subponderal","Supraponderal","Obezitate grad I"],[1],1],
+    ["Principiul aparatului portabil de masurare a grasimii corporale:",["Tesutul adipos are impedanta electrica MAI MARE decat tesutul muscular","Tesutul adipos are impedanta electrica MAI MICA","Densitate corporala prin cantarire in apa","Absorbtia razelor X"],[0],1],
+    ["Ordinea corecta a pasilor la aparatul de grasime corporala:",["Sex - Varsta - Greutate - Inaltime - Start","Inaltime - Greutate - Varsta - Sex - Start","Greutate - Inaltime - Sex - Varsta - Start","Varsta - Sex - Inaltime - Greutate - Start"],[1],1],
+    ["Momentele nerecomandate pentru masurarea grasimii corporale includ:",["Dimineata pe nemancate","Imediat dupa efort fizic intens sau baie","Dupa 8 ore de somn","Dupa o gustare usoara"],[1],1],
+    ["La care dintre urmatoarele grupe valorile sunt mai putin valide?",["Adulti tineri sanatosi","Gravide si pacientii cu edeme","Sportivi amatori","Adulti normoponderali"],[1],1],
+    ["Pozitia corecta la masurarea grasimii corporale:",["Sezut, mainile in poala","Priza pe maner, brate la unghi drept","Culcat, brate intinse pe langa corp","Stand, brate ridicate deasupra capului"],[1],1],
+    ["Metodele de evaluare a consumului alimentar individual includ:",["Absorptiometrie duala + tomografie","Chestionar alimentar 24h + cantarirea alimentelor","Albumina serica + creatinina urinara","Nomograme specifice varstei"],[1],1],
+    ["Chestionarul alimentar pe 24h se recomanda sa fie repetat:",["O singura data este suficient","In diverse zile (zi obisnuita + weekend)","Doar in zile de sarbatoare","Lunar, cu aceeasi zi"],[1],1],
+    ["Metoda estimativa a portiilor foloseste:",["Cantarire exacta a fiecarui aliment","Desene, imagini, modele 3D pentru estimarea portiilor","Chestionare de frecventa saptamanala","Analize biochimice serice"],[1],1],
+    ["Evaluarea alimentatiei la nivel populational include:",["Doar chestionare individuale","National (consum/locuitor/an), colectiv, familial","Doar analiza meniurilor institutionale","Exclusiv metode biochimice"],[1],1],
+    ["Durata recomandata pentru monitorizarea aportului alimentar prin cantarire:",["1 ora","24 ore","1-7 zile sau mai mult","1 luna"],[2],1],
+    ["Analiza meniurilor cuprinde:",["Doar numarul de calorii totale","Numarul de mese/zi, feluri, intervalul de repetare, repartizarea calorica","Exclusiv continutul de proteine","Doar vitamina C si fier"],[1],1],
+    ["Formula pentru calcularea caloriilor furnizate de un aliment:",["Cantitate (g) + calorii la 100g","Cantitate (g) × calorii la 100g / 100","Cantitate (g) / calorii la 100g × 100","Calorii la 100g / Cantitate (g)"],[1],1],
+    ["Total calorii mic dejun:",["175 kcal","274 kcal","305 kcal","130 kcal"],[1],1],
+    ["Factorii evaluati in alimentatia zilnica includ:",["Doar calorii totale","Aport energetic + proteine + grasimi + glucide + fibre + minerale + vitamine","Exclusiv continutul de grasimi saturate","Doar aportul de lichide"],[1],1],
+    ["Sursele de date pentru calculul caloric sunt:",["Etichetele de pe ambalaje sunt singura sursa","Tabelele de compozitie alimentara (compozitie la 100g)","Nomogramele IMC","Analizele biochimice serice"],[1],1],
+    ["Evaluarea nutritionala:",["Normoponderal, abdomen normal","Supraponderal, circumferinta abdominala depasita","Obezitate gr.I, abdomen normal","Subponderal, risc malnutritie"],[1],1],
+    ["Alimentatia cu exces cronic duce la:",["Subnutritie si carente","Supraalimentatie si obezitate","Toxiinfectii alimentare","Methemoglobinemie"],[1],1],
     ["Care sunt metodele antropometrice de evaluare a stării de nutriție:",["măsurarea pliului cutanat","măsurarea procentului de grăsime corporală","tomografia computerizată","măsurarea greutății corporale"],[0,3],2],
     ["Alegeți răspunsurile adevărate referitoare la IMC (indicele de masă corporală):",["18,5 – 24,9  normoponderal","25 – 29,9  normoponderal","18,5 – 24,9  subponderal","35 – 39,9  obezitate gradul I"],[0],1],
     ["Care din valorile IMC enumerate mai jos este corect interpretată?",["valoare IMC sub 35 = subponderal","valoare IMC între 18,5 - 24,9 = normoponderal","valoare IMC între 35 - 39,9 = supraponderal","valoare IMC peste 40 = obezitate grad III"],[1,3],2],
     ["Alegeți varianta corectă referitoare la IMC:",["< 17 = normoponderal","25 - 29,9 = normoponderal","> 40 obezitate grad III","< 35 = subponderal"],[2],1],
   ],
   lp4b: [
+    ["Hârtia de filtru în extractul de carne determină:",["Amoniac (Eber)","Amoniac (Nessler)","Grăsimile (Gerber)","pH-ul"],[3],1],
+    ["La pește se verifică specific:",["Culoare și pH","Ochi, gură, operculii, branhii, solzi","Grăsimea","Mirosul"],[1],1],
+    ["Principiul metodei Gerber:",["Titrare NaOH","Precipitare alcool","Centrifugare după H₂SO₄","Filtrare"],[2],1],
+    ["Densitate SCĂZUTĂ lapte (sub 1.028):",["Ecremare","Lapte praf","Pasteurizare incorectă","Adăugare apă"],[3],1],
+    ["Camera de aer normală ou proaspăt: max",["5 mm","2 mm","10 mm","15 mm"],[0],1],
+    ["Reacția Eber:",["Gaz fumuriu","Precipitat galben Hg","Culoare indicator","Precipitare proteine"],[0],1],
+    ["Falsificare cu bicarbonat → detectare:",["Acid rozolic","Peroxidaza","Densimetru","Gerber"],[0],1],
+    ["Sterilizare incompletă conserve:",["Bacterii aerobe","Clostridium + gaze","Mucegaiuri","Stafilococi"],[1],1],
+    ["Etanșeitatea conservelor:",["Organoleptic","pH","Examen fizic","Bacteriologic"],[2],1],
+    ["Recoltare probe carne: min cantitate:",["100g, 1 loc","500g mușchi","300g, mai multe locuri","Orice"],[2],1],
+    ["Concluzia examinării cărnii:",["Proaspătă – admisă","Relativ proaspătă","Date insuficiente","Alterată – respinsă"],[3],1],
+    ["Starea oului:",["Proaspăt (1-3 zile)","Vârstă medie","Vechi – nerecomandat","Fiert"],[2],1],
+    ["Concluzia:",["Lapte normal","Lapte crud normal","Lapte alterat","Lapte smântânit"],[2],1],
+    ["Concluzia:",["Relativ proaspătă","Proaspătă – admisă","Alterată","Congelată-decongelată"],[1],1],
+    ["Agent etiologic:",["Clostridium – respinsă imediat","Oxidare chimică","Levuri – fierbere","Stafilococ"],[0],1],
+    ["Semnificația:",["Pasteurizare corectă","Supraîncălzit","Bicarbonat","Lapte insuficient pasteurizat"],[3],1],
+    ["Frauda:",["Nicio fraudă","Ecremare","Adăugare apă","Fraudă dublă"],[2],1],
+    ["Tipul fraudei:",["Ecremare frauduloasă","Nicio fraudă","Diluare","Lapte praf"],[0],1],
+    ["Descoperirea:",["Lapte normal","Neutralizare cu bicarbonat","Diluare+ecremare","Lapte bătut"],[1],1],
+    ["Concluzia:",["Fraudă dublă","Posibilă diluare ușoară","Apă oxigenată","Complet normal"],[1],1],
+    ["Evaluarea:",["Conformă","Neconformă – depășește limita","Admisă până la 6%","Insuficiente date"],[1],1],
+    ["Vechimea:",["1-2 săptămâni","Proaspăt (1-3 zile)","3-4 săptămâni","Stricat"],[1],1],
+    ["Interpretarea:",["Vârstă medie – 7-8mm","Proaspăt","Vechi >10mm","Fiert"],[0],1],
+    ["Decizia:",["Admis","Admis condiționat","Analize suplimentare","Respins"],[3],1],
+    ["Densitatea și interpretarea:",["~1.055 – sub normă","~1.07 – normal","~1.09 – anormal","~1.06 – limita inferioară"],[3],1],
+    ["Evaluarea:",["Ou mic proaspăt – admis","Ou mediu – admis","Sub normă – respins","Categorie A"],[0],1],
+    ["pH care delimitează carnea PROASPĂTĂ de RELATIV proaspătă:",["pH 5.8","pH 6.2","pH 6.6","pH 7.0"],[1],1],
+    ["Aciditatea normală a laptelui crud/pasteurizat:",["5-10°T","25-35°T","15-20°T","40-60°T"],[2],1],
+    ["Densitatea minimă a laptelui integral la 20°C:",["1.015 g/ml","1.028 g/ml","1.022 g/ml","1.035 g/ml"],[1],1],
+    ["Toxina botulinică se distruge prin:",["Fierbere 100°C / 10 min","Refrigerare","Congelare","Sărare 5%"],[0],1],
+    ["NaCl admis în brânzeturi:",["0.5-1.0 g%","1.0-2.0 g%","5.0-8.0 g%","2.5-4.0 g%"],[3],1],
+    ["Carne ALTERATĂ la Nessler dacă:",["Culoare după 20 pic","Culoare după 15 pic","Culoare la primele 10 pic","Nicio culoare"],[2],1],
+    ["Densitatea normală a oului proaspăt la 15°C:",["1.00-1.02","1.03-1.05","1.10-1.15","1.07-1.09"],[3],1],
+    ["Enzima pentru controlul pasteurizării:",["Peroxidaza","Amilaza","Lipaza","Catalaza"],[0],1],
     ["Determinările fizice din lapte implică următoarele evaluări:",["Aspectul - să fie lichid","Consistența - să fie fluidă","Se determină densitatea laptelui cu ajutorul lactodensimetrului","Se determină gradul de impurificare al laptelui cu ajutorul lactofiltrului"],[2,3],2],
+    ["Referitor la variațiile zilnice și săptămânale ale randamentului fiziologic",["randament maxim între orele 9-11","randament maxim la ora 8 dimineața","luni – capacitate maximă","marți – capacitatea începe să scadă față de nivelul înregistrat lunea"],[0],1],
     ["Conform normelor igienico-sanitare, carnea proaspătă:",["are o suprafaţă mată, uscată","conținutul grăsos este cenuşiu","are un pH sub 6,2","are un pH peste 6,6"],[2],1],
     ["Sunt măsuri de prevenire a toxiinfecțiilor alimentare, cu excepția:",["respectarea strictă a măsurilor de igiena mâinilor","păstrarea unei curăţenii meticuloase pe toate suprafeţele din bucătărie","evitarea contactului între alimentele crude/neprelucrate şi cele preparate/gătite","reîncălzirea alimentelor preparate/gătite în cuptorul de microunde"],[3],1],
     ["Alegeți afirmațiile corecte privind analiza laptelui prin determinări fizice:",["un lapte diluat are o densitate mai scăzută decât laptele normalizat","un lapte diluat are o densitate mai ridicată decât laptele normalizat","un lapte degresat are o densitate mai scăzută decât laptele normalizat","determinarea grăsimii din lapte poate depista dubla falsificare a laptelui"],[0,3],2],
     ["Măsurile comunitare pentru limitarea poluării sonore includ:",["piste pentru biciclete","achiziţionarea aparatelor de uz casnic (frigider, congelator etc) silenţioase;","căşti antifonice","șosele de ocolire"],[0,3],2],
+    ["Radioprotecția pacienților are în vedere următoarele aspecte:",["nu se fac radiografii de rutină","justificare/indicaţie: procedura trebuie să aducă un beneficiu net, să depăşească cu mult riscurile","se pot face radiografii înainte de anamneză şi examen clinic","se folosesc filme lente pentru creșterea timpului necesar în punerea diagnosticului"],[0,1],2],
     ["Normele igienico-sanitare privind pâinea prevăd:",["o coajă atacată de insecte, rozătoare","un miez uniform, fără urme de făină nefrământată","un miros aromat de mucegai","un gust caracteristic tipului de pâine, potrivit sărat"],[1,3],2],
     ["Valoarea medie optimă a temperaturii în locuințe conform normelor:",["16-20 °C","18-22 °C","20-24 °C","24-25 °C"],[1],1],
+    ["Principala sursă de contaminare a apei cu nitrați:",["antibioticele folosite în ferme industriale","traficul intens pe drumuri","apa meteorică (poluanți din aer)","îngrășăminte folosite intensiv în agricultură"],[3],1],
     ["Despre un ou proaspăt este adevărat:",["se scufundă şi ia poziţie orizontală într-un vas cu apă","are o cameră de aer sub 2 mm","în medie are o greutate de 50 grame","plutește în apă cu vârful în jos"],[0,2],2],
+    ["Prezenţa nitriților în apa potabilă peste limitele admise de normele igienico-sanitare poate duce la apariția:",["hepatitei cronice","ulcerului duodenal","diabetului zaharat tip II","methemoglobinemiei"],[3],1],
     ["Care este principala proteină din ou?",["Ovoalbumina","Fosfolipidele","Vitamina K","Colesterolul"],[0],1],
+    ["Prevenirea trichinelozei include:",["evitarea consumului de carne cu termen de valabilitate expirat","deratizare","afumarea adecvată a cărnii de porc","examinarea trichinoscopică a cărnii de porc"],[1,3],2],
     ["Care din următoarele măsuri sunt eficiente pentru prevenirea methemoglobinemiei infantile?",["folosirea apei din surse verificate şi avizate","fierberea apei din surse suspecte","dezinfecția apei prin clorinare","alăptarea la sân"],[0,3],2],
-    ["Prin măsurarea densității laptelui se pot depista următoarele forme de falsificare a laptelui:",["extragerea smântânii","adăugarea de bicarbonat","adăugarea de făină","diluarea cu apă"],[0,3],2],
     ["Încercuiți afirmațiile care sunt adevărate:",["Determinarea pH-ului cărnii se poate face cu hârtie de filtru.","Un pH de >6,6 denotă o carne proaspătă.","Un pH de >6,6 denotă o carne alterată.","Amoniacul este produs prin degradarea proteinelor în cursul procesului de alterare a cărnii."],[1,3],2],
+    ["Variațiile zilnice ale randamentului se distribuie astfel:",["ora 8 dimineața – valori mijlocii","orele 9-11 – valori maxime","orele 13-14 – valori maxime","orele 15-17 – scădere ușoară"],[0,1],2],
     ["Următoarele afirmații despre conținutul cărnii sunt false:",["carnea conţine circa 20% proteine","cea mai săracă în grăsimi este carnea de porc","cea mai bogată carne în grăsimi este carnea de porc","viscerele sunt sărace în vitamine liposolubile"],[1,3],2],
     ["Care din măsurile de limitare a poluării sonore enumerate mai jos se încadrează în categoria măsurilor comunitare?",["purtarea de căști antifonate","construirea de şosele ocolitoare în jurul orașelor","interzicerea claxonatului în zonele rezidențiale","folosirea de materiale de construcție fonoizolatoare la clădirile rezidențiale"],[1,2],2],
     ["Carnea alterată prezintă:",["suprafaţă puţin umedă","grăsimea este mată şi cenuşie","miros plăcut","măduva oaselor are o culoare cenuşie murdar"],[1,3],2],
+    ["Care din următoarele afirmaţii privind identificarea amoniacului din carne sunt corecte?",["Identificarea se poate face cu reactivul Nessler.","Amoniacul formează compuşi de culoare galbenă cu reactivul Nessler.","Identificarea nu se poate face cu reactivul Eber.","Amoniacul din carne se identifică prin însămânţarea extractului de carne pe un mediu de cultură."],[0,1],2],
     ["Un moment nerecomandabil în cazul măsurării procentului de grăsime este:",["imediat după efort fizic intens","după învățat","înainte de masă","se poate măsura oricând"],[0],1],
-    ["Care din fraudele de mai jos se pot depista cu ajutorul lactodensimetrului?",["neutralizarea acidității laptelui","diluarea cu apă a laptelui","extragerea smântânii din lapte","dublă falsificare a laptelui"],[1,2],2],
-    ["Care din măsurile următoare sunt utile pentru prevenirea trichinelozei?",["trichinoscopia cărnii de porc","determinarea micotoxinelor","trichinoscopia cărnii de vânat","respectarea termenului de valabilitate"],[0,2],2],
+    ["Între măsurile de prevenire a trichinelozei se numără:",["trichinoscopia obligatorie a cărnii porc și de vânat","deratizarea","furajarea naturală a animalelor de crescătorie","tratarea cărnii cu aditivi conservanţi"],[0,1],2],
     ["Proprietățile fizice ale laptelui constau în determinarea:",["culorii","consistenței","gradului de impurificare","densității"],[2,3],2],
   ],
   lp5a: [
+    ["Cereale cu risc crescut de contaminare cu micotoxine:",["Orez si mei exclusiv","Porumb, grau, orz, ovaz, orez + arahide, nuci","Doar grane importate","Exclusiv produse congelate"],[1],1],
+    ["Nu se admite in faina, in niciun stadiu de dezvoltare:",["Urme de rozatoare","Insecte sau acarieni","Granule de gris","Gluten de calitate II"],[1],1],
+    ["Principiul separarii glutenului din faina:",["Titrare cu NaOH","Spalare cu solutie NaCl a portiunii hidrosolubile din aluat, cu zvantarea glutenului obtinut","Centrifugare in solutie acida","Metoda ELISA"],[1],1],
+    ["Evaluarea:",["Conforma - norma e max 8 grade","Neconforma - depaseste max 6,5 grade","Conforma - aciditate normala pentru paine neagra","Necesita confirmare pH"],[1],1],
+    ["Vitamina C este termosensibila, adica:",["Creste la incalzire","Isi pierde proprietatile prin expunere la caldura intensa sau pastrare indelungata","Este stabila la orice temperatura","Se transforma in caroten la caldura"],[1],1],
+    ["Carotenul se pierde in cantitati MICI prin:",["Spalare cu apa calda","Mentinere in apa, tratare termica sau conservare - rezistent la oxidare","Decojire","Congelare"],[1],1],
+    ["Evaluarea:",["Conforma - sub limita de 0,5 g/l","Neconforma - trebuie sa fie absent","Conforma - limita e 1 g/l","Date insuficiente - necesita confirmare"],[1],1],
+    ["Dospirea painii produce:",["Acid lactic si apa","CO2 si alcool etilic (+ alcooli, esteri - aroma)","Acid acetic si gaze","Glucoza si fructoza"],[1],1],
+    ["Solanina din cartofi este o substanta:",["Nutritiva - sursa de vitamina C","Chimica potential toxica - continut maxim admis reglementat","Micotoxina de origine fungica","Conservant autorizat"],[1],1],
+    ["Benzoatul de sodiu in conserve:",["Este interzis complet","Este permis dar in cantitati limitate","Nu are limite de utilizare","Este obligatoriu pentru conservare"],[1],1],
+    ["Conditiile care favorizeaza contaminarea cerealelor cu micotoxine:",["Temperaturi scazute si umiditate mica","Umiditate si temperaturi inalte","Congelare si uscare","Iradiere UV"],[1],1],
+    ["Metoda de determinare a aflatoxinei totale (B1+B2+G1+G2):",["Titrare cu NaOH","Metoda ELISA","Examen microscopic","Testul cu fenolftaleina"],[1],1],
+    ["Gluten categoria I = faina de buna calitate are caracteristicile:",["Moale, filat, lipicios","Tare, elastic, lipicios","Sfaramicios, uscat, alb","Fluid, lipicios, roz"],[1],1],
+    ["Norma minima de gluten pentru faina ALBA:",["Minim 20%","Minim 24%","Minim 26%","Minim 30%"],[2],1],
+    ["Semnificatia:",["Calitate excelenta - gluten bun","Infestare cu Bacillus mezentericus","Umiditate excesiva in aluat","Aciditate prea mare"],[1],1],
+    ["Aciditatea maxima admisa pentru painea ALBA:",["Maxim 2,5 grade","Maxim 3,5 grade","Maxim 4,5 grade","Maxim 6,5 grade"],[1],1],
+    ["Concluzia:",["Paine integrala de calitate superioara","Etichetare frauduloasa - paine alba vanduta ca integrala","Contaminare cu micotoxine","Gluten de calitate II"],[1],1],
+    ["Pe masura ce fructele si legumele se coc, aciditatea:",["Creste progresiv","Scade","Ramane constanta","Oscileaza zilnic"],[1],1],
+    ["Vitamina C se gaseste:",["Exclusiv in alimente de origine animala","Numai in alimente de origine vegetala","In proportii egale in toate alimentele","Mai ales in grasimi"],[1],1],
+    ["Metoda de determinare a vitaminei C:",["Titrare cu NaOH in prezenta fenolftaleinei","Titrare cu 2,6 diclorfenol-indofenol (pana la roz persistent)","Metoda ELISA","Spectrofotometrie UV"],[1],1],
+    ["Carotenul (provitamina A) se gaseste in:",["Exclusiv in alimente de origine animala","Alimente de origine vegetala - fructe si legume cu coaja/pulpa colorata","Exclusiv in lapte si oua","In toate grasimile animale"],[1],1],
+    ["Explicatia:",["Vitamina C creste prin hidratare","Vitamina C este termosensibila si hidrolabila - se pierde prin pastrare in apa","Morcovii nu contin vitamina C","Carotenul a inlocuit vitamina C"],[1],1],
+    ["Acidul tartric este caracteristic pentru:",["Mere si pere","Struguri","Citrice si capsuni","Gutui si caise"],[1],1],
+    ["Alcoolul metilic in bauturile alcoolice:",["Este permis pana la 0,5%","Este permis in concentratii mici","Trebuie sa fie ABSENT in bauturile industriale","Este un conservant autorizat"],[2],1],
+    ["Examenul organoleptic al conservelor include verificarea:",["Doar a gustului si mirosului","Aspectului exterior (bombata, ruginita, fisura) + etanseitate + continut la deschidere","Exclusiv a continutului chimic","Doar a datei de expirare"],[1],1],
+    ["Decizia:",["Admisa - bombajul e normal la conserve acide","Respinsa - risc botulism si anaerobi","Admisa dupa fierbere 10 minute","Necesita analize chimice suplimentare"],[1],1],
+    ["Sucurile artificiale racoritoare trebuie sa mentioneze obligatoriu pe eticheta:",["Doar caloriile totale","Denumirea aditivilor alimentari utilizati","Exclusiv ingredientele principale","Doar data de expirare"],[1],1],
+    ["Incalzirea conservei la 80 grade C se face pentru:",["Sterilizare inainte de consum","Verificarea mirosului - miros neplacut la incalzire = produs alterat","Cresterea valorii nutritive","Activarea conservantilor"],[1],1],
+    ["Acidul cianhidric in bauturile alcoolice:",["Permis pana la 50 mg/l","Trebuie sa fie absent sau in urme foarte slabe","Este un aditiv autorizat","Norma: maxim 0,5%"],[1],1],
     ["Cantitatea de alcool metilic în băuturile alcoolice admisă este de:",["0,1 mg/l","10 ml/l","absent","0,5 mg/l"],[2],1],
     ["Printre măsurile de control igienico-sanitar pentru băuturile alcoolice se numără:",["determinarea conținutului de vitamine","determinarea alcoolului metilic","determinarea acidului cianhidric","determinarea pH-ului"],[1,2],2],
   ],
   lp5b: [
+    ["Trichinoscopia este OBLIGATORIE la:",["Bovine si ovine","Porc si vanat sacrificate pentru consum public","Toate animalele, inclusiv pasari","Doar la importul de carne"],[1],1],
+    ["Temperatura de distrugere a cisticercilor Tenia saginata:",["77 grade C / toate portiunile","56 grade C / 5 minute sau congelare -10 grade C / 9 zile","100 grade C / 2 minute","Congelare -32 grade C / 24h"],[1],1],
+    ["Evaluarea:",["Toate conforme","Neconforma - E. coli depaseste max 1/g","Neconforma - Salmonella depaseste norma","Neconforma - stafilococii depasesc norma"],[1],1],
+    ["Diphilobotrium latum se previne prin:",["Trichinoscopia obligatorie","Prelucrare termica peste peste minimum 56 grade C / 5min sau congelare -10 grade C / 72h","Examen pentru cisticercoza","Evitarea contactului cu rozatoare"],[1],1],
+    ["Sursa de TIA include:",["Exclusiv animale bolnave","Persoane bolnave si purtatori sanatosi, animale bolnave, sol contaminat cu fecale","Doar alimente de import","Exclusiv apa contaminata"],[1],1],
+    ["Numarul maxim de germeni admis pe frotiul de la SUPRAFATA carnii:",["Max 5 germeni/camp","Max 20 germeni/camp, fara fragmente tisulare","Max 100 germeni/camp","Orice numar, conteaza doar profunzimea"],[1],1],
+    ["Regula OMS nr. 9 de prevenire a TIA:",["Spalarea mainilor de 9 ori pe zi","Folosirea exclusiv a apei potabile la prepararea alimentelor","Consumul alimentelor dupa 9 ore de la preparare","Pastrarea la 9 grade C"],[1],1],
+    ["Evaluarea:",["Conform la toti parametrii","Neconform - NTG depaseste 300.000/ml","Neconform - coliformii depasesc norma","Neconform - drojdii peste norma"],[1],1],
+    ["Cuptorul cu microunde in prelucrarea carnii cu Trichinella:",["Este metoda recomandata - distruge sigur larvele","Poate fi ineficient - incalzire inegala, larve supravietuiesc in carne aparent gatita","Este echivalent cu fierberea clasica","Distruge larvele la orice putere"],[1],1],
+    ["Examenul pentru cisticercoza bovina este obligatoriu la:",["Toate bovinele","Bovine peste 3 luni","Bovine peste 1 an","Doar bovine importate"],[1],1],
+    ["Conditiile de recoltare a probelor de carne pentru examen bacteriologic:",["La temperatura camerei, fara ambalaj special","In conditii de asepsie, 100-150g, ambalare aseptica, transport max 6h","Orice cantitate, la frigider, fara termen","Minim 500g, ambalaj obisnuit, transport 24h"],[1],1],
+    ["Bacterioscopia carnii PROASPETE in profunzime arata:",["Germeni Gram+ si Gram- numerosi","Germeni absenti","Mucegaiuri si fragmente tisulare","Coci si bacili izolati"],[1],1],
+    ["Interpretarea:",["Carne proaspata – admisa","Carne relativ proaspata – condi tionat admisa","Carne alterata – respinsa","Date insuficiente"],[2],1],
+    ["Norma pentru Salmonella in mezeluri:",["Max 10/g","Max 1/g","Max 100/g","Absenta /25g"],[3],1],
+    ["Norma pentru Clostridii sulfito-reducatoare in carne (zvantata, refrigerata, congelata):",["Absente /25g","Max 1/g","Max 10/g","Max 100/g"],[1],1],
+    ["Stafilococii coagulazo-pozitivi sunt importanti deoarece:",["Produc spori rezistenti la fierbere","Pot produce toxiinfectii alimentare in preparatele reci neprelucrate termic","Sunt indicatori ai contaminarii fecale","Produc gaze in mediu lactozat"],[1],1],
+    ["Trichinella spiralis – localizarea formei adulte si a formei larvare:",["Adult in muschi, larva in intestin","Adult in intestin, larva in muschi","Ambele forme in intestin","Ambele forme in muschi"],[1],1],
+    ["Zonele de electie pentru recoltarea probelor la trichinoscopia:",["Muschi dorsali si coapsa","Pilieri diafragmatici, muschi limbii, laringelui, musculatura intercostala","Ficatul si rinichii","Grasimea subcutanata"],[1],1],
+    ["Gradul de infestare:",["Absenta parazitului","Infestare slaba (sub 5 sectiuni)","Infestare masiva (peste 5 sectiuni)","Date insuficiente"],[2],1],
+    ["Temperatura minima de prelucrare termica pentru distrugerea larvelor de Trichinella:",["56 grade C / 5 minute","65 grade C / 10 minute","77 grade C (toate portiunile)","100 grade C / 2 minute"],[2],1],
+    ["Tenia saginata este responsabila de ce procent din teniaze?",["20%","50%","80%","95%"],[2],1],
+    ["Cisticercii Tenia saginata se detecteaza:",["Prin trichinoscop la marire mare","Cu ochiul liber sau cu lupa – vezicule albe de marimea unui bob de mei","Prin culturi bacteriologice","Prin reactie ELISA"],[1],1],
+    ["Botriocefaloza se transmite prin:",["Carne de porc insuficient prelucrata","Peste crud, insuficient preparat termic, afumat sau icre","Apa contaminata direct","Legume nespălate"],[1],1],
+    ["Agentii etiologici principali ai toxiinfectiilor alimentare (pana la 90%):",["Clostridium botulinum si Listeria","Salmonella si stafilococii enterotoxici","E. coli si Shigella","Rotavirus si norovirus"],[1],1],
+    ["Alimentele cel mai frecvent implicate in TIA:",["Produse de origine vegetala crude","Alimente de origine animala (carne, oua) + deserturi, inghetata, patiserie","Exclusiv conserve","Doar apa contaminata"],[1],1],
+    ["Dintre regulile OMS de prevenire a TIA, care este corecta?",["Pastrarea alimentelor preparate la temperatura camerei max 24h","Evitarea contactului intre alimente crude si cele preparate/gatite","Consumul alimentelor dupa 2-3h de la preparare","Spalarea mainilor o data inainte de gatit"],[1],1],
+    ["Agentul etiologic cel mai probabil:",["Clostridium botulinum","Stafilococ enterotoxic sau Salmonella","Trichinella spiralis","Virus hepatitic A"],[1],1],
+    ["HACCP (Analiza riscurilor in punctele critice de control) are ca scop:",["Doar etichetarea corecta a produselor","Eliminarea riscului de contaminare chimica si bacteriana prin prevenire, instruire, cresterea calitatii igienico-sanitare","Exclusiv controlul la punctul final de vanzare","Inlocuirea analizelor microbiologice"],[1],1],
+    ["Circuitul alimentelor trebuie sa fie:",["Bidiectional, cu posibilitate de reluare a fazelor","Intr-un singur sens, fara incrucisari intre faze salubre si insalubre, eficient si operativ","Circular, cu faze care se pot repeta","Flexibil, cu posibilitate de ocolire a fazelor"],[1],1],
     ["Măsuri pentru prevenirea trichinelozei:",["igiena corespunzătoare a mâinilor","consumul exclusiv al cărnii de animal domestic","prelucrarea termică adecvată a cărnii la temperaturi peste 77 °C","afumarea la rece a cărnii de porc"],[2],1],
+    ["Care din măsurile următoare sunt utile pentru prevenirea trichinelozei?",["trichinoscopia cărnii de porc","determinarea micotoxinelor","trichinoscopia cărnii de vânat","respectarea termenului de valabilitate"],[0,2],2],
   ],
   lp6a: [
+    ["Sievert (Sv) reprezintă:",["Activitatea radioactivă a sursei","Doza absorbită (J/kg)","Debitul dozei","Doza echivalentă și efectivă (cu factori de ponderare)"],[3],1],
+    ["Limita de doză efectivă pentru populația generală:",["5 mSv/an","20 mSv/an","50 mSv/an","1 mSv/an"],[3],1],
+    ["Principalul echipament de protecție individuală în radiologie:",["Șorț de cauciuc plumbat + ochelari de sticlă plumbată + mănuși plumbate","Mănuși sterile","Mască de protecție respiratorie","Costum integral steril"],[0],1],
+    ["Riscul:",["Sub limita de risc – nicio măsură","Risc cataractă (4 Gy < 3 luni = risc cataractă)","Risc leucemie acută","Risc de deces imediat"],[1],1],
+    ["NU se fac radiografii de rutină deoarece:",["Orice expunere contribuie la creșterea riscului cumulativ","Este prea costisitor","Calitatea este slabă","Durează prea mult"],[0],1],
+    ["Detectorul Geiger-Muller funcționează pe principiul:",["Luminiscenței/termoluminiscenței","Impresionării fotografice","Ionizării gazelor","Rezonanței magnetice"],[2],1],
+    ["Doza absorbită se măsoară în:",["Becquerel (Bq)","Sievert (Sv)","Gray (Gy)","Curie (Ci)"],[2],1],
+    ["Factorul de ponderare pentru particulele alfa (α) față de razele X:",["5-20 ori mai mare (factor 10-20)","Același (factor 1)","10 ori mai mic","Factor 2"],[0],1],
+    ["Surse artificiale de radiații ionizante includ:",["Cosmos și sol","Radon din clădiri","Aparatură Roentgen, centrale nucleare, mine uraniu, armament nuclear","Potasiu-40 din alimente"],[2],1],
+    ["Tipuri de radiații electromagnetice ionizante:",["Unde radio și microunde","Raze X și raze γ","Raze infraroșii și UV","Lumina vizibilă"],[1],1],
+    ["Organul cu cel mai mare factor de ponderare tisulară (0,20):",["Gonade (0,20)","Sân (0,05)","Piele (0,01)","Măduvă hematopoetică (0,12)"],[0],1],
+    ["Limita de doză efectivă profesională (radiologie):",["5 mSv/an","10 mSv/an","50 mSv/an","20 mSv/an (100 mSv/5 ani)"],[3],1],
+    ["Limita de doză echivalentă pentru cristalin (personal profesional):",["20 mSv/an","50 mSv/an","500 mSv/an","150 mSv/an"],[3],1],
+    ["Dozimetrul fotodozimetric se poartă:",["Pe mână dominantă","Pe gleznă","Pe torace sau abdomen (sub șorțul de protecție la gravide - pe abdomen)","Pe frunte"],[2],1],
+    ["Principiul de bază al radioprotecției pacienților:",["Orice expunere este permisă dacă e necesară","Justificare (beneficiu net > risc) + doză minimă + număr minim de examinări","Repetarea examinărilor pentru precizie","Ecrane nu sunt necesare la proceduri scurte"],[1],1],
+    ["Autorizarea funcționării spațiilor pentru radiodiagnostic este emisă de:",["Ministerul Sănătății","CNCAN (Comisia Națională pentru Controlul Activităților Nucleare)","Direcția de Sănătate Publică","Colegiul Medicilor"],[1],1],
   ],
   lp6b: [
-    ["Referitor la variațiile zilnice și săptămânale ale randamentului fiziologic",["randament maxim între orele 9-11","randament maxim la ora 8 dimineața","luni – capacitate maximă","marți – capacitatea începe să scadă față de nivelul înregistrat lunea"],[0],1],
-    ["Variațiile zilnice ale randamentului se distribuie astfel:",["ora 8 dimineața – valori mijlocii","orele 9-11 – valori maxime","orele 13-14 – valori maxime","orele 15-17 – scădere ușoară"],[0,1],2],
+    ["Intervalul de depresiune a capacității de lucru în cursul zilei:",["7-8 dimineața","11-12","13-14","17-18"],[2],1],
+    ["Numărul de ore pe zi recomandat pentru clasa a VIII-a:",["3-4 ore","5 ore","4 ore","5-6 ore"],[1],1],
+    ["Alternarea perioadelor de activitate cu cele de repaus în programul școlar este importantă deoarece:",["Reduce costurile","Respectă curbele fiziologice ale capacității de lucru","Este cerință legală","Reduce numărul de absențe"],[1],1],
+    ["Evaluarea orarului:",["Conform – distribuție normală","Neconformă – luni și vineri nu trebuie să aibă multe ore grele","Conformă – maxim zilnic respectat","Date insuficiente"],[1],1],
+    ["Monitorizarea medicală periodică de bilanț la copii urmărește:",["Exclusiv greutatea și înălțimea","Doar parametrii hematologici","Exclusiv vaccinările","Activitatea, obiceiurile, atitudinea și cunoștințele elevilor + starea de sănătate"],[3],1],
+    ["Intervalul de randament maxim al elevilor în cursul zilei:",["9-11 dimineața","7-9 dimineața","14-16 după-amiaza","17-19 seara"],[0],1],
+    ["Capacitatea de lucru cea mai scăzută în cursul săptămânii:",["Marți și joi","Luni și vineri","Miercuri","Joi și vineri"],[1],1],
+    ["Numărul maxim de ore pe zi pentru clasa I:",["3-4 ore","2-3 ore","5 ore","6 ore"],[0],1],
+    ["Zilele cu cele mai multe ore grele NU trebuie să fie:",["Luni și vineri","Marți și miercuri","Miercuri și joi","Joi și marți"],[0],1],
+    ["Randamentul școlar cel mai scăzut apare:",["La începutul semestrului","La mijlocul anului","Vara","La sfârșitul semestrelor, după examene, la sfârșitul anului școlar"],[3],1],
+    ["Comportamentele de risc la copii și adolescenți supuse prevenirii includ:",["Exclusiv consumul de droguri","Doar comportamentul violent","Obiceiuri alimentare, tabagism, alcool, droguri, comportament sexual, violență, igienă buco-dentară","Exclusiv fumatul și alcoolul"],[2],1],
+    ["Metodele de monitorizare a comportamentelor de risc în colectivități includ:",["Exclusiv examinare fizică","Doar analize de laborator","Chestionare, interviuri, seminarii, cursuri, teste","Numai observație directă"],[2],1],
+    ["Orarul școlar trebuie să țină seama de:",["Preferințele profesorilor","Exclusiv programa școlară","Disponibilitatea sălilor","Curbele fiziologice zilnice, săptămânale și anuale ale capacității de lucru"],[3],1],
+    ["Randamentul elevilor variază sezonier. Cel mai scăzut este:",["La sfârșitul semestrelor și la sfârșitul anului școlar","La începutul lunii septembrie","La mijlocul semestrului I","Vara – în concediu"],[0],1],
   ],
 };
 
@@ -2770,34 +3050,35 @@ function pickExamQuestions() {
   const LPS = ['lp1a','lp1b','lp2a','lp2b','lp3a','lp3b','lp4a','lp4b','lp5a','lp5b','lp6a','lp6b'];
   const shuffle = arr => [...arr].sort(()=>Math.random()-0.5);
   const EXAM_BANK = getExamBank();
-  
-  let picked = [];
-  // First pass: 1 per LP (guaranteed)
+  const TARGET = 20;
+  const MAX_PER_LP = 2;
+
+  // Step 1: 1 guaranteed question per LP (12 questions)
+  const picked = [];
+  const usedPerLP = {};
   for (const lp of LPS) {
-    const pool = EXAM_BANK[lp] || [];
+    const pool = shuffle(EXAM_BANK[lp] || []);
     if (pool.length === 0) continue;
-    const s = shuffle(pool);
-    picked.push({...s[0], lp});
+    picked.push({...pool[0], lp});
+    usedPerLP[lp] = [pool[0].q];
   }
-  
-  // Second pass: add 1 more from random LPs until we have 20
-  const extra_lps = shuffle(LPS);
-  let i = 0;
-  while (picked.length < 20 && i < extra_lps.length * 3) {
-    const lp = extra_lps[i % extra_lps.length];
-    const pool = EXAM_BANK[lp] || [];
-    const usedQ = picked.filter(p=>p.lp===lp);
-    if (usedQ.length < 2 && pool.length > usedQ.length) {
-      const usedTexts = new Set(usedQ.map(p=>p.q));
-      const available = shuffle(pool).filter(q=>!usedTexts.has(q.q));
-      if (available.length > 0) {
-        picked.push({...available[0], lp});
-      }
-    }
-    i++;
+
+  // Step 2: add 8 more from random LPs (max 2 total per LP)
+  const extraLPs = shuffle(LPS);
+  let attempts = 0;
+  while (picked.length < TARGET && attempts < 200) {
+    attempts++;
+    const lp = extraLPs[attempts % extraLPs.length];
+    const used = usedPerLP[lp] || [];
+    if (used.length >= MAX_PER_LP) continue;
+    const pool = shuffle(EXAM_BANK[lp] || []);
+    const available = pool.filter(q => !used.includes(q.q));
+    if (available.length === 0) continue;
+    picked.push({...available[0], lp});
+    usedPerLP[lp] = [...used, available[0].q];
   }
-  
-  return shuffle(picked).slice(0, 20);
+
+  return shuffle(picked).slice(0, TARGET);
 }
 
 // ── ExamCodeScreen ─────────────────────────────────────────
@@ -2853,11 +3134,79 @@ function ExamCodeScreen({session, onStart}) {
 
 // ── ExamScreen ──────────────────────────────────────────────
 function ExamScreen({code, questions, session, onFinish}) {
-  const [cur,      setCur]      = React.useState(0);
-  const [selected, setSelected] = React.useState([]); // array of selected indices
-  const [answers,  setAnswers]  = React.useState([]);
-  const [confirmed,setConfirmed]= React.useState(false);
-  const [startT]               = React.useState(Date.now());
+  const EXAM_DURATION = 20 * 60; // 20 minutes in seconds
+  const MAX_BLUR = 2; // max times allowed to leave screen
+
+  const [cur,        setCur]      = React.useState(0);
+  const [selected,   setSelected] = React.useState([]);
+  const [answers,    setAnswers]  = React.useState([]);
+  const [confirmed,  setConfirmed]= React.useState(false);
+  const [startT]                  = React.useState(Date.now());
+  const [timeLeft,   setTimeLeft] = React.useState(EXAM_DURATION);
+  const [blurCount,  setBlurCount]= React.useState(0);
+  const [blurWarning,setBlurWarning]=React.useState(false);
+  const [forcedEnd,  setForcedEnd]= React.useState(false);
+  const timerRef = React.useRef(null);
+  const answersRef = React.useRef([]);
+
+  // Keep answersRef in sync (needed for forced submit)
+  React.useEffect(()=>{ answersRef.current = answers; }, [answers]);
+
+  // Force submit helper
+  const forceSubmit = React.useCallback((currentAnswers, reason) => {
+    const allAnswers = [...currentAnswers];
+    // Fill remaining unanswered questions as wrong
+    for (let i = allAnswers.length; i < questions.length; i++) {
+      allAnswers.push({
+        q: questions[i].q, selected:[], correct:questions[i].c,
+        options:questions[i].o, lp:questions[i].lp, type:questions[i].t, isCorrect:false
+      });
+    }
+    const score = allAnswers.filter(a=>a.isCorrect).length;
+    const pct = Math.round(score/questions.length*100);
+    const grade = calcGrade(pct);
+    const timeUsed = Math.round((Date.now()-startT)/1000);
+    onFinish({code, score, total:questions.length, pct, grade, timeUsed,
+              answers:allAnswers, session, note:reason});
+  }, [questions, startT, code, session, onFinish]);
+
+  // Countdown timer
+  React.useEffect(()=>{
+    timerRef.current = setInterval(()=>{
+      setTimeLeft(prev=>{
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          forceSubmit(answersRef.current, "⏱️ Timp expirat");
+          return 0;
+        }
+        return prev-1;
+      });
+    }, 1000);
+    return ()=>clearInterval(timerRef.current);
+  }, [forceSubmit]);
+
+  // Focus/blur detection
+  React.useEffect(()=>{
+    const onBlur = ()=>{
+      setBlurCount(prev=>{
+        const next = prev+1;
+        if (next >= MAX_BLUR) {
+          setTimeout(()=>forceSubmit(answersRef.current, "⚠️ Părăsire platformă de "+MAX_BLUR+"x"), 1500);
+        } else {
+          setBlurWarning(true);
+          setTimeout(()=>setBlurWarning(false), 4000);
+        }
+        return next;
+      });
+    };
+    window.addEventListener('blur', onBlur);
+    document.addEventListener('visibilitychange', ()=>{
+      if (document.hidden) onBlur();
+    });
+    return ()=>{
+      window.removeEventListener('blur', onBlur);
+    };
+  }, [forceSubmit]);
   
   const q = questions[cur];
   const isMulti = q.t === 'multi';
@@ -3024,6 +3373,11 @@ function ExamResultScreen({result, onRestart}) {
         {/* Grade card */}
         <div style={{background:'#fff',borderRadius:24,padding:36,marginBottom:20,textAlign:'center',boxShadow:'0 20px 50px rgba(0,0,0,0.3)'}}>
           <div style={{fontSize:14,color:'#64748b',fontWeight:600,marginBottom:4}}>REZULTAT EXAMEN IGIENĂ</div>
+          {result.note && (
+            <div style={{background:'#fef2f2',border:'1px solid #fecaca',borderRadius:8,padding:'6px 12px',marginBottom:8,fontSize:12,color:'#dc2626',fontWeight:600}}>
+              {result.note}
+            </div>
+          )}
           <div style={{fontFamily:'monospace',color:'#6366f1',fontSize:18,marginBottom:20}}>🔑 {code}</div>
           
           <div style={{display:'inline-block',background:gradeBg,borderRadius:20,padding:'24px 48px',marginBottom:20}}>
@@ -3085,6 +3439,201 @@ function ExamResultScreen({result, onRestart}) {
     </div>
   );
 }
+
+
+// ════════════════════════════════════════════════════════════
+// EXAM BANK PANEL — vizsga kérdések megtekintése és szerkesztése
+// ════════════════════════════════════════════════════════════
+const EXAM_EDITS_KEY = "exam_edits_v1";
+
+function loadExamEdits() {
+  try { const s=localStorage.getItem("igiena_exam_edits"); return s?JSON.parse(s):{}; } catch(e){return {};}
+}
+async function loadExamEditsRemote() {
+  try {
+    const res = await sb(`settings?key=eq.${EXAM_EDITS_KEY}&select=data`);
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length>0 ? rows[0].data : null;
+  } catch(e){return null;}
+}
+function saveExamEdits(edits) {
+  try { localStorage.setItem("igiena_exam_edits", JSON.stringify(edits)); } catch(e){}
+  sb("settings",{method:"POST",prefer:"return=minimal,resolution=merge-duplicates",
+    body:JSON.stringify({key:EXAM_EDITS_KEY, data:edits})}).catch(()=>{});
+}
+
+function ExamBankPanel({mode, selLab}) {
+  const [edits, setEdits] = React.useState(()=>loadExamEdits());
+  const [filterLP, setFilterLP] = React.useState("all");
+  const [search, setSearch] = React.useState("");
+  const [editingQ, setEditingQ] = React.useState(null); // {lpKey, idx, data}
+  const [saveMsg, setSaveMsg] = React.useState("");
+  const [expandedQ, setExpandedQ] = React.useState(null);
+  const isEdit = mode==="edit";
+  const ABCD = ['A','B','C','D'];
+
+  // Load from Supabase on mount
+  React.useEffect(()=>{
+    loadExamEditsRemote().then(remote=>{
+      if (remote && Object.keys(remote).length>0) {
+        setEdits(remote);
+        try{localStorage.setItem("igiena_exam_edits",JSON.stringify(remote));}catch(e){}
+      }
+    }).catch(()=>{});
+  },[]);
+
+  // Build question list from EXAM_BANK_RAW + edits
+  const bank = getExamBank();
+  const lpOrder = ['lp1a','lp1b','lp2a','lp2b','lp3a','lp3b','lp4a','lp4b','lp5a','lp5b','lp6a','lp6b'];
+  const lpLabels = {
+    lp1a:'LP1A — Microclimatul Interior', lp1b:'LP1B — Poluarea Aerului',
+    lp2a:'LP2A — Fumat & Microbiologie', lp2b:'LP2B — Iluminat & Sonometrie',
+    lp3a:'LP3A — Apa (Fizico-Chimică)',  lp3b:'LP3B — Apa (Microbiologie)',
+    lp4a:'LP4A — Nutriție',              lp4b:'LP4B — Produse Alimentare',
+    lp5a:'LP5A — Produse Vegetale',      lp5b:'LP5B — Bacteriologie',
+    lp6a:'LP6A — Radiații',              lp6b:'LP6B — Igienă Școlară',
+  };
+
+  // Get questions for a LP, applying edits
+  const getLPQs = (lp) => {
+    const base = bank[lp] || [];
+    const lpEdits = edits[lp] || {};
+    return base.map((q,i) => lpEdits[i] ? {...q, ...lpEdits[i]} : q)
+               .filter(q => !lpEdits[`del_${base.indexOf(q)}`]);
+  };
+
+  // Filter
+  const filteredLPs = filterLP==="all" ? lpOrder : [filterLP];
+  const allQs = filteredLPs.flatMap(lp =>
+    getLPQs(lp).map((q,i)=>({...q, lp, lpIdx:i}))
+  ).filter(q => !search || q.q.toLowerCase().includes(search.toLowerCase()));
+
+  const totalQ = lpOrder.reduce((s,lp)=>s+getLPQs(lp).length,0);
+
+  // Save an edit to one question
+  const saveEdit = (lp, idx, newData) => {
+    const newEdits = {...edits, [lp]:{...(edits[lp]||{}), [idx]:newData}};
+    setEdits(newEdits);
+    saveExamEdits(newEdits);
+    setEditingQ(null);
+    setSaveMsg("✓ Salvat!"); setTimeout(()=>setSaveMsg(""),2000);
+  };
+
+  const sS = {padding:"6px 10px",border:"1.5px solid #e0e7ff",borderRadius:8,fontSize:13,background:"#fff",color:"#1e293b"};
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:14}}>
+        <div>
+          <h3 style={{margin:0,fontSize:16,fontWeight:800,color:"#1e1b4b"}}>
+            🎓 {isEdit?"Editor":"Previzualizare"} Bancă Examen
+          </h3>
+          <p style={{margin:"3px 0 0",fontSize:12,color:"#64748b"}}>{totalQ} întrebări · {allQs.length} afișate</p>
+        </div>
+        {saveMsg && <span style={{color:"#16a34a",fontWeight:700,fontSize:13}}>{saveMsg}</span>}
+      </div>
+
+      {/* Filters */}
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
+        <select style={sS} value={filterLP} onChange={e=>setFilterLP(e.target.value)}>
+          <option value="all">🔬 Toate LP-urile</option>
+          {lpOrder.map(lp=><option key={lp} value={lp}>{lp.toUpperCase()}</option>)}
+        </select>
+        <input style={{...sS,flex:1,minWidth:160}} placeholder="🔍 Caută în întrebări..."
+          value={search} onChange={e=>setSearch(e.target.value)}/>
+      </div>
+
+      {/* Questions */}
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        {allQs.length===0 && (
+          <div style={{background:"#fff",borderRadius:12,border:"1px solid #e0e7ff",padding:"32px",textAlign:"center",color:"#94a3b8"}}>
+            Nicio întrebare găsită.
+          </div>
+        )}
+        {allQs.map((q, globalIdx) => {
+          const isExpanded = expandedQ===`${q.lp}-${q.lpIdx}`;
+          const isEditing = editingQ?.lp===q.lp && editingQ?.idx===q.lpIdx;
+          const correctCount = q.c?.length || 0;
+          const typeNote = correctCount>1?`${correctCount} răsp. corecte`:"1 răsp. corect";
+
+          if (isEditing) {
+            const d = editingQ.data;
+            return (
+              <div key={globalIdx} style={{background:"#FFF8E1",border:"2px solid #f59e0b",borderRadius:12,padding:16}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#92400e",marginBottom:8}}>{q.lp.toUpperCase()} — EDITARE</div>
+                <textarea value={d.q} onChange={e=>setEditingQ({...editingQ,data:{...d,q:e.target.value}})}
+                  style={{width:"100%",padding:8,borderRadius:8,border:"1.5px solid #f59e0b",fontSize:13,marginBottom:10,resize:"vertical",boxSizing:"border-box",minHeight:60}}/>
+                {d.o.map((opt,oi)=>(
+                  <div key={oi} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                    <span style={{fontWeight:700,color:"#374151",minWidth:20}}>{ABCD[oi]}.</span>
+                    <input value={opt} onChange={e=>{const o=[...d.o];o[oi]=e.target.value;setEditingQ({...editingQ,data:{...d,o}});}}
+                      style={{flex:1,padding:"6px 8px",borderRadius:7,border:"1.5px solid #e0e7ff",fontSize:13}}/>
+                    <label style={{display:"flex",alignItems:"center",gap:4,fontSize:12,color:"#16a34a",cursor:"pointer"}}>
+                      <input type="checkbox" checked={d.c.includes(oi)}
+                        onChange={e=>{const nc=e.target.checked?[...d.c,oi]:d.c.filter(x=>x!==oi);setEditingQ({...editingQ,data:{...d,c:nc}});}}/>
+                      corect
+                    </label>
+                  </div>
+                ))}
+                <div style={{display:"flex",gap:8,marginTop:10}}>
+                  <button onClick={()=>saveEdit(q.lp,q.lpIdx,{q:d.q,o:d.o,c:d.c,t:d.c.length>1?'multi':'single'})}
+                    style={{padding:"7px 18px",background:"#6366f1",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:13,cursor:"pointer"}}>
+                    💾 Salvează
+                  </button>
+                  <button onClick={()=>setEditingQ(null)}
+                    style={{padding:"7px 14px",background:"#f1f5f9",color:"#374151",border:"none",borderRadius:8,fontSize:13,cursor:"pointer"}}>
+                    Anulează
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div key={globalIdx} style={{background:"#fff",border:"1px solid #e0e7ff",borderRadius:12,overflow:"hidden"}}>
+              <div onClick={()=>setExpandedQ(isExpanded?null:`${q.lp}-${q.lpIdx}`)}
+                style={{padding:"12px 14px",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:10}}>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",gap:6,marginBottom:4,flexWrap:"wrap"}}>
+                    <span style={{background:"#EEF2FF",color:"#4338ca",borderRadius:5,padding:"1px 7px",fontSize:11,fontWeight:700}}>{q.lp.toUpperCase()}</span>
+                    <span style={{background:correctCount>1?"#fef3c7":"#f0fdf4",color:correctCount>1?"#92400e":"#15803d",borderRadius:5,padding:"1px 7px",fontSize:11,fontWeight:600}}>{typeNote}</span>
+                  </div>
+                  <div style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4}}>{q.q}</div>
+                </div>
+                <div style={{display:"flex",gap:6,flexShrink:0}}>
+                  {isEdit && (
+                    <button onClick={e=>{e.stopPropagation();setEditingQ({lp:q.lp,idx:q.lpIdx,data:{q:q.q,o:[...q.o],c:[...(q.c||[])]}});}}
+                      style={{padding:"4px 10px",background:"#FFF8E1",border:"1px solid #f59e0b",borderRadius:7,fontSize:12,color:"#92400e",cursor:"pointer",fontWeight:600}}>
+                      ✏️
+                    </button>
+                  )}
+                  <span style={{color:"#94a3b8",fontSize:16}}>{isExpanded?"▲":"▼"}</span>
+                </div>
+              </div>
+              {isExpanded && (
+                <div style={{padding:"0 14px 14px",borderTop:"1px solid #f1f5f9"}}>
+                  {q.o.map((opt,oi)=>{
+                    const isC = (q.c||[]).includes(oi);
+                    return (
+                      <div key={oi} style={{display:"flex",gap:8,alignItems:"flex-start",padding:"6px 0",borderBottom:oi<3?"1px solid #f8faff":"none"}}>
+                        <span style={{fontWeight:800,color:isC?"#15803d":"#94a3b8",minWidth:22,fontSize:13}}>{ABCD[oi]}.</span>
+                        <span style={{fontSize:13,color:isC?"#15803d":"#374151",fontWeight:isC?600:400,flex:1}}>{opt}</span>
+                        {isC && <span style={{fontSize:14,color:"#16a34a",flexShrink:0}}>✓</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 
 // ════════════════════════════════════════════════════════════
@@ -3307,8 +3856,21 @@ function AdminPanel({onBack, teacherName}) {
     setGenerating(false);
   };
 
-  const cancelSession = () => {
+  const cancelSession = async () => {
     clearInterval(timerRef.current);
+    // Delete session from Supabase immediately so QR code stops working
+    if (activeSession?.token) {
+      try {
+        await sb(`sessions?id=eq.${activeSession.token}`, {method:"DELETE"});
+      } catch(e) {}
+      // Also set expiresAt to past (belt + suspenders)
+      try {
+        await sb(`sessions?id=eq.${activeSession.token}`, {
+          method:"PATCH",
+          body:JSON.stringify({expires_at: new Date(0).toISOString()})
+        });
+      } catch(e) {}
+    }
     setActiveSession(null);
     setQrDataURL(null);
     setTimeLeft(0);
@@ -4185,7 +4747,7 @@ function QuizPreviewTab({selLab, onSelectLab}) {
 
   const [selModId, setSelModId] = useState(null);
   const [search, setSearch] = useState("");
-  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise_preview | fise_edit
+  const [subTab, setSubTab] = useState("preview"); // preview | edit | fise_preview | fise_edit | exam_preview | exam_edit
   const [quizEdits, setQuizEdits] = useState(()=>loadQuizEdits());
   
   // Load edits from Supabase on mount
@@ -4347,6 +4909,8 @@ function QuizPreviewTab({selLab, onSelectLab}) {
           {id:"edit",         label:"✏️ Editor Quiz"},
           {id:"fise_preview", label:"📋 Previzualizare Fișe de Grup"},
           {id:"fise_edit",    label:"✏️ Editor Fișe"},
+          {id:"exam_preview", label:"🎓 Previzualizare Examen"},
+          {id:"exam_edit",    label:"✏️ Editor Examen"},
         ].map(t=>(
           <button key={t.id} onClick={()=>setSubTab(t.id)}
             style={{padding:"8px 18px",borderRadius:9,border:"none",cursor:"pointer",fontSize:13,fontWeight:subTab===t.id?700:400,
@@ -4380,6 +4944,10 @@ function QuizPreviewTab({selLab, onSelectLab}) {
       {/* ── FISE SUB-TABS ── */}
       {(subTab==="fise_preview"||subTab==="fise_edit") && (
         <FisaPreviewPanel labId={selLab?.id} mode={subTab==="fise_edit"?"edit":"preview"}/>
+      )}
+
+      {(subTab==="exam_preview"||subTab==="exam_edit") && (
+        <ExamBankPanel mode={subTab==="exam_edit"?"edit":"preview"} selLab={selLab}/>
       )}
 
       {/* ── PREVIEW + EDIT sub-tabs: two-column layout ── */}
